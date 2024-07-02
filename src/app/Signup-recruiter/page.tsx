@@ -4,14 +4,20 @@ import Link from 'next/link';
 const Signup = () => {
   return (
     <div className="min-h-screen bg-gray-800 flex">
-      <div className="text-5xl text-white pt-48 pl-24 tracking-wider leading-relaxed">
-        <p>
-          <strong>
-            Get the best engineering<br />minds
-            to bring your product<br />vision to life.
-          </strong>
-        </p>
-      </div>
+    <div className="relative">
+  <div className="absolute top-0 left-0 pl-24 pt-16 text-white text-4xl">
+    <strong>CodeUnity</strong>
+  </div>
+  <div className="text-5xl text-white pt-60 pl-24 tracking-wider leading-relaxed">
+    <p>
+      <strong>
+        Get the <span style={{ color: "#9457CF" }}>best engineering</span><br />
+        <span style={{ color: "#9457CF" }}>minds </span>
+        to bring your product<br />vision to life.
+      </strong>
+    </p>
+  </div>
+</div>
       <div className="ml-16 mt-10 mr-8 mb-8 h-screen border border-white rounded-lg flex-1">
         <div className="h-full overflow-y-auto p-8">
           <div className='text-3xl text-white tracking-wider leading-relaxed font-bold pr-4 mb-8'>
@@ -139,7 +145,7 @@ const Signup = () => {
 </div>
 <div className='justify-center text-center mt-8'>
 <div className="bubble-element Text cpaKaOaE0" style={{ whiteSpace: 'pre-wrap', overflow: 'visible', fontFamily: 'Space Grotesk', fontSize: '20px', fontWeight: 400, color: 'rgba(255, 255, 255, 0.6)', lineHeight: 1.4, borderRadius: 0, opacity: 1, alignSelf: 'center', minWidth: '16px', order: 18, minHeight: '10px', height: 'max-content', flexGrow: 0, flexShrink: 0, width: 'auto', margin: '0px', zIndex: 203 }}>
-  Already have an account? <font color="#9457CF"><a href="https://3.flexiple.com/login" target="_blank">Login</a></font>
+  Already have an account? <font color="#9457CF"><Link href="/login" target="_blank">Login</Link></font>
 </div>
 </div>
 
