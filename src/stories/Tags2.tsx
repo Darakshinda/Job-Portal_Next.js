@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Tag from '@/app/Components/Tag';
 import ClickOutsideDiv from '../app/Components/ClickoutsideDiv';
-import "@/app/Components/Clickoutsidediv.css";
+import "../app/Components/ClickoutsideDiv.css";
 
 
 interface Option {
