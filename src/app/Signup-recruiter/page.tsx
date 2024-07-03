@@ -1,7 +1,15 @@
+"use client";
 import React from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 
 const Signup = () => {
+
+  const [selectedOption, setSelectedOption] = useState<string>("");
+
+  const handleOptionSelect = (option: string) => {
+    setSelectedOption(option);
+  };
   return (
     <div className="min-h-screen bg-gray-800 flex">
     <div className="relative">
@@ -76,6 +84,52 @@ const Signup = () => {
                 placeholder="00000 00000"
                 inputMode="numeric"
                 className="flex-1 p-2 bg-gray-900 text-white rounded-r border border-gray-700 ml-4"
+              />
+            </div>
+          </div>
+          <div className="flex flex-col mt-6">
+            <label className="text-gray-500 font-medium">
+              What are you looking for? <span className="text-red-500">*</span>
+            </label>
+            <div className="flex space-x-4 mt-1">
+              <div
+                className={`flex items-center bg-gray-900 text-white rounded border p-3 cursor-pointer ${selectedOption === "Freelance Contractor" ? 'border-pink-500' : 'border-gray-700'}`}
+                onClick={() => handleOptionSelect("Freelance Contractor")}
+              >
+                <img
+                  src="https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2F3fde73c38faef18e5434cf9455ec5a40.cdn.bubble.io%2Ff1719401619808x744048326997721200%2Fclock%25201.png?w=48&amp;h=48&amp;auto=compress&amp;dpr=1.25&amp;fit=max"
+                  alt="icon"
+                  className="w-8 h-8 mr-3"
+                />
+                <div className="text-gray-500 font-medium tracking-wide">
+                  Freelance Contractor
+                </div>
+              </div>
+              <div
+                className={`flex items-center bg-gray-900 text-white rounded border p-3 cursor-pointer ${selectedOption === "Full time Employee" ? 'border-pink-500' : 'border-gray-700'}`}
+                onClick={() => handleOptionSelect("Full time Employee")}
+              >
+                <img
+                  src="https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2F3fde73c38faef18e5434cf9455ec5a40.cdn.bubble.io%2Ff1719401627806x459444916144273100%2Fbriefcase-business%2520%25282%2529%25201.png?w=48&amp;h=48&amp;auto=compress&amp;dpr=1.25&amp;fit=max"
+                  alt="icon"
+                  className="w-8 h-8 mr-3"
+                />
+                <div className="text-gray-500 font-medium tracking-wide">
+                  Full time Employee
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col mt-6">
+            <label className="text-gray-500 font-medium" htmlFor="skills">
+              What skills are you hiring for? <span className="text-red-500">*</span>
+            </label>
+            <div className="flex mt-1">
+              <input
+                id="skills"
+                type="text"
+                placeholder="Technical Skills Required"
+                className="p-2 bg-gray-900 text-white rounded border border-gray-700 flex-1"
               />
             </div>
           </div>
