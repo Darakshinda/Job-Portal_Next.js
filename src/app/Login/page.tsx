@@ -119,12 +119,14 @@ const Login = () => {
         </form>
         <h2 className="mt-8 text-black-600">Don't have an account?</h2>
         <div className="flex mt-4 space-x-10">
+          <Link href="/Signup-seeker">
           <button className="flex-1 bg-white border border-black rounded-lg text-black p-4 rounded-lg hover:border-pink-500 hover:bg-white transition duration-300 whitespace-nowrap">
             <div>
               <h2 className="text-lg font-bold">Explore Jobs</h2>
               <h5 className="text-sm text-gray-600">Signup as a Talent</h5>
             </div>
           </button>
+          </Link>
           <Link href="/Signup-recruiter">
             <button className="flex-1 bg-white border border-black rounded-lg text-black p-4 rounded-lg hover:border-pink-500 hover:bg-white transition duration-300 whitespace-nowrap">
               <div>
