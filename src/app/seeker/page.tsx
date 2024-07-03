@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Head from 'next/head';
 import { Tags } from '@/stories/Tags';
 import tagOpns from "../post/data/tags.json"
+import { relative } from 'path';
 
 const Page = () => {
   const [formData, setFormData] = useState({
@@ -19,6 +20,16 @@ const Page = () => {
     monthsOfExperience: '',
     skills: ''
   });
+
+  let errors=new Array(20).fill(0);
+  const [sbmt, setsbmt] = useState(false);
+  
+const err=(value:string, ref:string,valid:boolean,i:number)=>{
+  if(value==ref) errors[i]=1;else if(!valid) errors[i]=2;else errors[i]=0;
+if((value==ref||!valid)&&sbmt) return "red";
+return "#ccc";}
+const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
+  return err(value,ref,valid,i)=="red"}
 
   const handler = (key:string, value:string) => {
     setFormData((prevState) => {
@@ -40,6 +51,7 @@ const Page = () => {
   };
 
   const handleSubmit = (e: React.FormEvent) => {
+    setsbmt(true);
     e.preventDefault();
     console.log(formData);
   };
@@ -50,33 +62,48 @@ const Page = () => {
         <title>Get Hired</title>
         <meta name="description" content="Let's get you hired!" />
       </Head>
-      <div className="container" style={{top:0,right:0,position:"fixed",height:"100%",}}>
-        <b><h1>Let's get you hired!</h1></b>
-        <form onSubmit={handleSubmit} className="form">
+      <div className="container" style={{top:0,right:0,position:"fixed",height:"100%"}}>
+        <b style={{textAlign:"center"}}><h1>Let's get you hired!</h1></b>
+        
+        {errchck(formData.firstName,"",true,1)&&<p style={{color:"red",fontSize:"11px",marginLeft:"19%"}}>This is required</p>}
         <div className="formGroup">
             <label>First Name*</label>
-            <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} required style={{width:"80.5%",marginLeft:"2%"}} />
+            <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} required style={{border: `1px solid ${err(formData.firstName,"",true,1)}`,width:"80.5%",marginLeft:"2%"}} />
           </div>
+          
+          {errchck(formData.lastName,"",true,1)&&<p style={{color:"red",fontSize:"11px",marginLeft:"19%"}}>This is required</p>}
           <div className="formGroup">
             <label>Last Name*</label>
-            <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} required style={{width:"80.5%",marginLeft:"2%"}} />
+            <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} required style={{border:`1px solid ${err(formData.lastName,"",true,2)}`,width:"80.5%",marginLeft:"2%"}} />
           </div>
+
+          {errchck(formData.username,"",true,1)&&<p style={{color:"red",fontSize:"11px",marginLeft:"19%"}}>This is required</p>}
           <div className="formGroup">
             <label>Username*</label>
-            <input type="text" name="username" value={formData.username} onChange={handleChange} required style={{width:"80.5%",marginLeft:"2%"}} />
+            <input type="text" name="username" value={formData.username} onChange={handleChange} required style={{border:`1px solid ${err(formData.username,"",true,3)}`,width:"80.5%",marginLeft:"2%"}} />
           </div>
+
+          {errchck(formData.password,"",true,1)&&<p style={{color:"red",fontSize:"11px",marginLeft:"19%"}}>This is required</p>}
           <div className="formGroup">
             <label>Password*</label>
-            <input type="text" name="password" value={formData.password} onChange={handleChange} required style={{width:"80.5%",marginLeft:"2%"}} />
+            <input type="text" name="password" value={formData.password} onChange={handleChange} required style={{border:`1px solid ${err(formData.password,"",true,4)}`,width:"80.5%",marginLeft:"2%"}} />
           </div>
+
+          {errchck(formData.email,"",true,1)&&<p style={{color:"red",fontSize:"11px",marginLeft:"19%"}}>This is required</p>}
           <div className="formGroup">
             <label>Email ID*</label>
-            <input type="email" name="email" value={formData.email} onChange={handleChange} required style={{width:"80.5%",marginLeft:"2%"}} />
+            <input type="email" name="email" value={formData.email} onChange={handleChange} required style={{border:`1px solid ${err(formData.email,"",true,5)}`,width:"80.5%",marginLeft:"2%"}} />
           </div>
+
+          {errchck(formData.location,"",true,1)&&<p style={{color:"red",fontSize:"11px",marginLeft:"19%"}}>This is required</p>}
           <div className="formGroup">
             <label>Location*</label>
-            <input type="text" name="location" value={formData.location} onChange={handleChange} required style={{width:"80.5%",marginLeft:"2%"}}/>
+            <input type="text" name="location" value={formData.location} onChange={handleChange} required style={{border:`1px solid ${err(formData.location,"",true,6)}`,width:"80.5%",marginLeft:"2%"}}/>
           </div>
+
+          <div style={{display:"flex",}}>
+          {errchck(formData.contactNumber,"",true,1)&&<a style={{color:"red",fontSize:"11px",left:"45%",position:"relative"}}>This is required</a>}
+          {errchck(formData.contactNumber,"",true,1)&&<a style={{color:"red",fontSize:"11px",left:"6%",position:"relative"}}>This is required</a>}</div>
           <div className="formGroup">
             <label>Contact Number*</label>
             <div className="contactNumber" style={{width:"90%",}}>
@@ -84,13 +111,14 @@ const Page = () => {
                 <option value="+91">India +91</option>
                 {/* Add other country codes as needed */}
               </select>
-              <input type="tel" name="contactNumber"  pattern="[0-9]{10}" value={formData.contactNumber} onChange={handleChange} required />
+              <input type="tel" name="contactNumber"  pattern="[0-9]{10}" value={formData.contactNumber} onChange={handleChange} style={{border:`1px solid ${err(formData.contactNumber,"",true,9)}`,}} required />
             </div>
           </div>
-          
-          <button type="submit" className="submitButton">Find Dream Jobs</button>
-        </form>
-        <p>Already have an account? <a href="/login" className="loginLink">Login here</a></p>
+
+          <div style={{width:"100%",textAlign:"center"}}>
+          <button type="submit" className="submitButton" onClick={handleSubmit}>Find Dream Jobs</button>
+    
+        <p>Already have an account? <a href="/login" className="loginLink">Login here</a></p></div>
       </div>
       <style jsx>{`
         .container {
@@ -101,7 +129,7 @@ const Page = () => {
           margin: 0 auto;
           
           font-family: Arial, sans-serif;
-          text-align: center;
+         
         }
         h1 {
           font-size: 2rem;
@@ -131,10 +159,9 @@ const Page = () => {
         input,
         select {
           padding: 0.5rem;
-          border: 1px solid #ccc;
           border-radius: 4px;
           background-color: #333;
-          color: #fff;
+          color: #fff;width:7px;
           font-size: 1rem;
         }
         .cont

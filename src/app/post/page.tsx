@@ -42,10 +42,14 @@ export default function Home() {
     setSelectedJob(null);
   };
 
-let errors=new Array(15).fill(0);
+let errors=new Array(20).fill(0);
   
 const err=(value:string, ref:string,valid:boolean,i:number)=>{
   if(value==ref) errors[i]=1;else if(!valid) errors[i]=2;else errors[i]=0;
+if((value==ref||!valid)&&sbmt) return "solid";
+return "none";}
+
+const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
 if((value==ref||!valid)&&sbmt) return "solid";
 return "none";}
 
@@ -59,12 +63,15 @@ function isValidURL(url: string): boolean {
   const urlRegex = /^(https?:\/\/)?((([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})|localhost)(:\d+)?(\/\S*)?$/;
   return urlRegex.test(url);
 }
+const [sbmt, setsbmt] = useState(false);
+console.log(`@@${errors[7]}`);
 
 function sal(sentence: string): number {
   // Function to escape special characters in a regex pattern
+  if(sentence=="Minimum per year") return -1;if(sentence=="Maximum per year") return 1e8;
   return parseInt(sentence.replace(/[^0-9]/g, ''),10);
 }
-const [sbmt, setsbmt] = useState(false);
+
 
 let comp=user.company,pos=user.position,jobdesc=user.desc,how2apply=user.how2apply;
 if(comp=="") comp="Company";if(pos=="") pos="Position";
@@ -73,7 +80,6 @@ const disp=()=>
     setsbmt(true);
     for(let i=0;i<errors.length;i++) if(errors[i]==1) {alert("Kindly fill the necessary Details");return;}
     for(let i=0;i<errors.length;i++) if(errors[i]==2) {alert("Enter valid details");return;}
- 
     console.log(user);};
 
 return (
@@ -95,14 +101,17 @@ return (
 
         <span className="head">COMPANY NAME*</span>
         <div style={{border:`3px ${err(user.company,"",true,1)} red`,}}><TextInput keyy='company' val={user.company} placeholder={`Company name`} onChange={handleChange} req={true} cls="input_company"/></div>
+        {errchck(user.company,"",true,1)=="solid"&&<p style={{color:"red",fontSize:"11px"}}>This is required</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>Your company's brand/trade name: without Inc., Ltd., B.V., Pte., etc.</span>
         
         <span className="head">POSITION*</span>
         <div style={{border:`3px ${err(user.position,"",true,2)} red`,}}><TextInput keyy='position' val={user.position} placeholder={`Position`} onChange={handleChange} req={true} cls="input_company"/></div>
+        {errchck(user.position,"",true,2)=="solid"&&<p style={{color:"red",fontSize:"11px"}}>This is required</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}> Please specify as single job position like "Marketing Manager" or "Node JS Developer", not a sentence like "Looking for PM / Biz Dev / Manager". We know your job is important but please DO NOT WRITE IN FULL CAPS. If posting multiple roles, please create multiple job posts. A job post is limited to a single job. We only allow real jobs, absolutely no MLM-type courses "learn how to work online" please.</span>
         
         <span className="head">EMPLOYMENT TYPE*</span>
         <div style={{border:`3px ${err(user.emptype,"Select Employment type",true,3)} red`,}}><Select keyy='emptype' onChange={handleChange} req={true} cls="input_company" body={emptype}/></div>
+        {errchck(user.emptype,"Select Employment type",true,3)=="solid"&&<p style={{color:"red",fontSize:"11px"}}>This is required</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}></span>
 
         <span className="head">PRIMARY TAG</span>
@@ -111,6 +120,7 @@ return (
         
         <span className="head">TAGS, KEYWORDS OR STACK*</span>
         <div style={{border:`3px ${err(user.tags,"",true,4)} red`,}}><Tags keyy='tags' cls="input_company" settgs={handleChange} dynamic={true} options={tagOpns}/></div>
+        {errchck(user.tags,"",true,4)=="solid"&&<p style={{color:"red",fontSize:"11px"}}>This is required</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>Short tags are preferred. Use tags like industry and tech stack. The first 3 or 4 tags are shown on the site, the other tags aren't but the job will be shown on each tag specific page (like /remote-react-jobs). We also sometimes generate tags automatically after you post/edit to supplement.</span>
 
         <span className="head">JOB IS RESTRICTED TO LOCATIONS?</span>
@@ -128,14 +138,18 @@ return (
         
         <span className="head">COMPANY EMAIL* {`(STAYS PRIVATE, FOR INVOICE + EDIT LINK)`}</span>
         <div style={{border:`3px ${err(user.compMail,"",isValidEmail(user.compMail),5)} red`,}}><TextInput keyy='compMail' val={user.compMail} placeholder={``} onChange={handleChange} req={true} cls="input_company"/></div>
+        {errchck(user.compMail,"",true,5)=="solid"&&<p style={{color:"red",fontSize:"11px"}}>This is required</p>}
+        {!isValidEmail(user.compMail)&&<p style={{marginLeft:"2.5%",color:"red",fontSize:"11px"}}>Enter a valid email</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>Make sure this email is accessible by you! We use this to send the invoice and edit link. We can not and do not manually resend it! If you use your company domain (same as company name), we will show a [ Verified ] tag on your job post.</span>
         
         <span className="head">INVOICE EMAIL {`(STAYS PRIVATE)`}</span>
-        <div style={{border:`3px ${err(user.invMail,"^~239874xzxdr46x?:trjan",isValidEmail(user.invMail),11)} red`,}}><TextInput keyy='invMail' val={user.invMail} placeholder={``} onChange={handleChange} cls="input_company"/></div>
+        <div style={{border:`3px ${err(user.invMail,"^~239874xzxdr46x?:trjan",isValidEmail(user.invMail),6)} red`,}}><TextInput keyy='invMail' val={user.invMail} placeholder={``} onChange={handleChange} cls="input_company"/></div>
+        {!isValidEmail(user.invMail)&&<p style={{marginLeft:"2.5%",color:"red",fontSize:"11px"}}>Enter a valid email</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>We send a copy of the invoice and edit link to here too. You can write your finance department or accountant expenses email here so they get a copy of the invoice for your bookkeeping.</span>
 
         <span className="head">INVOICE ADDRESS*</span>
-        <div style={{border:`3px ${err(user.invAdrs,"",true,6)} red`,}}><TextArea keyy="invAdrs" val={user.invAdrs} placeholder={`e.g. your company's full name and full invoice address, including building, street, city and country; also things like your VAT number, this is shown on the invoice.`} onChange={handleChange} req={true} cls="input_company"/></div>
+        <div style={{border:`3px ${err(user.invAdrs,"",true,7)} red`,}}><TextArea keyy="invAdrs" val={user.invAdrs} placeholder={`e.g. your company's full name and full invoice address, including building, street, city and country; also things like your VAT number, this is shown on the invoice.`} onChange={handleChange} req={true} cls="input_company"/></div>
+        {errchck(user.invAdrs,"",true,6)=="solid"&&<p style={{color:"red",fontSize:"11px"}}>This is required</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>{`Specify your company address here and we'll put it on your invoice for your bookkeeping. Be sure to [ Save changes ] in bottom right after editing your invoice address. Then it'll be instantly updated on the invoice.`}</span>
         
         <span className="head">INVOICE NOTES / PO NUMBER</span>
@@ -147,7 +161,9 @@ return (
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>{`Need to get approval for this payment? Or send the invoice to your finance department first? No problem, we'll save your job post and send you (and your finance department below) a payment link. Once it's paid we immediately publish it!`}</span>
 
       { user.payLtr&&<div><span className="head">PAY LATER EMAIL*</span>
-        <div style={{border:`3px ${err(user.pltrEml,"",isValidEmail(user.pltrEml),7)} red`,}}><TextInput keyy='pltrEml' val={user.pltrEml} placeholder={`Pay later email address`} onChange={handleChange} req={true} cls="input_company"/></div>
+        <div style={{border:`3px ${err(user.pltrEml,"",isValidEmail(user.pltrEml),8)} red`,}}><TextInput keyy='pltrEml' val={user.pltrEml} placeholder={`Pay later email address`} onChange={handleChange} req={true} cls="input_company"/></div>
+        {errchck(user.pltrEml,"",true,7)=="solid"&&<p style={{color:"red",fontSize:"11px"}}>This is required</p>}
+        {!isValidEmail(user.pltrEml)&&<p style={{marginLeft:"2.5%",color:"red",fontSize:"11px"}}>Enter a valid email</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>We will send a link to pay for this job to this email address.</span></div>}
        
        </div>
@@ -162,19 +178,23 @@ return (
         
         
         <span className="head">JOB DESCRIPTION*</span>
-        <div style={{marginLeft:"1.4%",marginRight:"2%",border:`3px ${err(user.desc,"",err(user.desc,"<p><br></p>",true,7)=="none",7)} red`,}}><JoditEditorComponent keyy="desc" value={user.desc} onChange={handleChange}/></div>
+        <div style={{marginLeft:"1.4%",marginRight:"2%",border:`3px ${err(user.desc,"",err(user.desc,"<p><br></p>",true,9)=="none",9)} red`,}}><JoditEditorComponent keyy="desc" value={user.desc} onChange={handleChange}/></div>
+        {errchck(user.desc,"",err(user.desc,"<p><br></p>",true,7)=="none",7)=="solid"&&<p style={{color:"red",marginLeft:"1.4%",fontSize:"11px"}}>This is required. Click outside the box after filling.</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>Click anywhere outside the editor to save</span>
         
         <span className="head">{`ANNUAL SALARY OR COMPENSATION IN USD (GROSS, ANNUALIZED, FULL-TIME-EQUIVALENT (FTE) IN USD EQUIVALENT)*`}</span>
-        <div style={{marginLeft:"18%",border:`3px ${err(user.minsal,"Minimum per year",err(user.maxsal,"Maximum per year",true,8)=="none"&&sal(user.minsal)<=sal(user.maxsal),8)} red`,width:"60%",alignItems:"center"}}>
+        <div style={{marginLeft:"18%",border:`3px ${err(user.minsal,"Minimum per year",err(user.maxsal,"Maximum per year",true,10)=="none"&&sal(user.minsal)<=sal(user.maxsal),10)} red`,width:"60%",alignItems:"center"}}>
           <div style={{display:"inline",marginLeft:"8%"}}><Select keyy="minsal" onChange={handleChange} req={true} cls="input_company" body={minSal} type="small" /></div> 
           <a style={{display:"inline",fontSize:"30px",marginLeft:"1%"}}>{`-`}</a>
           <div style={{display:"inline"}}><Select keyy="maxsal" onChange={handleChange} req={true} cls="input_company" body={maxSal} type="small"/></div> 
         </div>
+        {errchck(user.minsal,"Minimum per year",errchck(user.maxsal,"Maximum per year",true,8)=="none",8)=="solid"&&<p style={{color:"red",marginLeft:"18%",fontSize:"11px"}}>This is required</p>}
+        {!(sal(user.minsal)<=sal(user.maxsal))&&<p style={{color:"red",marginLeft:"25%",fontSize:"11px"}}>Min Salary must be lesser or equal to Max Salary</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>It's illegal to not share salary range on job posts since 2021. Posts without salary will automatically show an estimate of salary based on similar jobs. Remote job postings are legally required to show a salary compensation range in many U.S. states and countries. Google does NOT index jobs without salary data. If it's a short-term gig, use the annual full-time equivalent. For example, if it's a 2-week project for $2,000, the annual equivalent would be $2,000 / 2 weeks * 52 weeks = $52,000. Please use USD equivalent. We don't have currency built-in yet and we'd like to use this salary data to show salary trends in remote work. Remote OK is a supporter of #OpenSalaries.</span>
 
         <span className="head">BENEFITS*</span>
-        <div style={{marginLeft:"1.4%",border:`3px ${err(user.benefits,"",true,9)} red`,}}><SelectedOptions options={benefitOpns} keyy="benefits" onChange={handleChange} /></div>
+        <div style={{marginLeft:"1.4%",border:`3px ${err(user.benefits,"",true,11)} red`,}}><SelectedOptions options={benefitOpns} keyy="benefits" onChange={handleChange} /></div>
+        {errchck(user.benefits,"",true,9)=="solid"&&<p style={{color:"red",fontSize:"11px",marginLeft:"1.4%",}}>This is required</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}></span>
         
         <span className="head">HOW TO APPLY?</span>
@@ -182,11 +202,13 @@ return (
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>Click anywhere outside the editor to save</span>
 
         <span className="head">EMAIL TO GET JOB APPLICATIONS VIA APPLICANT AI (OUR OWN ATS)*</span>
-        <div style={{border:`3px ${err(user.email4jobappl,"",isValidEmail(user.email4jobappl),10)} red`,}}><TextInput keyy='email4jobappl' val={user.email4jobappl} placeholder={`Apply email address`} onChange={handleChange} req={true} cls="input_company"/></div>
+        <div style={{border:`3px ${err(user.email4jobappl,"^~239874xzxdr46x?:trjan",isValidEmail(user.email4jobappl),12)} red`,}}><TextInput keyy='email4jobappl' val={user.email4jobappl} placeholder={`Apply email address`} onChange={handleChange} req={true} cls="input_company"/></div>
+        {!isValidEmail(user.email4jobappl)&&<p style={{marginLeft:"2.5%",color:"red",fontSize:"11px"}}>Enter a valid email</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>{`Need to get approval for this payment? Or send the invoice to your finance department first? No problem, we'll save your job post and send you (and your finance department below) a payment link. Once it's paid we immediately publish it!`}</span>
 
         <span className="head">APPLY URL</span>
-        <div style={{border:`3px ${err(user.applUrl,"^~239874xzxdr?:trjan",isValidURL(user.applUrl),11)} red`,}}><TextInput keyy='applUrl' val={user.applUrl} placeholder={`https://`} onChange={handleChange} cls="input_company"/></div>
+        <div style={{border:`3px ${err(user.applUrl,"^~239874xzxdr?:trjan",isValidURL(user.applUrl),13)} red`,}}><TextInput keyy='applUrl' val={user.applUrl} placeholder={`https://`} onChange={handleChange} cls="input_company"/></div>
+        {!isValidURL(user.applUrl)&&<p style={{marginLeft:"2.5%",color:"red",fontSize:"11px"}}>Enter a valid URL</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>If you'd like to use your own apply form or ATS you can enter the URL here for people to apply. Jobs that use our own Applicant AI ATS generally receive more applicants.</span>
        
        </div>
