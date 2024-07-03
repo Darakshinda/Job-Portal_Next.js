@@ -28,8 +28,22 @@ const err=(value:string, ref:string,valid:boolean,i:number)=>{
   if(value==ref) errors[i]=1;else if(!valid) errors[i]=2;else errors[i]=0;
 if((value==ref||!valid)&&sbmt) return "red";
 return "#ccc";}
+
 const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
   return err(value,ref,valid,i)=="red"}
+
+  function isValidEmail(email: string): boolean {
+    if(email=="") return true;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  }
+
+  function isValidmobileNo(phone: string): boolean {
+    if(phone=="") return true;
+    // Regular expression to check if the string contains exactly 10 digits
+    const tenDigitRegex = /^\d{10}$/;
+    return tenDigitRegex.test(phone);
+}
 
   const handler = (key:string, value:string) => {
     setFormData((prevState) => {
@@ -53,6 +67,8 @@ const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
   const handleSubmit = (e: React.FormEvent) => {
     setsbmt(true);
     e.preventDefault();
+    for(let i=0;i<errors.length;i++) if(errors[i]==1) {alert("Kindly fill the necessary Details");return;}
+    for(let i=0;i<errors.length;i++) if(errors[i]==2) {alert("Enter valid details");return;}
     console.log(formData);
   };
 
@@ -62,7 +78,7 @@ const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
         <title>Get Hired</title>
         <meta name="description" content="Let's get you hired!" />
       </Head>
-      <div className="container" style={{top:0,right:0,position:"fixed",height:"100%"}}>
+      <div className="container" style={{top:0,right:0,position:"fixed",height:"100%",overflowY:"auto"}}>
         <b style={{textAlign:"center"}}><h1>Let's get you hired!</h1></b>
         
         {errchck(formData.firstName,"",true,1)&&<p style={{color:"red",fontSize:"11px",marginLeft:"19%"}}>This is required</p>}
@@ -90,9 +106,10 @@ const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
           </div>
 
           {errchck(formData.email,"",true,1)&&<p style={{color:"red",fontSize:"11px",marginLeft:"19%"}}>This is required</p>}
+          {!isValidEmail(formData.email)&&<p style={{color:"red",fontSize:"11px",marginLeft:"19%"}}>Enter a valid email</p>}
           <div className="formGroup">
             <label>Email ID*</label>
-            <input type="email" name="email" value={formData.email} onChange={handleChange} required style={{border:`1px solid ${err(formData.email,"",true,5)}`,width:"80.5%",marginLeft:"2%"}} />
+            <input type="email" name="email" value={formData.email} onChange={handleChange} required style={{border:`1px solid ${err(formData.email,"",isValidEmail(formData.email),5)}`,width:"80.5%",marginLeft:"2%"}} />
           </div>
 
           {errchck(formData.location,"",true,1)&&<p style={{color:"red",fontSize:"11px",marginLeft:"19%"}}>This is required</p>}
@@ -103,7 +120,8 @@ const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
 
           <div style={{display:"flex",}}>
           {errchck(formData.contactNumber,"",true,1)&&<a style={{color:"red",fontSize:"11px",left:"45%",position:"relative"}}>This is required</a>}
-          {errchck(formData.contactNumber,"",true,1)&&<a style={{color:"red",fontSize:"11px",left:"6%",position:"relative"}}>This is required</a>}</div>
+          {!isValidmobileNo(formData.contactNumber)&&<a style={{color:"red",fontSize:"11px",left:"45%",position:"relative"}}>Enter a valid phone no</a>}
+          {/*errchck(formData.contactNumber,"",true,1)&&<a style={{color:"red",fontSize:"11px",left:"6%",position:"relative"}}>This is required</a>*/}</div>
           <div className="formGroup">
             <label>Contact Number*</label>
             <div className="contactNumber" style={{width:"90%",}}>
@@ -111,7 +129,7 @@ const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
                 <option value="+91">India +91</option>
                 {/* Add other country codes as needed */}
               </select>
-              <input type="tel" name="contactNumber"  pattern="[0-9]{10}" value={formData.contactNumber} onChange={handleChange} style={{border:`1px solid ${err(formData.contactNumber,"",true,9)}`,}} required />
+              <input type="number" name="contactNumber" value={formData.contactNumber} onChange={handleChange} style={{border:`1px solid ${err(formData.contactNumber,"",isValidmobileNo(formData.contactNumber),9)}`,}} required />
             </div>
           </div>
 
@@ -163,6 +181,12 @@ const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
           background-color: #333;
           color: #fff;width:7px;
           font-size: 1rem;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
         }
         .cont
         {
