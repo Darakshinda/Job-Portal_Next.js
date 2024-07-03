@@ -15,7 +15,7 @@ interface Props {
     onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;settgs?:Function;
     cls?: string;keyy?:string;
     options: Option[];
-    req?: boolean;
+    req?: boolean;srchwdth?:string;scrollht?:string;
   }
 
 /*
@@ -23,7 +23,7 @@ interface Props {
 */
 let mySet: Set<string> = new Set();
   export const Tags = ({closeable=false,linktg=false,color="white",dynamic=false,size="sm",cls = 'select',settgs=()=>{},
-    phdr="Type a tag or keyword to search and add it",keyy,
+    phdr="Type a tag or keyword to search and add it",keyy,srchwdth="350px",scrollht="200px",
     options,
     req = false,}: Props) => 
       {
@@ -70,13 +70,14 @@ let mySet: Set<string> = new Set();
   };
   
   if(inputValue=="done") addTag();
+
+
   const renderInput = () => {
-   
       return (
         <div style={{display:"inline"}}>
       <input
         type="text"
-        className={`search-input ${cls}`} style={{width:"350px",borderStyle:"none"}}
+        className={`search-input ${cls}`} style={{width:srchwdth,height:"2%",borderStyle:"none",}}
         placeholder={phdr}
         value={searchTerm}
         onChange={e => {setSearchTerm(e.target.value);setsel(1);}} onClick={e=>setsel(1)}
@@ -118,13 +119,17 @@ let mySet: Set<string> = new Set();
         {!linktg&&"Tag"}
     </Tag>);
    
-  
+
+
+
   return (
-    <ClickOutsideDiv onOutsideClick={handleOutsideClick}><div  className={`searchable-select ${cls}`} style={{justifyItems:"center",backgroundSize:"cover",}}>
+    <ClickOutsideDiv onOutsideClick={handleOutsideClick}>
+      
+    <div  className={`searchable-select ${cls}`} style={{justifyItems:"center",backgroundSize:"cover",}}>
     {tags.map((item, index) => printtag(item,index))}
     {renderInput()}
   </div>
-  {sel==1 && <div role="listbox" className="scrollable-div" style={{backgroundColor:`white`,marginLeft:"1.5%",zIndex:"20000px", maxWidth:"95%"}}><ul tabIndex={0} className={`dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box`}>
+  {sel==1 && <div role="listbox" className="scrollable-div" style={{backgroundColor:`white`,marginLeft:"1.5%",zIndex:"20000px", maxWidth:"95%",color:"black",maxHeight:scrollht}}><ul tabIndex={0} className={`dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box`}>
   {filteredOptions.map(option => fun(option))}
 </ul></div>}</ClickOutsideDiv>
     );

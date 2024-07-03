@@ -10,6 +10,9 @@ interface Props {
   location_restriction?: string;
   tags?: string;
   created_at?: string;
+  job?: object;
+  viewDetails?: Function;
+  
 }
 interface tprop
 {tag?: string;
@@ -55,6 +58,7 @@ export const JobCard = ({cls="",bdg = false,imgflg=false,divcls="flex justify-be
   location_restriction="Faridabad",
   tags="HTML,Css,JS",
   created_at="6/18/2024 1:00:21",
+  viewDetails,job,
 }: Props) => {
 if(company_name=="") company_name="Company";if(position=="") position="Position";if(imgsrc=="") imgsrc="https://tse4.mm.bing.net/th?id=OIP.jsRxsoSHWZurGmwk32OMcQAAAA&pid=Api&P=0&h=220";
  return (
@@ -93,9 +97,13 @@ if(company_name=="") company_name="Company";if(position=="") position="Position"
           <p className="mr-[8%] text-black-500 mr-32">
             {getTimeDifference(created_at)}
           </p>
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",}}>
           <button className="border border-gray-300 rounded-md px-2 py-2 w-16"  style={{borderColor:"black"}}>
             Apply
           </button>
+          <button className="border border-gray-300 rounded-md px-2 py-2 w-32"  style={{borderColor:"black",marginTop:"25px"}} onClick={() => viewDetails(job)}>
+            View Details
+          </button></div>
         </div>
       </div>
       <div  style={{ width:"800px"}}>
