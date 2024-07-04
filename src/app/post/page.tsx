@@ -101,17 +101,17 @@ return (
 
         <span className="head">COMPANY NAME*</span>
         <div style={{border:`3px ${err(user.company,"",true,1)} red`,}}><TextInput keyy='company' val={user.company} placeholder={`Company name`} onChange={handleChange} req={true} cls="input_company"/></div>
-        {errchck(user.company,"",true,1)=="solid"&&<p style={{color:"red",fontSize:"11px"}}>This is required</p>}
+        {errchck(user.company,"",true,1)=="solid"&&<p style={{marginLeft:"2.5%",color:"red",fontSize:"11px"}}>This is required</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>Your company's brand/trade name: without Inc., Ltd., B.V., Pte., etc.</span>
         
         <span className="head">POSITION*</span>
         <div style={{border:`3px ${err(user.position,"",true,2)} red`,}}><TextInput keyy='position' val={user.position} placeholder={`Position`} onChange={handleChange} req={true} cls="input_company"/></div>
-        {errchck(user.position,"",true,2)=="solid"&&<p style={{color:"red",fontSize:"11px"}}>This is required</p>}
+        {errchck(user.position,"",true,2)=="solid"&&<p style={{marginLeft:"2.5%",color:"red",fontSize:"11px"}}>This is required</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}> Please specify as single job position like "Marketing Manager" or "Node JS Developer", not a sentence like "Looking for PM / Biz Dev / Manager". We know your job is important but please DO NOT WRITE IN FULL CAPS. If posting multiple roles, please create multiple job posts. A job post is limited to a single job. We only allow real jobs, absolutely no MLM-type courses "learn how to work online" please.</span>
         
         <span className="head">EMPLOYMENT TYPE*</span>
         <div style={{border:`3px ${err(user.emptype,"Select Employment type",true,3)} red`,}}><Select keyy='emptype' onChange={handleChange} req={true} cls="input_company" body={emptype}/></div>
-        {errchck(user.emptype,"Select Employment type",true,3)=="solid"&&<p style={{color:"red",fontSize:"11px"}}>This is required</p>}
+        {errchck(user.emptype,"Select Employment type",true,3)=="solid"&&<p style={{marginLeft:"2.5%",color:"red",fontSize:"11px"}}>This is required</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}></span>
 
         <span className="head">PRIMARY TAG</span>
@@ -120,7 +120,7 @@ return (
         
         <span className="head">TAGS, KEYWORDS OR STACK*</span>
         <div style={{border:`3px ${err(user.tags,"",true,4)} red`,}}><Tags keyy='tags' cls="input_company" settgs={handleChange} dynamic={true} options={tagOpns}/></div>
-        {errchck(user.tags,"",true,4)=="solid"&&<p style={{color:"red",fontSize:"11px"}}>This is required</p>}
+        {errchck(user.tags,"",true,4)=="solid"&&<p style={{marginLeft:"2.5%",color:"red",fontSize:"11px"}}>This is required</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>Short tags are preferred. Use tags like industry and tech stack. The first 3 or 4 tags are shown on the site, the other tags aren't but the job will be shown on each tag specific page (like /remote-react-jobs). We also sometimes generate tags automatically after you post/edit to supplement.</span>
 
         <span className="head">JOB IS RESTRICTED TO LOCATIONS?</span>
@@ -138,7 +138,7 @@ return (
         
         <span className="head">COMPANY EMAIL* {`(STAYS PRIVATE, FOR INVOICE + EDIT LINK)`}</span>
         <div style={{border:`3px ${err(user.compMail,"",isValidEmail(user.compMail),5)} red`,}}><TextInput keyy='compMail' val={user.compMail} placeholder={``} onChange={handleChange} req={true} cls="input_company"/></div>
-        {errchck(user.compMail,"",true,5)=="solid"&&<p style={{color:"red",fontSize:"11px"}}>This is required</p>}
+        {errchck(user.compMail,"",true,5)=="solid"&&<p style={{marginLeft:"2.5%",color:"red",fontSize:"11px"}}>This is required</p>}
         {!isValidEmail(user.compMail)&&<p style={{marginLeft:"2.5%",color:"red",fontSize:"11px"}}>Enter a valid email</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>Make sure this email is accessible by you! We use this to send the invoice and edit link. We can not and do not manually resend it! If you use your company domain (same as company name), we will show a [ Verified ] tag on your job post.</span>
         
@@ -149,7 +149,7 @@ return (
 
         <span className="head">INVOICE ADDRESS*</span>
         <div style={{border:`3px ${err(user.invAdrs,"",true,7)} red`,}}><TextArea keyy="invAdrs" val={user.invAdrs} placeholder={`e.g. your company's full name and full invoice address, including building, street, city and country; also things like your VAT number, this is shown on the invoice.`} onChange={handleChange} req={true} cls="input_company"/></div>
-        {errchck(user.invAdrs,"",true,6)=="solid"&&<p style={{color:"red",fontSize:"11px"}}>This is required</p>}
+        {errchck(user.invAdrs,"",true,6)=="solid"&&<p style={{marginLeft:"2.5%",color:"red",fontSize:"11px"}}>This is required</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>{`Specify your company address here and we'll put it on your invoice for your bookkeeping. Be sure to [ Save changes ] in bottom right after editing your invoice address. Then it'll be instantly updated on the invoice.`}</span>
         
         <span className="head">INVOICE NOTES / PO NUMBER</span>
@@ -162,7 +162,7 @@ return (
 
       { user.payLtr&&<div><span className="head">PAY LATER EMAIL*</span>
         <div style={{border:`3px ${err(user.pltrEml,"",isValidEmail(user.pltrEml),8)} red`,}}><TextInput keyy='pltrEml' val={user.pltrEml} placeholder={`Pay later email address`} onChange={handleChange} req={true} cls="input_company"/></div>
-        {errchck(user.pltrEml,"",true,7)=="solid"&&<p style={{color:"red",fontSize:"11px"}}>This is required</p>}
+        {errchck(user.pltrEml,"",true,7)=="solid"&&<p style={{marginLeft:"2.5%",color:"red",fontSize:"11px"}}>This is required</p>}
         {!isValidEmail(user.pltrEml)&&<p style={{marginLeft:"2.5%",color:"red",fontSize:"11px"}}>Enter a valid email</p>}
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>We will send a link to pay for this job to this email address.</span></div>}
        

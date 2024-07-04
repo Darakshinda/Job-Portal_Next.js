@@ -17,7 +17,6 @@ const Page = () => {
     countryCode: '+91',
     contactNumber: '',
     yearsOfExperience: '',
-    monthsOfExperience: '',
     skills: ''
   });
 
@@ -72,12 +71,36 @@ const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
     console.log(formData);
   };
 
+  function validUsername(s: string): boolean {
+    if(s=="") return true;
+    // Check if the string length is 150 characters or fewer
+    if (s.length > 150) {
+        return false;
+    }
+
+    // Check if the string contains alphabets, digits, and special characters
+    const regex = /[A-Za-z]/.test(s) && /[0-9]/.test(s) && /[^A-Za-z0-9]/.test(s);
+    return regex;
+}
+ 
+
   return (
-    <>
-      <Head>
-        <title>Get Hired</title>
-        <meta name="description" content="Let's get you hired!" />
-      </Head>
+   <>
+      <div className="min-h-screen bg-gray-800 flex" style={{maxHeight:"700px",overflowY:"auto"}}>
+            <div className="fixed" style={{width:"60%",}}>
+          <div className="absolute top-0 left-0 pl-24 pt-16 text-white text-4xl">
+            <strong>CodeUnity</strong>
+          </div>
+          <div className="text-5xl text-white pt-60 pl-24 tracking-wider leading-relaxed">
+            <p>
+              <strong>
+                Become part of an<br/>
+                <span style={{ color: "#9457CF" }}>exclusive</span> network.<br />
+                
+              </strong>
+            </p>
+          </div>
+        </div>
       <div className="container" style={{top:0,right:0,position:"fixed",height:"100%",overflowY:"auto"}}>
         <b style={{textAlign:"center"}}><h1>Let's get you hired!</h1></b>
         
@@ -94,10 +117,11 @@ const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
           </div>
 
           {errchck(formData.username,"",true,1)&&<p style={{color:"red",fontSize:"11px",marginLeft:"19%"}}>This is required</p>}
-          <div className="formGroup">
+          <div style={{display: "flex",justifyContent: "space-between",marginBottom: "0%",}}>
             <label>Username*</label>
-            <input type="text" name="username" value={formData.username} onChange={handleChange} required style={{border:`1px solid ${err(formData.username,"",true,3)}`,width:"80.5%",marginLeft:"2%"}} />
+            <input type="text" name="username" value={formData.username} onChange={handleChange} required style={{border:`1px solid ${err(formData.username,"",validUsername(formData.username),3)}`,width:"80.5%",marginLeft:"2%"}} />
           </div>
+          <div style={{marginBottom: "1.5rem",}}>{!validUsername(formData.username)&&<p style={{color:"red",marginTop:"0px",fontSize:"11px",marginLeft:"19%"}}>Username must contain alphabets, digits and special charcters and should be lesser than 150 characters</p>}</div>
 
           {errchck(formData.password,"",true,1)&&<p style={{color:"red",fontSize:"11px",marginLeft:"19%"}}>This is required</p>}
           <div className="formGroup">
@@ -117,6 +141,11 @@ const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
             <label>Location*</label>
             <input type="text" name="location" value={formData.location} onChange={handleChange} required style={{border:`1px solid ${err(formData.location,"",true,6)}`,width:"80.5%",marginLeft:"2%"}}/>
           </div>
+          {errchck(formData.skills,"",true,1)&&<p style={{color:"red",fontSize:"11px",marginLeft:"19%"}}>This is required</p>}
+          <div className="formGroup">
+            <label>Technical Skills*</label>
+            <Tags keyy='skills' cls="cont" settgs={handler} dynamic={true} options={tagOpns} border={`1px solid ${err(formData.skills,"",true,7)}`} phdr='Search and add a skill' srchwdth='41.5%'/>
+          </div>
 
           <div style={{display:"flex",}}>
           {errchck(formData.contactNumber,"",true,1)&&<a style={{color:"red",fontSize:"11px",left:"45%",position:"relative"}}>This is required</a>}
@@ -133,10 +162,17 @@ const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
             </div>
           </div>
 
+          {errchck(formData.yearsOfExperience,"",true,1)&&<p style={{color:"red",fontSize:"11px",marginLeft:"29%"}}>This is required</p>}
+          <div className="formGroup" style={{justifyContent:"left"}}>
+            <label>Years of Experience*</label>
+            <input type="number" name="yearsOfExperience" value={formData.yearsOfExperience} onChange={handleChange} style={{border:`1px solid ${err(formData.yearsOfExperience,"",true,10)}`,width:"18.5%",marginLeft:"2%"}} required />
+          </div>
+
           <div style={{width:"100%",textAlign:"center"}}>
           <button type="submit" className="submitButton" onClick={handleSubmit}>Find Dream Jobs</button>
     
         <p>Already have an account? <a href="/login" className="loginLink">Login here</a></p></div>
+      </div>
       </div>
       <style jsx>{`
         .container {
@@ -234,6 +270,7 @@ const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
         }
       `}</style>
     </>
+    
   );
 };
 

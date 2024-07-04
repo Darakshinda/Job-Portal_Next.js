@@ -11,7 +11,7 @@ interface Option {
 
 interface Props {
  
-    closeable?:boolean;linktg?:boolean;color?:string;dynamic?:boolean;size?:string;phdr: string;
+    closeable?:boolean;linktg?:boolean;color?:string;dynamic?:boolean;size?:string;phdr: string;border?:string;
     onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;settgs?:Function;
     cls?: string;keyy?:string;
     options: Option[];
@@ -22,8 +22,9 @@ interface Props {
 
 */
 let mySet: Set<string> = new Set();
+
   export const Tags = ({closeable=false,linktg=false,color="white",dynamic=false,size="sm",cls = 'select',settgs=()=>{},
-    phdr="Type a tag or keyword to search and add it",keyy,srchwdth="350px",scrollht="200px",
+    phdr="Type a tag or keyword to search and add it",keyy,srchwdth="350px",scrollht="200px",border='',
     options,
     req = false,}: Props) => 
       {
@@ -125,7 +126,7 @@ let mySet: Set<string> = new Set();
   return (
     <ClickOutsideDiv onOutsideClick={handleOutsideClick}>
       
-    <div  className={`searchable-select ${cls}`} style={{justifyItems:"center",backgroundSize:"cover",}}>
+    <div  className={`searchable-select ${cls}`} style={{justifyItems:"center",border:border}}>
     {tags.map((item, index) => printtag(item,index))}
     {renderInput()}
   </div>
