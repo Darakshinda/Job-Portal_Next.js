@@ -86,7 +86,7 @@ const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
 
   return (
    <>
-      <div className="min-h-screen bg-gray-800 flex" style={{maxHeight:"700px",overflowY:"auto"}}>
+      <div className="min-h-screen bg-gray-800 flex">
             <div className="fixed" style={{width:"60%",}}>
           <div className="absolute top-0 left-0 pl-24 pt-16 text-white text-4xl">
             <strong>CodeUnity</strong>
@@ -101,7 +101,8 @@ const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
             </p>
           </div>
         </div>
-      <div className="container" style={{top:0,right:0,position:"fixed",height:"100%",overflowY:"auto"}}>
+        <div className="ml-[63%] mt-10 mb-8 h-screen border border-white text-white rounded-lg flex-1 bg-black max-w-[37%]">
+        <div className="h-full overflow-y-auto p-8">
         <b style={{textAlign:"center"}}><h1>Let's get you hired!</h1></b>
         
         {errchck(formData.firstName,"",true,1)&&<p style={{color:"red",fontSize:"11px",marginLeft:"19%"}}>This is required</p>}
@@ -142,9 +143,9 @@ const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
             <input type="text" name="location" value={formData.location} onChange={handleChange} required style={{border:`1px solid ${err(formData.location,"",true,6)}`,width:"80.5%",marginLeft:"2%"}}/>
           </div>
           {errchck(formData.skills,"",true,1)&&<p style={{color:"red",fontSize:"11px",marginLeft:"19%"}}>This is required</p>}
-          <div className="formGroup">
-            <label>Technical Skills*</label>
-            <Tags keyy='skills' cls="cont" settgs={handler} dynamic={true} options={tagOpns} border={`1px solid ${err(formData.skills,"",true,7)}`} phdr='Search and add a skill' srchwdth='41.5%'/>
+          <div style={{marginBottom: "1.5rem",display:"flex",}}>
+            <label>Technical<br/>Skills*</label>
+            <Tags keyy='skills' cls="ml-[9%] w-[155%] cont" optionMrgn='9%' optionWdth='155%' settgs={handler} dynamic={true} options={tagOpns} border={`1px solid ${err(formData.skills,"",true,7)}`} phdr='Search and add a skill' srchwdth='49%'/>
           </div>
 
           <div style={{display:"flex",}}>
@@ -162,9 +163,9 @@ const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
             </div>
           </div>
 
-          {errchck(formData.yearsOfExperience,"",true,1)&&<p style={{color:"red",fontSize:"11px",marginLeft:"29%"}}>This is required</p>}
+          {errchck(formData.yearsOfExperience,"",true,1)&&<p style={{color:"red",fontSize:"11px",marginLeft:"21%"}}>This is required</p>}
           <div className="formGroup" style={{justifyContent:"left"}}>
-            <label>Years of Experience*</label>
+            <label>Years of<br/> Experience*</label>
             <input type="number" name="yearsOfExperience" value={formData.yearsOfExperience} onChange={handleChange} style={{border:`1px solid ${err(formData.yearsOfExperience,"",true,10)}`,width:"18.5%",marginLeft:"2%"}} required />
           </div>
 
@@ -173,7 +174,7 @@ const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
     
         <p>Already have an account? <a href="/login" className="loginLink">Login here</a></p></div>
       </div>
-      </div>
+      </div></div>
       <style jsx>{`
         .container {
           background-color: #1a1a1a;
@@ -181,7 +182,7 @@ const errchck=(value:string, ref:string,valid:boolean,i:number)=>{
           padding: 20px;
           max-width: 600px;
           margin: 0 auto;
-          
+          top:0;right:0;position:fixed;
           font-family: Arial, sans-serif;
          
         }
