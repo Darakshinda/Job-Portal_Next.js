@@ -2,23 +2,29 @@
 "use client";
 import Link from "next/link";
 import React, { useState } from "react";
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import { useRouter } from 'next/navigation';
 import { TextInput } from "../../stories/TextInput";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [authError, setAuthError] = useState("");
+  const router = useRouter();
+  const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     let valid = true;
 
-    if (!email) {
-      setEmailError("Please fill out this field");
+    if (!username) {
+      setUsernameError("Please fill out this field");
       valid = false;
     } else {
-      setEmailError("");
+      setUsernameError("");
     }
 
     if (!password) {
@@ -29,8 +35,39 @@ const Login = () => {
     }
 
     if (valid) {
-      // Handle login logic here
-      console.log("Form submitted");
+      try {
+        const response = await axios.post(`${baseurl}/accounts/login/`, {
+          username,
+          password
+        });
+
+        const { access, refresh } = response.data;
+
+        // Save the tokens in localStorage or cookies
+        localStorage.setItem('access_token', access);
+        localStorage.setItem('refresh_token', refresh);
+
+        // Show success message
+        Swal.fire({
+          title: "Login Successful",
+          icon: "success",
+          toast: true,
+          timer: 6000,
+          position: 'top-right',
+          timerProgressBar: true,
+          showConfirmButton: false,
+        }).then(() => {
+          // Redirect to the homepage
+          router.push('/');
+        });
+
+        console.log("Logged in successfully");
+
+        // Redirect to the desired page after login
+        // window.location.href = "/dashboard";
+      } catch (error) {
+        setAuthError("Invalid username or password");
+      }
     }
   };
 
@@ -71,25 +108,25 @@ const Login = () => {
         <h1 className="text-3xl font-bold mb-12 text-center">Login</h1>
         <form className="w-full max-w-md" onSubmit={handleSubmit}>
           <div className="mb-8">
-            <label className="block text-gray-700 mb-2" htmlFor="email">
-              Email*
+            <label className="block text-gray-700 mb-2" htmlFor="username">
+              Username <span className="text-red-500">*</span>
             </label>
             <TextInput
-              keyy="email"
+              keyy="username"
               cls={`w-full p-3 border rounded-lg focus:outline-none ${
-                emailError ? "border-red-500" : "border-gray-300"
+                usernameError ? "border-red-500" : "border-gray-300"
               } focus:border-blue-500`}
-              placeholder="Enter your email"
-              val={email}
-              onChange={(key: string, value: string) => setEmail(value)}
+              placeholder="Enter your username"
+              val={username}
+              onChange={(key: string, value: string) => setUsername(value)}
             />
-            {emailError && (
-              <p className="text-red-500 text-sm mt-1">{emailError}</p>
+            {usernameError && (
+              <p className="text-red-500 text-sm mt-1">{usernameError}</p>
             )}
           </div>
           <div className="mb-6">
             <label className="block text-gray-700 mb-2" htmlFor="password">
-              Password*
+              Password <span className="text-red-500">*</span>
             </label>
             <TextInput
               keyy="password"
@@ -105,6 +142,9 @@ const Login = () => {
               <p className="text-red-500 text-sm mt-1">{passwordError}</p>
             )}
           </div>
+          {authError && (
+            <p className="text-red-500 text-sm mb-4">{authError}</p>
+          )}
           <div className="mb-6 flex justify-end">
             <p className="text-black-400 cursor-pointer">Forgot Password?</p>
           </div>
@@ -120,12 +160,12 @@ const Login = () => {
         <h2 className="mt-8 text-black-600">Don't have an account?</h2>
         <div className="flex mt-4 space-x-10">
           <Link href="/Signup-seeker">
-          <button className="flex-1 bg-white border border-black rounded-lg text-black p-4 rounded-lg hover:border-pink-500 hover:bg-white transition duration-300 whitespace-nowrap">
-            <div>
-              <h2 className="text-lg font-bold">Explore Jobs</h2>
-              <h5 className="text-sm text-gray-600">Signup as a Talent</h5>
-            </div>
-          </button>
+            <button className="flex-1 bg-white border border-black rounded-lg text-black p-4 rounded-lg hover:border-pink-500 hover:bg-white transition duration-300 whitespace-nowrap">
+              <div>
+                <h2 className="text-lg font-bold">Explore Jobs</h2>
+                <h5 className="text-sm text-gray-600">Signup as a Talent</h5>
+              </div>
+            </button>
           </Link>
           <Link href="/Signup-recruiter">
             <button className="flex-1 bg-white border border-black rounded-lg text-black p-4 rounded-lg hover:border-pink-500 hover:bg-white transition duration-300 whitespace-nowrap">

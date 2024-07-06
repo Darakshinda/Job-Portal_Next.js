@@ -14,6 +14,7 @@
     "axios": "^1.7.2",
     "jodit-react": "^4.1.2",
     "next": "14.2.3",
+    "notistack": "^3.0.1",
     "razorpay": "^2.9.4",
     "react": "^18",
     "react-color": "^2.19.3",
@@ -22,7 +23,8 @@
     "react-range": "^1.8.14",
     "react-select": "^5.8.0",
     "rsuite": "^5.64.0",
-    "shortid": "^2.2.16"
+    "shortid": "^2.2.16",
+    "sweetalert2": "^11.12.2"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.5.0",

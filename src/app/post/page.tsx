@@ -57,7 +57,7 @@ if(comp=="") comp="Company";if(pos=="") pos="Position";if(jobdesc=="") jobdesc=`
 const disp=()=>console.log(user);
 
 const handleSubmit = () => {
-    const url = `${baseUrl}/jobs/register-jobs/`;
+    const url = `${baseUrl}/jobs/create/`;
     axios.post(url, user)
       .then(response => {
         console.log(response.data);

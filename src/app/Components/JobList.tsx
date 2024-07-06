@@ -24,6 +24,7 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
   const [page, setPage] = useState<number>(1);
   const fetchCount = 10;
   const bottomBoundaryRef = useRef<HTMLDivElement>(null);
+  const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
 
   const fetchJobs = async () => {
     setLoading(true);
@@ -42,7 +43,7 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
       params.append('limit', fetchCount.toString());
       params.append('offset', ((page - 1) * fetchCount).toString());
 
-      const url = `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/jobs/?${params.toString()}`;
+      const url = `${baseurl}/jobs/?${params.toString()}`;
       const response = await axios.get(url);
       console.log('Fetched jobs:', response.data.results);
 
