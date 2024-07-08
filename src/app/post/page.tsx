@@ -21,7 +21,7 @@ export default function Home() {
   const [user, setuser] = useState({
     company: "",position: "",emptype: "Select Employment type",primtg: "Select a Primary tag for the Job",tags: "",locns:'',
     logo:'',minsal:"Minimum per year",maxsal:'Maximum per year',desc:'',benefits:'',how2apply:'',email4jobappl:'',applUrl:'',
-    twtr:'',compMail:'',invMail:'',invAdrs:'',invNote:'',payLtr:false,pltrEml:'',fdbck:'',bgcolor:'#fefba4',
+    twtr:'',compMail:'',invMail:'',invAdrs:'',invNote:'',payLtr:false,pltrEml:'',fdbck:'',bgcolor:'white',
   });
 
   const handleChange = (key:string, value:string) => {
