@@ -1,5 +1,5 @@
 import React from 'react';
-import './JobModal.css'
+import './JobModal.css';import './Form.css';
 
 interface JobDetailsModalProps {
   job:{
@@ -10,19 +10,22 @@ interface JobDetailsModalProps {
   onClose: Function;
 }
 
+
+
 const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
   const handleOverlayClick = () => {
    
       onClose();
     
   };
+  console.log(job);
   let comp=job.company,pos=job.position,jobdesc=job.desc,how2apply=job.how2apply;
   if(comp=="") comp="Company";if(pos=="") pos="Position";
 
   return (
    
     <div className="overlay" onClick={handleOverlayClick}>
-      <div className="modale">
+      <div className="modale" onClick={(event)=>{event.stopPropagation();}}>
         <button className="close-button" onClick={onClose}>&times;</button>
         <div className="group">
           <div className="group-heading">Details</div>
@@ -32,7 +35,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
           <div style={{display:"flex",flexDirection:"column",justifyItems:"center",alignItems:"center",width:"100%"}}><h1 style={{textAlign:"left"}}>
           
           <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar" style={{marginLeft:"41%"}}>
-            <div className="w-20 rounded-full"><img alt="Tailwind CSS Navbar component" src={job.logo} /></div>
+            <div className="w-20 rounded-full border border-black"><img alt="Tailwind CSS Navbar component" src={job.logo} /></div>
           </div>
         <div style={{fontSize: "35px",marginTop:"3%",display:"flex",justifyItems:"center"}}>
         <span>{comp} is hiring a</span>
@@ -40,7 +43,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
         <br/>
 
         <div style={{display:"flex",flexDirection:"row",alignItems:"center",}}><span className="head">EMPLOYMENT TYPE: </span><div style={{marginTop:"18px",}}>{job.emptype}</div></div>
-        {job.primtg!="Select a Primary tag for the Job"&&<div style={{display:"flex",flexDirection:"row",alignItems:"center",}}><span className="head">PRIMARY TAG:</span><div style={{marginTop:"18px",}}>{job.primtg}</div></div>}
+        {job.primtg!=""&&job.primtg!="Select a Primary tag for the Job"&&<div style={{display:"flex",flexDirection:"row",alignItems:"center",}}><span className="head">PRIMARY TAG:</span><div style={{marginTop:"18px",}}>{job.primtg}</div></div>}
         <div style={{display:"flex",flexDirection:"row",alignItems:"center",}}><span className="head">TECHNICAL SKILLS:</span><div style={{marginTop:"18px",}}>{job.tags}</div></div>
         {job.locns!=""&&<div style={{display:"flex",flexDirection:"row",alignItems:"center",}}><span className="head">LOCATIONS ALLOWED:</span><div style={{marginTop:"18px",}}>{job.locns}</div></div>}
         <div style={{display:"flex",flexDirection:"row",alignItems:"center",}}><span className="head">SALARY RANGE:</span><div style={{marginTop:"18px",}}>{`${job.minsal}  -  ${job.maxsal}`}</div></div>

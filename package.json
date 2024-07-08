@@ -18,7 +18,8 @@
     "react": "^18",
     "react-color": "^2.19.3",
     "react-dom": "^18",
-    "react-infinite-scroll-component": "^6.1.0"
+    "react-infinite-scroll-component": "^6.1.0",
+    "react-range": "^1.8.14"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.5.0",

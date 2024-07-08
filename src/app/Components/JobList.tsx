@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import JobCard from "./JobCard";
+import { JobCard } from "@/stories/Job-Card";
 
 interface Job {
   id: number;
@@ -9,16 +9,21 @@ interface Job {
   location_restriction: string;
   tags: string;
   created_at: string;
+  primary_tag: string;annual_salary_max:string;annual_salary_min:string;
+  job_description:string;
+  how_to_apply:string;
+  
+
 }
 
 interface JobListProps {
   selectedLocationTags: string[];
   selectedJobTags: string[];
-  selectedTagTags: string[];
+  selectedTagTags: string[];view:Function;
 
 }
 
-const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags,selectedTagTags}) => {
+const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags,selectedTagTags,view}) => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
@@ -78,6 +83,8 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
     }
   };
 
+ 
+
   // Attach scroll listener on mount
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -87,16 +94,23 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
   return (
     <div className="flex justify-center p-4 mt-8">
       <ul className="space-y-4 w-full flex flex-col items-center">
-        {jobs.map(({ id, position, company_name, location_restriction, tags, created_at }) => (
-          <JobCard
-            key={id}
-            id={id}
-            position={position}
-            company_name={company_name}
-            location_restriction={location_restriction}
-            tags={tags}
-            created_at={created_at}
-          />
+      <JobCard imgflg bgcolor="#99ffff" imgsrc="https://media-exp1.licdn.com/dms/image/C4D0BAQHNwdJlZmUh8g/company-logo_200_200/0/1593941980738?e=2159024400&v=beta&t=3rDBEuT39uXrBRU7KsCbJipH7WFm7A3hv0KeNDBCGb0"
+       bdg position={"Manager"} company_name={`CodeUnity`} location_restriction={`🇮🇳 India ,⛩ Asia ,🕌 Middle East`} 
+        tags={`🤓 Web Developer , ⚛️ React , ➡️ Next , 🟦 Typescript , 🤠 Django`} created_at={`7/8/2024 00:56:23`}
+        job={{
+          company: `CodeUnity`,position: "Manager",emptype: "Full-time",primtg: '',tags:`🤓 Web Developer , ⚛️ React , ➡️ Next , 🟦 Typescript , 🤠 Django`,
+          locns:`🇮🇳 India ,⛩ Asia ,🕌 Middle East`,
+          logo:'https://media-exp1.licdn.com/dms/image/C4D0BAQHNwdJlZmUh8g/company-logo_200_200/0/1593941980738?e=2159024400&v=beta&t=3rDBEuT39uXrBRU7KsCbJipH7WFm7A3hv0KeNDBCGb0',minsal:`USD 20,000 per year`,maxsal:`USD 50,000 per year`,desc:`job.job_description`,benefits:'💰 401(k) , 🌎 Distributed team , 📆 4 day workweek',
+          how2apply:``,
+        }} viewDetails={view}/>
+
+        {jobs.map((job) => (
+        <JobCard imgflg imgsrc="" bdg position={job.position} company_name={job.company_name} location_restriction={job.location_restriction} 
+        tags={job.tags} created_at={job.created_at}
+        job={{
+          company: job.company_name,position: job.position,emptype: "Full-time",primtg: job.primary_tag,tags:job.tags,locns:job.location_restriction,
+          logo:'https://tse4.mm.bing.net/th?id=OIP.jsRxsoSHWZurGmwk32OMcQAAAA&pid=Api&P=0&h=220',minsal:job.annual_salary_min,maxsal:job.annual_salary_max,desc:job.job_description,benefits:'',how2apply:job.how_to_apply,
+        }} viewDetails={view}/>
         ))}
         {loading && <p>Loading...</p>}
         <div ref={bottomBoundaryRef}></div>

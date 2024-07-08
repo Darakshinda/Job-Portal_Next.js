@@ -52,7 +52,7 @@ const tdisp1 = ({tag="",index=0}:tprop)=>
   </div>);
   }
 
-export const JobCard = ({cls="",bdg = false,imgflg=false,divcls="flex justify-between w-full mb-2",popup=false,top=true,fgcls="",bgcolor="",
+export const JobCard = ({cls="",bdg = false,imgflg=false,divcls="flex justify-between w-full mb-2",popup=false,top=true,fgcls="",bgcolor="#fefba4",
   imgsrc="https://media.dev.to/cdn-cgi/image/width=1600,height=900,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fwhh1lpihw7h587pb2iuc.png",position,
   company_name="Sample Company",
   location_restriction="Faridabad",
@@ -75,7 +75,7 @@ if(company_name=="") company_name="Company";if(position=="") position="Position"
   
     <div className={divcls}  style={{width:"50px", marginLeft:"0px"}}>
     {imgflg&&top&&<div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-              <div className="w-10 rounded-full">
+              <div className="w-10 rounded-full border border-black">
                 <img alt="Tailwind CSS Navbar component" src={imgsrc} />
               </div>
             </div>}

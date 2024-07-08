@@ -24,7 +24,7 @@ interface Props {
 */
 let mySet: Set<string> = new Set();
 
-  export const Tags = ({closeable=false,linktg=false,color="white",dynamic=false,size="sm",cls = 'select',settgs=()=>{},
+  export const Tags2 = ({closeable=false,linktg=false,color="white",dynamic=false,size="sm",cls = 'select',settgs=()=>{},
     phdr="Type a tag or keyword to search and add it",keyy,srchwdth="350px",scrollht="200px",border='',
     options,optionMrgn="1.5%",optionWdth="95%",
     req = false,}: Props) => 
@@ -46,7 +46,7 @@ let mySet: Set<string> = new Set();
   const [typing, setTyping] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("$$");
 
-  settgs(keyy,tags.join(","));
+  settgs(tags.join(","));
 
   const handleOutsideClick = () => {
     setsel(0);setSearchTerm("");
@@ -76,14 +76,18 @@ let mySet: Set<string> = new Set();
 
   const renderInput = () => {
       return (
-        <div style={{display:"inline"}}>
+       
       <input
         type="text"
-        className={`search-input ${cls}`} style={{width:srchwdth,height:"2%",borderStyle:"none",}}
+        className={`w-full border-none p-2 rounded-full border border-white placeholder-black`}
         placeholder={phdr}
         value={searchTerm}
-        onChange={e => {setSearchTerm(e.target.value);setsel(1);}} onClick={e=>setsel(1)}
-      /></div>
+        onChange={(e) => {
+          setSearchTerm(e.target.value);
+          setsel(1);
+        }}
+        onClick={(e) => setsel(1)}
+      />
       );
    
 
@@ -93,24 +97,34 @@ let mySet: Set<string> = new Set();
       if(option.label!="") return(
     <li><button onClick={()=>{setInputValue("done");setSearchTerm(option.label);setsel(0);mySet.add(option.label);}}>{option.label}</button></li>);}
   
-    const printtag=(item:string,index:number)=>{
-      return(
-        <Tag tag={{label:item}} key={index} onRemove={() => removeTag(item)}>
-          {item}
-        </Tag>
-      )}
+    const renderSelectedTags = () => {
+      return (
+        <div className="flex flex-wrap mt-2">
+          {tags.map((item, index) => (
+            <Tag tag={{ label: item }} key={index} onRemove={() => removeTag(item)}>
+              {item}
+            </Tag>
+          ))}
+        </div>
+      );
+    };
  
 
   return (
     <ClickOutsideDiv onOutsideClick={handleOutsideClick}>
+      <div className={`searchable-select border border-gray-300 rounded-full max-w-md overflow-hidden`}>
+        <div className="flex items-center">
+          {renderInput()}
+        </div>
       
-    <div  className={`searchable-select ${cls}`} style={{justifyItems:"center",border:border}}>
-    {tags.map((item, index) => printtag(item,index))}
-    {renderInput()}
-  </div>
-  {sel==1 && <div role="listbox" className="scrollable-div" style={{backgroundColor:`white`,marginLeft:optionMrgn,zIndex:"20000px", width:optionWdth,color:"black",maxHeight:scrollht}}><ul tabIndex={0} className={`dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box`}>
+      </div>
+      {sel==1 && <div role="listbox" className="scrollable-div" style={{backgroundColor:`white`,marginLeft:optionMrgn,zIndex:"20000px", width:optionWdth,color:"black",maxHeight:scrollht}}><ul tabIndex={0} className={`dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box`}>
   {filteredOptions.map(option => fun(option))}
-</ul></div>}</ClickOutsideDiv>
+</ul></div>}
+      <div className="mt-2 max-w-md">
+        {renderSelectedTags()}
+      </div>
+    </ClickOutsideDiv>
     );
   
   };
