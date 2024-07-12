@@ -1,7 +1,6 @@
 import React from 'react';
 import Tag from '@/app/Components/Tag';
-import ClickOutsideDiv from '../app/Components/ClickoutsideDiv';
-// import "../app/Components/Clickoutsidediv.css";
+import ClickOutsideDiv from '@/app/Components/ClickoutsideDiv';
 
 import { useState } from 'react';
 
@@ -11,20 +10,22 @@ interface Option {
 
 interface Props {
  
-    closeable?:boolean;linktg?:boolean;color?:string;dynamic?:boolean;size?:string;phdr: string;
-    onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;settgs?:Function;
+    closeable?:boolean;linktg?:boolean;color?:string;dynamic?:boolean;size?:string;phdr: string;border?:string;
+    onChange: (key: string, value: string[]) => void;
     cls?: string;keyy?:string;
     options: Option[];
-    req?: boolean;
+    req?: boolean;srchwdth?:string;scrollht?:string;
+    optionMrgn:string;optionWdth:string;
   }
 
 /*
 
 */
 let mySet: Set<string> = new Set();
+
   export const Tags = ({closeable=false,linktg=false,color="white",dynamic=false,size="sm",cls = 'select',settgs=()=>{},
-    phdr="Type a tag or keyword to search and add it",keyy,
-    options,
+    phdr="Type a tag or keyword to search and add it",keyy,srchwdth="350px",scrollht="200px",border='',
+    options,optionMrgn="1.5%",optionWdth="95%",
     req = false,}: Props) => 
       {
        
@@ -70,13 +71,14 @@ let mySet: Set<string> = new Set();
   };
   
   if(inputValue=="done") addTag();
+
+
   const renderInput = () => {
-   
       return (
         <div style={{display:"inline"}}>
       <input
         type="text"
-        className={`search-input ${cls}`} style={{width:"350px",borderStyle:"none"}}
+        className={`search-input ${cls}`} style={{width:srchwdth,height:"2%",borderStyle:"none",}}
         placeholder={phdr}
         value={searchTerm}
         onChange={e => {setSearchTerm(e.target.value);setsel(1);}} onClick={e=>setsel(1)}
@@ -96,35 +98,16 @@ let mySet: Set<string> = new Set();
           {item}
         </Tag>
       )}
-  
-  if(size=="lg")
-    return(
-    <Tag closable={closeable} className="badge badge-outline bg-yellow-100" style={{backgroundColor:`${color}`,height:"40px",width:"66px"}}>
-        {linktg&&<a target="_blank" href="https://rsuitejs.com" rel="noreferrer">Link-Tag</a>}
-        {!linktg&&"Tag"}
-    </Tag>);
+ 
 
-   if(size=="md")
-    return(
-    <Tag closable={closeable} size="sm" className="badge badge-outline bg-yellow-100" style={{backgroundColor:`${color}`,height:"30px",width:"50px"}}>
-        {linktg&&<a target="_blank" href="https://rsuitejs.com" rel="noreferrer">Link-Tag</a>}
-        {!linktg&&"Tag"}
-    </Tag>);
-
-  if(!dynamic) 
-    return(
-    <Tag closable={closeable} className="badge badge-outline bg-yellow-100" style={{backgroundColor:`${color}`}}>
-        {linktg&&<a target="_blank" href="https://rsuitejs.com" rel="noreferrer">Link-Tag</a>}
-        {!linktg&&"Tag"}
-    </Tag>);
-   
-  
   return (
-    <ClickOutsideDiv onOutsideClick={handleOutsideClick}><div  className={`searchable-select ${cls}`} style={{justifyItems:"center",backgroundSize:"cover",}}>
+    <ClickOutsideDiv onOutsideClick={handleOutsideClick}>
+      
+    <div  className={`searchable-select ${cls}`} style={{justifyItems:"center",border:border}}>
     {tags.map((item, index) => printtag(item,index))}
     {renderInput()}
   </div>
-  {sel==1 && <div role="listbox" className="scrollable-div" style={{backgroundColor:`white`,marginLeft:"1.5%",zIndex:"20000px", maxWidth:"95%"}}><ul tabIndex={0} className={`dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box`}>
+  {sel==1 && <div role="listbox" className="scrollable-div" style={{backgroundColor:`white`,marginLeft:optionMrgn,zIndex:"20000px", width:optionWdth,color:"black",maxHeight:scrollht}}><ul tabIndex={0} className={`dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box`}>
   {filteredOptions.map(option => fun(option))}
 </ul></div>}</ClickOutsideDiv>
     );

@@ -57,17 +57,24 @@ if(comp=="") comp="Company";if(pos=="") pos="Position";if(jobdesc=="") jobdesc=`
 const disp=()=>console.log(user);
 
 const handleSubmit = () => {
-    const url = `${baseUrl}/jobs/create/`;
-    axios.post(url, user)
-      .then(response => {
-        console.log(response.data);
-        alert('Job registered successfully');
-      })
-      .catch(error => {
-        console.error('There was an error registering the job!', error);
-        alert('Failed to register the job');
-      });
-  };
+  const url = `${baseUrl}/jobs/create/`;
+  const token = localStorage.getItem('access_token'); // Assuming you store your JWT token in localStorage
+
+  axios.post(url, user, {
+      headers: {
+          Authorization: `Bearer ${token}`
+      }
+  })
+  .then(response => {
+      console.log(response.data);
+      alert('Job registered successfully');
+  })
+  .catch(error => {
+      console.error('There was an error registering the job!', error);
+      alert('Failed to register the job');
+  });
+};
+
 
 return (
     <main className="bg-base-100">
@@ -183,7 +190,7 @@ return (
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}></span>
         
         <span className="head">HOW TO APPLY?</span>
-        <div style={{marginLeft:"1.4%",marginRight:"2%"}}><JoditEditorComponent keyy="how_t0_apply" value={user.how_to_apply} onChange={handleChange}/></div>
+        <div style={{marginLeft:"1.4%",marginRight:"2%"}}><JoditEditorComponent keyy="how_to_apply" value={user.how_to_apply} onChange={handleChange}/></div>
         <span className="info" style={{marginTop:"8px", marginLeft:"18px",width: "95%",}}>Click anywhere outside the editor to save</span>
 
         <span className="head">EMAIL TO GET JOB APPLICATIONS VIA APPLICANT AI (OUR OWN ATS)*</span>

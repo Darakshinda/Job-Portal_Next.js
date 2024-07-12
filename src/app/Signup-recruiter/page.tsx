@@ -3,6 +3,10 @@ import React from 'react';
 import { useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { useRouter } from 'next/navigation';
+import {Tags} from '../../stories/Tags';
+import tagOpns from "../post/data/tags.json";
+import {TextInput} from '../../stories/TextInput';
 import Link from 'next/link';
 
 const Signup = () => {
@@ -18,16 +22,97 @@ const Signup = () => {
     how_heard_about_codeunity: '',
     looking_for: ''
   });
-  const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { id, value } = e.target;
-    setFormData({ ...formData, [id]: value });
+  
+  const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
+  const router = useRouter();
+
+
+  const handleChange = (key: string, value: string) => {
+    setFormData(prevState => ({
+      ...prevState,
+      [key]: value
+    }));
   };
 
+
+  const [errors, setErrors] = useState(new Array(20).fill(0));
+  const [submitted, setSubmitted] = useState(false);
+
+  const isValidEmail = (email: string): boolean => {
+    if (email === "") return true;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  };
+
+  const isValidMobileNo = (phone: string): boolean => {
+    if (phone === "") return true;
+    const tenDigitRegex = /^\d{10}$/;
+    return tenDigitRegex.test(phone);
+  };
+
+  const isValidUsername = (username: string): boolean => {
+    if (username === "") return true;
+    if (username.length > 150) return false;
+    const regex =
+      /[A-Za-z]/.test(username) &&
+      /[0-9]/.test(username) &&
+      /[^A-Za-z0-9]/.test(username);
+    return regex;
+  };
+
+  const validateField = (
+    value: string,
+    reference: string,
+    valid: boolean,
+    index: number
+  ): string => {
+    if (value === reference || !valid) {
+      errors[index] = 1;
+      return "red";
+    } else {
+      errors[index] = 0;
+      return "#ccc";
+    }
+  };
+
+  const checkError = (
+    value: string,
+    reference: string,
+    valid: boolean,
+    index: number
+  ): boolean => {
+    return validateField(value, reference, valid, index) === "red";
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form Data:', formData);
+  
+    setSubmitted(true); // Mark the form as submitted
+
+    // Validation checks for each field
+    const errorsArray = [
+      checkError(formData.first_name, "", true, 1),
+      checkError(formData.last_name, "", true, 2),
+      checkError(formData.email, "", true, 3) || !isValidEmail(formData.email),
+      checkError(formData.working_email, "", true, 4) || !isValidEmail(formData.working_email),
+      checkError(formData.username, "", true, 5) ||
+        !isValidUsername(formData.username),
+      checkError(formData.password, "", true, 6),
+      
+      checkError(formData.phone_number, "", true, 7) ||
+        !isValidMobileNo(formData.phone_number),
+      
+      checkError(formData.hiring_skills, "", true, 8),
+
+      // Add more checks as needed
+    ];
+
+    // Check if any field has errors
+    if (errorsArray.some((error) => error)) {
+      // If there are errors, prevent form submission
+      return;
+    }
     try {
       const response = await axios.post(`${baseurl}/accounts/register/job-hirer/`, formData);
       console.log('Registration successful:', response.data);
@@ -48,7 +133,12 @@ const Signup = () => {
             animate__faster
           `
         }
+      }).then(() => {
+        // Redirect to the homepage
+        router.push('/login');
       });
+
+      console.log("Signedup successfully");
       // Optionally redirect or show success message to the user
     } catch (error) {
       console.error('Registration failed:', error);
@@ -103,84 +193,124 @@ const Signup = () => {
             Connect with Top Engineers
           </div>
           <div className="flex space-x-6">
-            <div className="flex flex-col flex-1">
+            <div className="flex flex-col flex-1 w-full">
               <label className="text-gray-500 font-medium" htmlFor="first_name">
                 First Name <span className="text-red-500">*</span>
               </label>
-              <input
-                id="first_name"
+              <TextInput
+                keyy="first_name"
                 type="text"
                 placeholder="John"
-                className="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
-                value={formData.first_name}
+                cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
+                val={formData.first_name}
                 onChange={handleChange}
               />
+              {submitted && checkError(formData.first_name, "", true, 1) && (
+                <p className="text-xs text-red-500 mt-1 ml-2">
+                  This is required
+                </p>
+              )}
             </div>
             <div className="flex flex-col flex-1">
               <label className="text-gray-500 font-medium" htmlFor="last_name">
                 Last Name <span className="text-red-500">*</span>
               </label>
-              <input
-                id="last_name"
+              <TextInput
+                keyy="last_name"
                 type="text"
                 placeholder="Doe"
-                className="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
-                value={formData.last_name}
+                cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
+                val={formData.last_name}
                 onChange={handleChange}
               />
+               {submitted && checkError(formData.last_name, "", true, 1) && (
+                <p className="text-xs text-red-500 mt-1 ml-2">
+                  This is required
+                </p>
+              )}
             </div>
           </div>
-          <div className="flex flex-col mt-6">
+          <div className="flex flex-col mt-6 w-full">
             <label className="text-gray-500 font-medium" htmlFor="working_email">
               Email <span className="text-red-500">*</span>
             </label>
-            <input
-              id="email"
+            <TextInput
+              keyy="email"
               type="email"
               placeholder="name@personal.com"
-              className="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
-              value={formData.email}
+              cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
+              val={formData.email}
               onChange={handleChange}
             />
+            {submitted && checkError(formData.email, "", true, 1) && (
+              <p className="text-xs text-red-500 mt-1 ml-2">This is required</p>
+            )}
+            {!isValidEmail(formData.email) && (
+              <p className="text-xs text-red-500 mt-1 ml-2">
+                Enter a valid email
+              </p>
+            )}
           </div>
           <div className="flex flex-col mt-6">
             <label className="text-gray-500 font-medium" htmlFor="working_email">
               Work Email <span className="text-red-500">*</span>
             </label>
-            <input
-              id="working_email"
+            <TextInput
+              keyy="working_email"
               type="email"
               placeholder="name@work.com"
-              className="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
-              value={formData.working_email}
+              cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
+              val={formData.working_email}
               onChange={handleChange}
             />
+            {submitted && checkError(formData.working_email, "", true, 1) && (
+              <p className="text-xs text-red-500 mt-1 ml-2">This is required</p>
+            )}
+            {!isValidEmail(formData.working_email) && (
+              <p className="text-xs text-red-500 mt-1 ml-2">
+                Enter a valid email
+              </p>
+            )}
           </div>
           <div className="flex flex-col mt-6">
             <label className="text-gray-500 font-medium" htmlFor="username">
               Username <span className="text-red-500">*</span>
             </label>
-            <input
-              id="username"
+            <TextInput
+              keyy="username"
               type="text"
               placeholder="username"
-              className="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
-              value={formData.username}
+              cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
+              val={formData.username}
               onChange={handleChange}
             />
+            {submitted && checkError(formData.username, "", true, 1) && (
+            <p className="text-xs text-red-500 mt-1 ml-2">This is required</p>
+          )}
+          <div style={{ marginBottom: "1.5rem" }}>
+            {!isValidUsername(formData.username) && (
+              <p className="text-xs text-red-500 mt-1 ml-2">
+                Username must contain alphabets, digits and special characters
+                and should be lesser than 150 characters
+              </p>
+            )}
           </div>
           <div className="flex flex-col mt-6">
             <label className="text-gray-500 font-medium" htmlFor="password">
               Password <span className="text-red-500">*</span>
             </label>
-            <input
-              id="password"
+            <TextInput
+              keyy="password"
               type="password"
               placeholder="password"
-              className="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
-              value={formData.password}
+              cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
+              val={formData.password}
               onChange={handleChange}
+              iconColor="white"
             />
+            {submitted && checkError(formData.password, "", true, 1) && (
+              <p className="text-xs text-red-500 mt-1 ml-2">This is required</p>
+            )}
           </div>
           <div className="flex flex-col mt-6">
             <label className="text-gray-500 font-medium" htmlFor="phoneNumber">
@@ -194,16 +324,23 @@ const Signup = () => {
                 <option value="India +91">India +91</option>
                 {/* Add more options here if needed */}
               </select>
-              <input
-                id="phone_number"
+              <TextInput
+                keyy="phone_number"
                 type="text"
                 placeholder="00000 00000"
-                inputMode="numeric"
-                className="flex-1 p-2 bg-gray-900 text-white rounded-r border border-gray-700 ml-4"
-                value={formData.phone_number}
+                cls="flex-1 p-2 bg-gray-900 text-white rounded-r border border-gray-700 ml-4"
+                val={formData.phone_number}
                 onChange={handleChange}
               />
             </div>
+            {submitted && checkError(formData.phone_number, "", true, 1) && (
+              <p className="text-xs text-red-500 mt-1 ml-2">This is required</p>
+            )}
+            {!isValidMobileNo(formData.phone_number) && (
+              <p className="text-xs text-red-500 mt-1 ml-2">
+                Enter a valid phone no
+              </p>
+            )}
           </div>
           <div className="flex flex-col mt-6">
             <label className="text-gray-500 font-medium">
@@ -242,25 +379,28 @@ const Signup = () => {
             <label className="text-gray-500 font-medium" htmlFor="hiring_skills">
               What skills are you hiring for? <span className="text-red-500">*</span>
             </label>
-            <input
-              id="hiring_skills"
+            <TextInput
+              keyy="hiring_skills"
               type="text"
               placeholder="Technical Skills Required"
-              className="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
-              value={formData.hiring_skills}
+              cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
+              val={formData.hiring_skills}
               onChange={handleChange}
             />
+            {submitted && checkError(formData.hiring_skills, "", true, 1) && (
+              <p className="text-xs text-red-500 mt-1 ml-2">This is required</p>
+            )}
           </div>
           <div className="flex flex-col mt-6">
             <label className="text-gray-500 font-medium" htmlFor="how_heard_about_codeunity">
               How did you hear about CodeUnity? <span className="text-red-500">*</span>
             </label>
-            <input
-              id="how_heard_about_codeunity"
+            <TextInput
+              keyy="how_heard_about_codeunity"
               type="text"
               placeholder="How did you hear about us"
-              className="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
-              value={formData.how_heard_about_codeunity}
+              cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
+              val={formData.how_heard_about_codeunity}
               onChange={handleChange}
             />
           </div>
@@ -311,6 +451,7 @@ const Signup = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };

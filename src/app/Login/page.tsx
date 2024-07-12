@@ -41,18 +41,31 @@ const Login = () => {
           password
         });
 
-        const { access, refresh } = response.data;
+        const { access, refresh} = response.data;
 
         // Save the tokens in localStorage or cookies
         localStorage.setItem('access_token', access);
         localStorage.setItem('refresh_token', refresh);
+        const profileResponse = await axios.get(`${baseurl}/accounts/profile/`, {
+          headers: {
+            'Authorization': `Bearer ${access}`
+          }
+        });
+
+        const { account_type } = profileResponse.data;
+        localStorage.setItem('account_type', account_type);
+
+        // Log the account_type to the console
+        console.log("Account Type:", account_type);
+
+       
 
         // Show success message
         Swal.fire({
           title: "Login Successful",
           icon: "success",
           toast: true,
-          timer: 6000,
+          timer: 1000,
           position: 'top-right',
           timerProgressBar: true,
           showConfirmButton: false,
@@ -137,6 +150,7 @@ const Login = () => {
               val={password}
               onChange={(key: string, value: string) => setPassword(value)}
               type="password"
+              iconColor="black"
             />
             {passwordError && (
               <p className="text-red-500 text-sm mt-1">{passwordError}</p>
