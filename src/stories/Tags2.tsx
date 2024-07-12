@@ -118,7 +118,7 @@ let mySet: Set<string> = new Set();
         </div>
       
       </div>
-      {sel==1 && <div role="listbox" className="scrollable-div" style={{backgroundColor:`white`,marginLeft:optionMrgn,zIndex:"20000px", width:optionWdth,color:"black",maxHeight:scrollht}}><ul tabIndex={0} className={`dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box`}>
+      {sel==1 && <div role="listbox" className="scrollable-div scrollbar-hide" style={{backgroundColor:`white`,marginLeft:optionMrgn,zIndex:"20000px", width:optionWdth,color:"black",maxHeight:scrollht}}><ul tabIndex={0} className={`dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box`}>
   {filteredOptions.map(option => fun(option))}
 </ul></div>}
       <div className="mt-2 max-w-md">

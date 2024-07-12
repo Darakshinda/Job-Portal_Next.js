@@ -235,7 +235,7 @@ return (
         <span>{comp}</span> is hiring a
         </div> <b style={{fontSize: "35px",}}>Remote <span>{pos}</span></b></h1></div>
         {(jobdesc==""||jobdesc=="<p><br></p>")&&<p  style={{marginTop:"5px",marginLeft:"20%"}}>{`The description of the job position will appear here. Write this in the "Job Description" box above.`}</p>}
-        {jobdesc!=""&&jobdesc!="<p><br></p>"&&<div style={{marginLeft:"10%",overflowX: "auto",overflowY: "auto",width:"80%",maxHeight:"400px",padding:"2px",border:"solid",borderRadius:"4px"}}>
+        {jobdesc!=""&&jobdesc!="<p><br></p>"&&<div className=' scrollbar-hide' style={{marginLeft:"10%",overflowX: "auto",overflowY: "auto",width:"80%",maxHeight:"400px",padding:"2px",border:"solid",borderRadius:"4px"}}>
         <span className="head" style={{fontSize: "25px",marginLeft:"1.5%",}} >JOB DESCRIPTION:</span>
           <main dangerouslySetInnerHTML={{ __html: jobdesc }} ></main></div>}
         
@@ -243,7 +243,7 @@ return (
         <div className="top-text"   style={{display:"flex",flexDirection:"column",justifyItems:"center",alignItems:"center",width:"100%",padding:"5%"}}>
         <strong style={{fontSize: "25px",}} >How do you apply?</strong>
         {(how2apply==""||how2apply=="<p><br></p>")&&<p  style={{marginTop:"5px"}}>{`Here the instructions go on how to apply for this job. Write them in the "How to Apply?" box.`}</p>}
-        {how2apply!=""&&how2apply!="<p><br></p>"&&<div style={{marginLeft:"10%",overflowX: "auto",overflowY: "auto",width:"80%",maxHeight:"400px",padding:"2px",border:"solid",borderRadius:"4px"}}>
+        {how2apply!=""&&how2apply!="<p><br></p>"&&<div className=' scrollbar-hide' style={{marginLeft:"10%",overflowX: "auto",overflowY: "auto",width:"80%",maxHeight:"400px",padding:"2px",border:"solid",borderRadius:"4px"}}>
         <div  style={{marginTop:"1.5px"}} dangerouslySetInnerHTML={{ __html:how2apply}}/></div>}
         <div className="border border-gray-300 rounded-md px-2 py-2"  style={{borderStyle:"dotted",height:"5%",marginTop:"15px",fontSize: "16px",color:"#C7C7C7"}}>Apply for this job</div>
         </div><br/>

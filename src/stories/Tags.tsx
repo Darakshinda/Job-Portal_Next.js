@@ -26,7 +26,7 @@ let mySet: Set<string> = new Set();
 
   export const Tags = ({closeable=false,linktg=false,color="white",dynamic=false,size="sm",cls = 'select',settgs=()=>{},
     phdr="Type a tag or keyword to search and add it",keyy,srchwdth="350px",scrollht="200px",border='',
-    options,optionMrgn="1.5%",optionWdth="95%",
+    options,optionMrgn="1%",optionWdth="95%",
     req = false,}: Props) => 
       {
        
@@ -108,7 +108,7 @@ let mySet: Set<string> = new Set();
     {tags.map((item, index) => printtag(item,index))}
     {renderInput()}
   </div>
-  {sel==1 && <div role="listbox" className="scrollable-div" style={{backgroundColor:`white`,marginLeft:optionMrgn,zIndex:"20000px", width:optionWdth,color:"black",maxHeight:scrollht}}><ul tabIndex={0} className={`dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box`}>
+  {sel==1 && <div role="listbox" className="scrollable-div scrollbar-hide" style={{backgroundColor:`white`,marginLeft:optionMrgn,zIndex:"20000px", width:optionWdth,color:"black",maxHeight:scrollht}}><ul tabIndex={0} className={`dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box`}>
   {filteredOptions.map(option => fun(option))}
 </ul></div>}</ClickOutsideDiv>
     );

@@ -25,7 +25,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
   return (
    
     <div className="overlay" onClick={handleOverlayClick}>
-      <div className="modale" onClick={(event)=>{event.stopPropagation();}}>
+      <div className="modale scrollbar-hide" onClick={(event)=>{event.stopPropagation();}}>
         <button className="close-button" onClick={onClose}>&times;</button>
         <div className="group">
           <div className="group-heading">Details</div>
@@ -50,14 +50,14 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
         <div style={{display:"flex",flexDirection:"row",alignItems:"center",}}><span className="head">BENEFITS:</span><div style={{marginTop:"18px",}}>{job.benefits}</div></div>
 
         <span className="head" style={{fontSize: "25px",marginLeft:"1.5%",}} >JOB DESCRIPTION:</span>
-        <div style={{marginLeft:"10%",overflowX: "auto",overflowY: "auto",width:"80%",maxHeight:"400px",minHeight:"125px",padding:"2px",border:"solid",borderRadius:"4px"}}>
+        <div className=' scrollbar-hide' style={{marginLeft:"10%",overflowX: "auto",overflowY: "auto",width:"80%",maxHeight:"400px",minHeight:"125px",padding:"2px",border:"solid",borderRadius:"4px"}}>
         <main dangerouslySetInnerHTML={{ __html: jobdesc }}></main></div><br/>
 
         {how2apply!=""&&how2apply!="<p><br></p>"&&<div style={{marginTop:"4%",marginBottom:"50px",minHeight:"300px", border:"solid",borderWidth:"1px",borderRadius:"7px",width:"60%",marginLeft:"20%"}}>
         <div className="top-text"   style={{display:"flex",flexDirection:"column",justifyItems:"center",alignItems:"center",width:"100%",padding:"5%"}}>
         <strong style={{fontSize: "25px",}} >How do you apply?</strong>
         
-        <div style={{overflowX: "auto",overflowY: "auto",width:"80%",maxHeight:"400px",padding:"2px",border:"solid",}}><div  style={{marginTop:"1.5px"}} dangerouslySetInnerHTML={{ __html:how2apply}}/></div>
+        <div className=' scrollbar-hide' style={{overflowX: "auto",overflowY: "auto",width:"80%",maxHeight:"400px",padding:"2px",border:"solid",}}><div  style={{marginTop:"1.5px"}} dangerouslySetInnerHTML={{ __html:how2apply}}/></div>
         
         </div><br/>
         </div>}
