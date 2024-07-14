@@ -392,7 +392,7 @@ const Signup = () => {
             >
               Technical Skills <span className="text-red-500">*</span>
             </label>
-            <Tags keyy='technical_skills'cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700" optionMrgn='0%' optionWdth='100%' settgs={handler} 
+            <Tags keyy='hiring_skills'cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700" optionMrgn='0%' optionWdth='100%' settgs={handler} 
             dynamic={true} options={tagOpns} border={`1px solid ${validateField(formData.hiring_skills,"",true,7)}`} phdr='Search and add a skill' srchwdth='37%' 
             scrollht="107px"/>
             {submitted &&
