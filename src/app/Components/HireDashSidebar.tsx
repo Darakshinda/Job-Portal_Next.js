@@ -1,20 +1,25 @@
 "use client"
 import React, { useState } from 'react';
 import ClickOutsideDiv from './ClickoutsideDiv';
+import Link from 'next/link';
 
-const Sidebar: React.FC = () => {
+interface HireDashSidebar {
+  hireId:string;
+}
+
+const Sidebar: React.FC<HireDashSidebar> = ({hireId}) => {
   const [showTrialOptions, setShowTrialOptions] = useState(false);
 
   return (
-    <div className="bg-gray-900 text-white h-screen w-64 fixed flex flex-col  min-w-[230px] border-r min-h-screen">
+    <div className="bg-gray-900 text-white h-screen fixed flex flex-col  w-[230px] border-r min-h-screen">
       <div className="p-4 font-bold text-xl">CodeUnity</div>
       <nav className="flex-grow">
         <ul>
           <li className="p-4 hover:bg-gray-700">
-            <a href="#">Home</a>
+            <Link href={`/hirerDash/${hireId}/home`}>Home</Link>
           </li>
           <li className="p-4 hover:bg-gray-700">
-            <a href="#">Posted Jobs</a>
+          <Link href={`/hirerDash/${hireId}/posted`}>Posted Jobs</Link>
           </li>
         </ul>
       </nav>

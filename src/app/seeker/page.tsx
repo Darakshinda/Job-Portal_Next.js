@@ -80,7 +80,7 @@ const Signup = () => {
     valid: boolean,
     index: number
   ): string => {
-    if (value === reference || !valid) {
+    if ((value === reference || !valid)&&submitted) {
       errors[index] = 1;
       return "red";
     } else {

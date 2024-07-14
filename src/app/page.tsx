@@ -48,6 +48,7 @@ const Home: React.FC = () => {
     setSelectedJob(null);
   };
 
+
   return (
     <main>
       <Navbar />
