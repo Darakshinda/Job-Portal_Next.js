@@ -11,15 +11,22 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@heroicons/react": "^1.0.6",
     "axios": "^1.7.2",
     "jodit": "^4.2.27",
     "jodit-react": "^4.1.2",
     "next": "14.2.3",
+    "notistack": "^3.0.1",
+    "razorpay": "^2.9.4",
     "react": "^18",
     "react-color": "^2.19.3",
     "react-dom": "^18",
+    "react-icons": "^5.2.1",
     "react-infinite-scroll-component": "^6.1.0",
     "react-range": "^1.8.14",
+    "react-select": "^5.8.0",
+    "rsuite": "^5.64.0",
+    "shortid": "^2.2.16",
     "sweetalert2": "^11.12.2"
   },
   "devDependencies": {
@@ -34,6 +41,7 @@
     "@storybook/test": "^8.1.6",
     "@types/node": "^20",
     "@types/react": "^18",
+    "@types/react-color": "^3.0.12",
     "@types/react-dom": "^18",
     "daisyui": "^4.11.1",
     "eslint": "^8",

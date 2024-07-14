@@ -2,24 +2,36 @@
 import React, { useState } from 'react';
 import ClickOutsideDiv from './ClickoutsideDiv';
 import Link from 'next/link';
+import { access } from 'fs';
+import { useRouter } from 'next/navigation';
 
-interface HireDashSidebar {
-  hireId:string;
+interface SidebarProps {
+  userName: string;
 }
 
-const Sidebar: React.FC<HireDashSidebar> = ({hireId}) => {
+const Sidebar: React.FC<SidebarProps> = ({userName}) => {
   const [showTrialOptions, setShowTrialOptions] = useState(false);
+  const Router = useRouter();
+
+  const handleLogOut = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    Router.push('/');
+  }
 
   return (
-    <div className="bg-gray-900 text-white h-screen fixed flex flex-col  w-[230px] border-r min-h-screen">
+    <div className="bg-gray-900 text-white h-screen w-64 fixed flex flex-col  min-w-[230px] border-r min-h-screen">
       <div className="p-4 font-bold text-xl">CodeUnity</div>
       <nav className="flex-grow">
         <ul>
           <li className="p-4 hover:bg-gray-700">
-            <Link href={`/hirerDash/${hireId}/home`}>Home</Link>
+            <Link href={`/hirerDash/${userName}`}>Home</Link>
           </li>
           <li className="p-4 hover:bg-gray-700">
-          <Link href={`/hirerDash/${hireId}/posted`}>Posted Jobs</Link>
+            <Link href={`/hirerDash/posted-jobs`}>Posted Jobs</Link>
+          </li>
+          <li className="p-4 hover:bg-gray-700">
+            <Link href={`/post`}>Post a Job</Link>
           </li>
         </ul>
       </nav>
@@ -29,7 +41,7 @@ const Sidebar: React.FC<HireDashSidebar> = ({hireId}) => {
             <ClickOutsideDiv onOutsideClick={() => setShowTrialOptions(!showTrialOptions)}>
               <div className="mt-2 bg-gray-800">
             <button className="block w-full text-left p-2 hover:bg-gray-700">Profile</button>
-            <button className="block w-full text-left p-2 hover:bg-gray-700">Logout</button>
+            <button onClick={handleLogOut} className="block w-full text-left p-2 hover:bg-gray-700">Logout</button>
           </div>
           </ClickOutsideDiv>
         )}
@@ -40,7 +52,7 @@ const Sidebar: React.FC<HireDashSidebar> = ({hireId}) => {
           <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar mr-[4px]">
             <div className="w-[35px] rounded-full border border-black"><img src={`https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg`} /></div>
           </div>
-          User
+          {userName}
         </button>
        
       </div>

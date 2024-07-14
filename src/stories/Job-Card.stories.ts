@@ -127,4 +127,3 @@ s10.storyName="Card with action on top";
 s11.storyName="Card glass";
 s12.storyName="Image on side";
 s13.storyName="Responsive card (vertical on small screen, horizontal on large screen)";
-

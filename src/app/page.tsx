@@ -7,7 +7,7 @@ import SalaryRangeSlider from './Components/FilterBox';
 import { Tags2 } from '@/stories/Tags2';
 import locationOptions from "../app/post/data/location.json";
 import tagOptions from "../app/post/data/tags.json";
-import JobDetailsModal from './Components/JobModal';
+import JobDetailsModal from "./Components/JobModal";
 
 const jobPositionOptions = [
   { label: 'Software Engineer' },
@@ -47,7 +47,6 @@ const Home: React.FC = () => {
   const handleCloseModal = () => {
     setSelectedJob(null);
   };
-
 
   return (
     <main>

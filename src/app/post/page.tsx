@@ -6,14 +6,15 @@ import {TextInput,TextArea} from "../../stories/TextInput";import { Tags } from 
 import { Select } from '@/stories/Dropdown';
 import JoditEditorComponent from '../Components/Jodit-Editor';
 import UploadButton from '../Components/ImgUpload';
-import Checkbox from '../Components/Check';import ColorPickerButton from '../Components/ColorPicker';
+import ColorPickerButton from '../Components/ColorPicker';
 import SelectedOptions from '../Components/Options';
 import "../Components/Form.css";
-
+import axios from 'axios';
 import locnOpns from "../post/data/location.json";import tagOpns from "../post/data/tags.json";import benefitOpns from "../post/data/benefits.json";
 import emptype from "../post/data/emptype.json";import primTag from "../post/data/primTag.json";import minSal from "../post/data/minsalary.json";
 import maxSal from "../post/data/maxsalary.json";
 import JobDetailsModal from '../Components/JobModal';
+import Checkbox from '../Components/check';
 
 
 
@@ -75,11 +76,31 @@ function sal(sentence: string): number {
 
 let comp=user.company,pos=user.position,jobdesc=user.desc,how2apply=user.how2apply;
 if(comp=="") comp="Company";if(pos=="") pos="Position";
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
 const disp=()=>
   {
     setsbmt(true);
     for(let i=0;i<errors.length;i++) if(errors[i]==1) {alert("Kindly fill the necessary Details");return;}
     for(let i=0;i<errors.length;i++) if(errors[i]==2) {alert("Enter valid details");return;}
+
+    const url = `${baseUrl}/jobs/create/`;
+  const token = localStorage.getItem('access_token'); // Assuming you store your JWT token in localStorage
+
+  axios.post(url, user, {
+      headers: {
+          Authorization: `Bearer ${token}`
+      }
+  })
+  .then(response => {
+      console.log(response.data);
+      alert('Job registered successfully');
+  })
+  .catch(error => {
+      console.error('There was an error registering the job!', error);
+      alert('Failed to register the job');
+  });
     console.log(user);};
 
 return (
