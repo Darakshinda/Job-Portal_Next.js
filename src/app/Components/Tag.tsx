@@ -16,6 +16,7 @@ const Tag: React.FC<TagProps> = ({ tag, onRemove }) => {
           display: flex;
           align-items: center;
           background-color: #f1f1f1;
+          color: black;
           border-radius: 16px;border:solid;border-width: 1px;
           padding: 5px;
           margin: 5px;margin-top: 7px;

@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import { TextInput } from "../../stories/TextInput";
 import tagOpns from "../post/data/tags.json";
+import locOpns from "../post/data/location.json";
 import { Tags } from "../../stories/Tags";
 import Link from "next/link";
 
@@ -29,6 +30,17 @@ const Signup = () => {
       ...prevState,
       [key]: value,
     }));
+  };
+  const handler = (key:string, value:string) => {
+    setFormData((prevState) => {
+      if (prevState[key] === value) {
+        return prevState; // Prevent unnecessary state updates
+      }
+      return {
+        ...prevState,
+        [key]: value,
+      };
+    });
   };
 
   const [errors, setErrors] = useState(new Array(20).fill(0));
@@ -69,7 +81,7 @@ const Signup = () => {
     valid: boolean,
     index: number
   ): string => {
-    if (value === reference || !valid) {
+    if ((value === reference || !valid) &&submitted){
       errors[index] = 1;
       return "red";
     } else {
@@ -302,20 +314,21 @@ const Signup = () => {
             )}
           </div>
           <div className="flex flex-col mt-6">
-            <label className="text-gray-500 font-medium" htmlFor="location">
+            <label
+              className="text-gray-500 font-medium"
+              htmlFor="location"
+            >
               Location <span className="text-red-500">*</span>
             </label>
-            <TextInput
-              keyy="location"
-              type="location"
-              placeholder="location"
-              cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
-              val={formData.location}
-              onChange={handleChange}
-            />
-            {submitted && checkError(formData.location, "", true, 1) && (
-              <p className="text-xs text-red-500 mt-1 ml-2">This is required</p>
-            )}
+            <Tags keyy='location'cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700" optionMrgn='0%' optionWdth='100%' settgs={handler} 
+            dynamic={true} options={locOpns} border={`1px solid ${validateField(formData.location,"",true,7)}`} phdr='location' srchwdth='37%' 
+            scrollht="107px"/>
+            {submitted &&
+              checkError(formData.location, "", true, 1) && (
+                <p className="text-xs text-red-500 mt-1 ml-2">
+                  This is required
+                </p>
+              )}
           </div>
           <div className="flex flex-col mt-6">
             <label className="text-gray-500 font-medium" htmlFor="phoneNumber">
@@ -379,18 +392,13 @@ const Signup = () => {
           <div className="flex flex-col mt-6">
             <label
               className="text-gray-500 font-medium"
-              htmlFor="hiring_skills"
+              htmlFor="technical_skills"
             >
-              Technical Skills? <span className="text-red-500">*</span>
+              Technical Skills <span className="text-red-500">*</span>
             </label>
-            <TextInput
-              keyy="technical_skills"
-              type="text"
-              placeholder="Technical Skills Required"
-              cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
-              val={formData.technical_skills}
-              onChange={handleChange}
-            />
+            <Tags keyy='technical_skills'cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700" optionMrgn='0%' optionWdth='100%' settgs={handler} 
+            dynamic={true} options={tagOpns} border={`1px solid ${validateField(formData.technical_skills,"",true,7)}`} phdr='Search and add a skill' srchwdth='37%' 
+            scrollht="107px"/>
             {submitted &&
               checkError(formData.technical_skills, "", true, 1) && (
                 <p className="text-xs text-red-500 mt-1 ml-2">

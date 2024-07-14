@@ -7,6 +7,7 @@ import SalaryRangeSlider from './Components/FilterBox';
 import { Tags2 } from '@/stories/Tags2';
 import locationOptions from "../app/post/data/location.json";
 import tagOptions from "../app/post/data/tags.json";
+import JobDetailsModal from "./Components/JobModal";
 
 const jobPositionOptions = [
   { label: 'Software Engineer' },
@@ -39,6 +40,12 @@ const Home: React.FC = () => {
   const handleSalaryRangeChange = (range: number[]) => {
     setSalaryRange(range);
     console.log('Selected Salary Range:', range);
+  };
+
+  const [selectedJob, setSelectedJob] = useState(null);
+
+  const handleCloseModal = () => {
+    setSelectedJob(null);
   };
 
   return (
@@ -75,37 +82,22 @@ const Home: React.FC = () => {
             </label>
           </form>
         </div>
-        <div className="flex gap-4 justify-center items-center">
+        <div className="flex gap-4 justify-center ">
           <div>
             <h3 className="text-lg font-semibold mb-2"></h3>
-            
-            <Tags2
-              options={locationOptions}
-              cls="input_company{background-color: #f2f1ed;width: 95%;margin-top:10px;margin-left: 14px;border-radius: 7px;border-width: 1px;border-color: #b1b3b6;padding: 3px 10px;}"
-              placeholder="Search by Location"
-              dynamic={true}
-              onSelect={handleLocationTagSelection}
-            />
+
+            <Tags2 cls="input_company" settgs={setSelectedLocationTags} dynamic={true} options={locationOptions} phdr='Search by Location'/>
+      
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-2"></h3>
-            <Tags2
-              options={jobPositionOptions}
-              cls="input_company{background-color: #f2f1ed;width: 95%;margin-top:10px;margin-left: 14px;border-radius: 7px;border-width: 1px;border-color: #b1b3b6;padding: 3px 10px;}"
-              placeholder="Search by Job Position"
-              dynamic={true}
-              onSelect={handleJobTagSelection}
-            />
+            <Tags2 cls="input_company" settgs={setSelectedJobTags} dynamic={true} options={jobPositionOptions} phdr='Search by Job Position'/>
+          
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-2"></h3>
-            <Tags2
-              options={tagOptions}
-              cls="input_company{background-color: #f2f1ed;width: 95%;margin-top:10px;margin-left: 14px;border-radius: 7px;border-width: 1px;border-color: #b1b3b6;padding: 3px 10px;}"
-              placeholder="Search by Tags"
-              dynamic={true}
-              onSelect={handleTagTagSelection}
-            />
+            <Tags2 cls="input_company" settgs={setSelectedTagTags} dynamic={true} options={tagOptions} phdr='Search by Tags'/>
+          
           </div>
           <div className="">
             <SalaryRangeSlider
@@ -114,10 +106,14 @@ const Home: React.FC = () => {
             />
           </div>
         </div>
+        {selectedJob && 
+        <JobDetailsModal job={selectedJob} onClose={handleCloseModal} />
+      }
         <JobList
           selectedLocationTags={selectedLocationTags}
           selectedJobTags={selectedJobTags}
           selectedTagTags={selectedTagTags}
+          view={setSelectedJob}
         />
       </div>
     </main>

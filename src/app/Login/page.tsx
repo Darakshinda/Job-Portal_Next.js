@@ -70,8 +70,14 @@ const Login = () => {
           timerProgressBar: true,
           showConfirmButton: false,
         }).then(() => {
-          // Redirect to the homepage
-          router.push('/');
+          if (account_type === 'job_seeker') {
+            router.push('/Dashboard_seeker');
+
+          } else if (account_type === 'job_hirer') {
+            router.push('/Dashboard_hirer');
+
+          }
+          
         });
 
         console.log("Logged in successfully");

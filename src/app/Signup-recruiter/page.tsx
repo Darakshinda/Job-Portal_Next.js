@@ -35,7 +35,17 @@ const Signup = () => {
     }));
   };
 
-
+  const handler = (key:string, value:string) => {
+    setFormData((prevState) => {
+      if (prevState[key] === value) {
+        return prevState; // Prevent unnecessary state updates
+      }
+      return {
+        ...prevState,
+        [key]: value,
+      };
+    });
+  };
   const [errors, setErrors] = useState(new Array(20).fill(0));
   const [submitted, setSubmitted] = useState(false);
 
@@ -67,7 +77,7 @@ const Signup = () => {
     valid: boolean,
     index: number
   ): string => {
-    if (value === reference || !valid) {
+    if ((value === reference || !valid)&& submitted) {
       errors[index] = 1;
       return "red";
     } else {
@@ -376,20 +386,21 @@ const Signup = () => {
             </div>
           </div>
           <div className="flex flex-col mt-6">
-            <label className="text-gray-500 font-medium" htmlFor="hiring_skills">
-              What skills are you hiring for? <span className="text-red-500">*</span>
+            <label
+              className="text-gray-500 font-medium"
+              htmlFor="technical_skills"
+            >
+              Technical Skills <span className="text-red-500">*</span>
             </label>
-            <TextInput
-              keyy="hiring_skills"
-              type="text"
-              placeholder="Technical Skills Required"
-              cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
-              val={formData.hiring_skills}
-              onChange={handleChange}
-            />
-            {submitted && checkError(formData.hiring_skills, "", true, 1) && (
-              <p className="text-xs text-red-500 mt-1 ml-2">This is required</p>
-            )}
+            <Tags keyy='technical_skills'cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700" optionMrgn='0%' optionWdth='100%' settgs={handler} 
+            dynamic={true} options={tagOpns} border={`1px solid ${validateField(formData.hiring_skills,"",true,7)}`} phdr='Search and add a skill' srchwdth='37%' 
+            scrollht="107px"/>
+            {submitted &&
+              checkError(formData.hiring_skills, "", true, 1) && (
+                <p className="text-xs text-red-500 mt-1 ml-2">
+                  This is required
+                </p>
+              )}
           </div>
           <div className="flex flex-col mt-6">
             <label className="text-gray-500 font-medium" htmlFor="how_heard_about_codeunity">
