@@ -400,7 +400,7 @@ const Signup = () => {
                 <p className="text-xs text-red-500 mt-1 ml-2">
                   This is required
                 </p>
-              )}
+              )}gi
           </div>
           <div className="flex flex-col mt-6">
             <label className="text-gray-500 font-medium" htmlFor="how_heard_about_codeunity">

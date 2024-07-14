@@ -1,39 +1,46 @@
 import React from 'react';
 
 interface CheckboxProps {
+  keyy:string;
   label: string;
   checked: boolean;
-  onChange: (checked: boolean) => void;
+  onChange: Function;
+  additionalInfo?: string;
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({ label="Pay Later", checked, onChange }) => {
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    
-    onChange(!checked);
+const Checkbox: React.FC<CheckboxProps> = ({ keyy,label, checked, onChange, additionalInfo }) => {
+  const styles = {
+    checkboxContainer: {
+      display: 'flex',
+      alignItems: 'center',
+      margin: '10px 0',
+    },
+    checkbox: {
+      marginRight: '10px',
+    },
+    label: {
+      fontSize: '16px',
+    },
+    additionalInfo: {
+      marginLeft: '5px',
+      color: 'red', // Adjust the color as needed
+      fontWeight: 'bold',
+    },
   };
 
   return (
-    <label style={styles.label}>
+    <div style={styles.checkboxContainer}>
       <input
         type="checkbox"
         checked={checked}
-        onChange={handleChange}
+        onChange={(e) => onChange(keyy,e.target.checked)}
         style={styles.checkbox}
       />
-      {label}
-    </label>
+      <label style={styles.label}>
+        {label} {additionalInfo && <span style={styles.additionalInfo}>{additionalInfo}</span>}
+      </label>
+    </div>
   );
-};
-
-const styles = {
-  label: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer',
-  },
-  checkbox: {
-    marginRight: '8px',
-  },
 };
 
 export default Checkbox;
