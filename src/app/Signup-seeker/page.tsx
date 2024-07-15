@@ -26,10 +26,15 @@ const Signup = () => {
   const router = useRouter();
 
   const handleChange = (key: string, value: string) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [key]: value,
-    }));
+    setFormData((prevState) => {
+      if (prevState[key] === value) {
+        return prevState; // Prevent unnecessary state updates
+      }
+      return {
+        ...prevState,
+        [key]: value,
+      };
+    });
   };
   const handler = (key:string, value:string) => {
     setFormData((prevState) => {

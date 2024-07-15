@@ -29,13 +29,6 @@ const Signup = () => {
 
 
   const handleChange = (key: string, value: string) => {
-    setFormData(prevState => ({
-      ...prevState,
-      [key]: value
-    }));
-  };
-
-  const handler = (key:string, value:string) => {
     setFormData((prevState) => {
       if (prevState[key] === value) {
         return prevState; // Prevent unnecessary state updates
@@ -46,6 +39,8 @@ const Signup = () => {
       };
     });
   };
+
+  
   const [errors, setErrors] = useState(new Array(20).fill(0));
   const [submitted, setSubmitted] = useState(false);
 
@@ -392,7 +387,7 @@ const Signup = () => {
             >
               Technical Skills <span className="text-red-500">*</span>
             </label>
-            <Tags keyy='hiring_skills'cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700" optionMrgn='0%' optionWdth='100%' settgs={handler} 
+            <Tags keyy='hiring_skills'cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700" optionMrgn='0%' optionWdth='100%' settgs={handleChange} 
             dynamic={true} options={tagOpns} border={`1px solid ${validateField(formData.hiring_skills,"",true,7)}`} phdr='Search and add a skill' srchwdth='37%' 
             scrollht="107px"/>
             {submitted &&
@@ -400,7 +395,7 @@ const Signup = () => {
                 <p className="text-xs text-red-500 mt-1 ml-2">
                   This is required
                 </p>
-              )}gi
+              )}
           </div>
           <div className="flex flex-col mt-6">
             <label className="text-gray-500 font-medium" htmlFor="how_heard_about_codeunity">
