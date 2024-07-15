@@ -26,7 +26,7 @@ export const NavBar = ({
       navbarClass += " bg-primary text-primary-content";
       break;
     default:
-      navbarClass += " bg-base-100";
+      navbarClass += " bg-white";
   }
 
   return (
@@ -40,8 +40,10 @@ export const NavBar = ({
           </button>
         </div>
       )}
-      <div className="flex-1">
-        <a className={buttonClass}>daisyUI</a>
+      <div className="flex-1"> 
+        <a className={`text-black p-6 text-3xl `} >Code Unity</a>
+        {post&&<main className="flex-1"><a className={`${buttonClass} text-black ml-[25%] font-serif p-21 text-[250%] `}>{"Hire remotely"}</a>
+        <Link href="/"><button className='btn btn-error ml-[35%] text-white font-bold'>Back{" <--"}</button></Link></main>}
       </div>
       {menu && (
         <div className="flex-none">

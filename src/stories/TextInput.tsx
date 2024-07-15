@@ -5,7 +5,8 @@ interface InputProps {
   placeholder?: string;
   value?: string;
   disabled?: boolean;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: Function;
+  type?:string;
 }
 
 interface TextAreaProps {
@@ -19,11 +20,13 @@ export const TextInput = ({
   placeholder = 'Type here',
   value,
   disabled = false,
+  type = '',
   onChange,
 }: InputProps) => {
   return (
-    <input
-      type="text"
+  <input
+      type={type}
+      required={req}
       className={cls}
       placeholder={placeholder}
       value={value}

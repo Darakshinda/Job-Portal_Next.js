@@ -15,7 +15,7 @@ const Navbar = () => {
             Post a Job
           </button>
         </Link>
-        <Link href="/loginpage">
+        <Link href="/Login">
           <button className="border-solid border-black border-2 px-4 p-1 m-4 mt-5 rounded-xl hover:bg-transparent">
             Log in
           </button>
