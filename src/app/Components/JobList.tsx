@@ -28,6 +28,7 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
   const [page, setPage] = useState<number>(1);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const baseurl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000/api';
   const fetchCount = 10;
 
   const bottomBoundaryRef = useRef<HTMLLIElement>(null);
@@ -61,7 +62,7 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
         setJobs(prevJobs => [...prevJobs, ...response.data.results]); // Append new jobs to existing jobs
       }
     } catch (error) {
-      console.error("Error fetching jobs:", error? .response.data);
+      console.error("Error fetching jobs:", error?.response.data);
     }
     setLoading(false);
   };
@@ -73,6 +74,7 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
 
   // Refetch jobs when tags, postedJobs, or page change
   useEffect(() => {
+    setJobs([]); // Clear previous jobs when tags change
     fetchJobs();
   }, [selectedLocationTags, selectedJobTags, selectedTagTags, page, postedJobs]);
 

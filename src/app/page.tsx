@@ -6,7 +6,6 @@ export default function Home() {
   return (
     <main className='container'>
       <Navbar />
-      <div>
         <div className="pb-4 h-20xl max-w-18xl bg-white size-5xl">
           <div className="relative isolate overflow-hidden bg-white pb-20 px-6 pt-40 text-center sm:px-18 sm:shadow-sm">
             <p className="mx-auto max-w-6xl text-5xl font-Nunito font-semibold tracking-tight text-gray-900">
@@ -85,5 +84,5 @@ export default function Home() {
         /> */}
       </div>
     </main>
-  );
-}
+  )
+};

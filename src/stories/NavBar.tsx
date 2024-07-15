@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 interface NavBarProps {
   starticon?: boolean;
@@ -6,6 +7,7 @@ interface NavBarProps {
   endIcon?: boolean;
   variant?: 'default' | 'neutral' | 'primary';
   withSearch?: boolean;
+  post?: boolean;
 }
 
 export const NavBar = ({
@@ -14,6 +16,7 @@ export const NavBar = ({
   endIcon = true,
   variant = 'default',
   withSearch = false,
+  post=false
 }: NavBarProps) => {
   let navbarClass = "navbar";
   let buttonClass = "btn btn-ghost text-xl";
