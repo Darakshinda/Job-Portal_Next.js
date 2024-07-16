@@ -29,15 +29,10 @@ const Signup = () => {
 
 
   const handleChange = (key: string, value: string) => {
-    setFormData((prevState) => {
-      if (prevState[key] === value) {
-        return prevState; // Prevent unnecessary state updates
-      }
-      return {
-        ...prevState,
-        [key]: value,
-      };
-    });
+
+    if(formData[key]===value) return;
+    setFormData({...formData,[key]: value,});
+     
   };
 
   
@@ -193,7 +188,7 @@ const Signup = () => {
         </div>
       </div>
       <div className="ml-16 mt-10 mr-8 mb-8 h-screen border border-white rounded-lg flex-1">
-        <div className="h-full overflow-y-auto p-8">
+        <div className="h-full overflow-y-auto p-8 scrollbar-hide">
           <div className='text-3xl text-white tracking-wider leading-relaxed font-bold pr-4 mb-8'>
             Connect with Top Engineers
           </div>

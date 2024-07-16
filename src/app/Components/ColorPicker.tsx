@@ -8,7 +8,7 @@ interface Props {
   }
 
 const ColorPickerButton: React.FC<Props> = ({change,keyy}) => {
-  const [color, setColor] = useState<string>('white');
+  const [color, setColor] = useState<string>("#111111");
   const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
 
   const handleClick = () => {

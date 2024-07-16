@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-import {JobCard} from "../../stories/Job-Card";
+import {JobCard} from "../Components/Job-Card";
 import {NavBar} from "../../stories/NavBar";
 import {TextInput,TextArea} from "../../stories/TextInput";import { Tags } from '@/stories/Tags';
 import { Select } from '@/stories/Dropdown';
@@ -22,21 +22,16 @@ export default function Home() {
   const [user, setuser] = useState({
     company: "",position: "",emptype: "Select Employment type",primtg: "Select a Primary tag for the Job",tags: "",locns:'',
     logo:'',minsal:"Minimum per year",maxsal:'Maximum per year',desc:'',benefits:'',how2apply:'',email4jobappl:'',applUrl:'',
-    twtr:'',compMail:'',invMail:'',invAdrs:'',invNote:'',payLtr:false,pltrEml:'',fdbck:'',bgcolor:'white',
+    twtr:'',compMail:'',invMail:'',invAdrs:'',invNote:'',payLtr:false,pltrEml:'',fdbck:'',bgcolor:"#111111",
   });
 
-  const handleChange = (key:string, value:string) => {
-    setuser((prevState) => {
-      if (prevState[key] === value) {
-        return prevState; // Prevent unnecessary state updates
-      }
-      return {
-        ...prevState,
-        [key]: value,
-      };
-    });
-  };
+  const handleChange = (key: string, value: string) => {
 
+    if(user[key]===value) return;
+    setuser({...user,[key]: value,});
+     
+  };
+console.log(user);
   const [selectedJob, setSelectedJob] = useState(null);
 
   const handleCloseModal = () => {

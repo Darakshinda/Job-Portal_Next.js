@@ -9,6 +9,7 @@ import locationOptions from "../app/post/data/location.json";
 import tagOptions from "../app/post/data/tags.json";
 import JobDetailsModal from "./Components/JobModal";
 
+
 const jobPositionOptions = [
   { label: 'Software Engineer' },
   { label: 'Data Analyst' },
@@ -109,6 +110,7 @@ const Home: React.FC = () => {
         {selectedJob && 
         <JobDetailsModal job={selectedJob} onClose={handleCloseModal} />
       }
+      
         <JobList
           selectedLocationTags={selectedLocationTags}
           selectedJobTags={selectedJobTags}

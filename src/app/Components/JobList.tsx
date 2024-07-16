@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { JobCard } from "./JobCard";
+
 import ApplyPopup from "./ApplyPopup"; // Make sure to import the ApplyPopup component
+import { JobCard } from "@/app/Components/Job-Card";
 
 interface Job {
   id: number;
@@ -107,33 +108,7 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
   return (
     <div className="flex justify-center p-4 mt-8">
       <ul className="space-y-4 w-full flex flex-col items-center">
-        <JobCard
-          imgflg
-          bgcolor="#99ffff"
-          imgsrc="https://media-exp1.licdn.com/dms/image/C4D0BAQHNwdJlZmUh8g/company-logo_200_200/0/1593941980738?e=2159024400&v=beta&t=3rDBEuT39uXrBRU7KsCbJipH7WFm7A3hv0KeNDBCGb0"
-          bdg
-          position={"Manager"}
-          company_name={`CodeUnity`}
-          location_restriction={`🇮🇳 India ,⛩ Asia ,🕌 Middle East`}
-          tags={`🤓 Web Developer , ⚛️ React , ➡️ Next , 🟦 Typescript , 🤠 Django`}
-          created_at={`7/8/2024 00:56:23`}
-          job={{
-            company: `CodeUnity`,
-            position: "Manager",
-            emptype: "Full-time",
-            primtg: '',
-            tags: `🤓 Web Developer , ⚛️ React , ➡️ Next , 🟦 Typescript , 🤠 Django`,
-            locns: `🇮🇳 India ,⛩ Asia ,🕌 Middle East`,
-            logo: 'https://media-exp1.licdn.com/dms/image/C4D0BAQHNwdJlZmUh8g/company-logo_200_200/0/1593941980738?e=2159024400&v=beta&t=3rDBEuT39uXrBRU7KsCbJipH7WFm7A3hv0KeNDBCGb0',
-            minsal: `USD 20,000 per year`,
-            maxsal: `USD 50,000 per year`,
-            desc: `job.job_description`,
-            benefits: '💰 401(k) , 🌎 Distributed team , 📆 4 day workweek',
-            how2apply: ``,
-          }}
-          viewDetails={view}
-          onApply={handleApplyClick} // Pass the onApply function to JobCard
-        />
+       
 
         {jobs.map((job) => (
           <JobCard
@@ -161,7 +136,7 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
               how2apply: job.how_to_apply,
             }}
             viewDetails={view}
-            onApply={handleApplyClick} // Pass the onApply function to JobCard
+             // Pass the onApply function to JobCard
           />
         ))}
         {loading && <p>Loading...</p>}
