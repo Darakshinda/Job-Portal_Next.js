@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import Navbar from '../Navbar';
@@ -25,6 +25,13 @@ const Dashboard: React.FC = () => {
   const [salaryRange, setSalaryRange] = useState([0, 100000]);
 
   const router = useRouter();
+
+  const checkLogIn = () => {
+    const access_token = localStorage.getItem('access_token');
+    if (!access_token) {
+      router.push('/login');
+    }
+  }
 
   const handleLocationTagSelection = (tags: string[]) => {
     setSelectedLocationTags(tags);
@@ -55,6 +62,10 @@ const Dashboard: React.FC = () => {
     localStorage.removeItem('refresh_token');
     router.push('/');
   }
+
+  useEffect(() => {
+    checkLogIn();
+  }, []);
 
   return (
       <>

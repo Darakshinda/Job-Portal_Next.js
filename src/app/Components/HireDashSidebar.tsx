@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ClickOutsideDiv from './ClickoutsideDiv';
 import Link from 'next/link';
 import { access } from 'fs';
@@ -11,6 +11,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({userName}) => {
   const [showTrialOptions, setShowTrialOptions] = useState(false);
+  const [currUserName, setCurrUserName] = useState(userName);
   const Router = useRouter();
 
   const handleLogOut = () => {
@@ -18,6 +19,10 @@ const Sidebar: React.FC<SidebarProps> = ({userName}) => {
     localStorage.removeItem("refresh_token");
     Router.push('/');
   }
+
+  useEffect(() => {
+    setCurrUserName(userName);
+  }, [userName]);
 
   return (
     <div className="bg-gray-900 text-white h-screen w-64 fixed flex flex-col  min-w-[230px] border-r min-h-screen">
@@ -52,7 +57,7 @@ const Sidebar: React.FC<SidebarProps> = ({userName}) => {
           <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar mr-[4px]">
             <div className="w-[35px] rounded-full border border-black"><img src={`https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg`} /></div>
           </div>
-          {userName}
+          {currUserName}
         </button>
        
       </div>

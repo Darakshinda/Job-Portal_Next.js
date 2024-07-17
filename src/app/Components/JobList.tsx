@@ -33,6 +33,10 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
 
   const bottomBoundaryRef = useRef<HTMLLIElement>(null);
 
+  const clearJobs = () => {
+    setJobs([]);
+  }
+
   const fetchJobs = async () => {
     setLoading(true);
     try {
@@ -57,9 +61,9 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
       const response = await axios.get(url, config);
       console.log('Fetched jobs:', response.data);
       if(postedJobs) {
-        setJobs(prevJobs => [...prevJobs, ...response.data]); // Append new jobs to existing jobs
+        setJobs(response.data); // Append new jobs to existing jobs
       } else {
-        setJobs(prevJobs => [...prevJobs, ...response.data.results]); // Append new jobs to existing jobs
+        setJobs(response.data.results); // Append new jobs to existing jobs
       }
     } catch (error) {
       console.error("Error fetching jobs:", error?.response.data);
@@ -68,15 +72,19 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
   };
 
   useEffect(() => {
-    setJobs([]); // Clear previous jobs when tags change
+    clearJobs(); // Clear previous jobs when tags change
     setPage(1); // Reset page number when tags change to refetch from the beginning
   }, [selectedLocationTags, selectedJobTags, selectedTagTags]);
 
   // Refetch jobs when tags, postedJobs, or page change
   useEffect(() => {
-    setJobs([]); // Clear previous jobs when tags change
+    clearJobs(); // Clear previous jobs when tags change
     fetchJobs();
-  }, [selectedLocationTags, selectedJobTags, selectedTagTags, page, postedJobs]);
+  }, [selectedLocationTags, selectedJobTags, selectedTagTags, postedJobs]);
+
+  useEffect(() => {
+    if(page > 1) fetchJobs();
+  }, [page]);
 
   // Function to handle scroll event
   const handleScroll = () => {

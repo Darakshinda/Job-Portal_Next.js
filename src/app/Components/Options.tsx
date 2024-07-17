@@ -38,7 +38,7 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({ options ,keyy,onChang
             style={{
               margin: '5px',
               padding: '10px',
-              backgroundColor: option.selected ? 'red' : 'white',
+              backgroundColor: option.selected ? 'red' : 'black',
               border: '1px solid black',
               borderRadius: '5px',
               cursor: 'pointer',

@@ -104,11 +104,11 @@ let mySet: Set<string> = new Set();
   return (
     <ClickOutsideDiv onOutsideClick={handleOutsideClick}>
       
-    <div  className={`searchable-select ${cls}`} style={{justifyItems:"center",border:border}}>
+    <div  className={`searchable-select ${cls}`} style={{justifyItems:"center"}}>
     {tags.map((item, index) => printtag(item,index))}
     {renderInput()}
   </div>
-  {sel==1 && <div role="listbox" className="scrollable-div scrollbar-hide" style={{backgroundColor:`white`,marginLeft:optionMrgn,zIndex:"20000px", width:optionWdth,color:"black",maxHeight:scrollht}}><ul tabIndex={0} className={`dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box`}>
+  {sel==1 && <div role="listbox" className="scrollable-div scrollbar-hide" style={{backgroundColor:`white`,marginLeft:optionMrgn,zIndex:"20000px", width:optionWdth,color:"black",maxHeight:scrollht}}><ul tabIndex={0} className={`dropdown-content z-[1] text-white menu p-2 shadow bg-[#101011] rounded-box`}>
   {filteredOptions.map(option => fun(option))}
 </ul></div>}</ClickOutsideDiv>
     );

@@ -1,7 +1,7 @@
 // pages/login.tsx
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation';
@@ -15,6 +15,31 @@ const Login = () => {
   const [authError, setAuthError] = useState("");
   const router = useRouter();
   const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
+
+  const alreadyLoggedIn = async () => {
+    const access_token = localStorage.getItem('access_token');
+    const refresh_token = localStorage.getItem('refresh_token');
+
+    if (access_token && refresh_token) {
+      const axiosInstance = axios.create({
+        baseURL: baseurl,
+        headers: {
+          Authorization: `Bearer ${access_token}`
+        }
+      })
+      axiosInstance.get('/accounts/profile')
+        .then((response) => {
+          if (response.data.account_type === 'job_seeker') {
+            router.push('/seeker-dashboard');
+          } else {
+            router.push(`/hirerDash/${response.data.first_name}`);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,6 +108,10 @@ const Login = () => {
       }
     }
   };
+
+  useEffect(() => {
+    alreadyLoggedIn();
+  }, []);
 
   return (
     <div className="min-h-screen flex">

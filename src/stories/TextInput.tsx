@@ -47,7 +47,7 @@ export const TextInput = ({
       <input
         type={type === 'password' && !showPassword ? 'password' : 'text'}
         required={req}
-        className={`w-full ${cls}`}
+        className={`w-full ${cls} py-2 px-3 border border-gray-300 rounded-lg shadow-sm text-white bg-[#101011]`}
         placeholder={placeholder}
         value={val}
         disabled={disabled}

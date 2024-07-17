@@ -1,8 +1,24 @@
+"use client"
+
 import ProfileCard from "@/app/Components/ProfileCard";
 import Sidebar from "../../Components/HireDashSidebar";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Page({ params }: { params: { hireId: string } }) {
     const username = params.hireId;
+    const router = useRouter();
+
+    const checkLogIn = () => {
+        const access_token = localStorage.getItem('access_token');
+        if (!access_token) {
+          router.push('/login');
+        }
+    }
+
+    useEffect(() => {
+        checkLogIn();
+    }, []);
 
     return (
       <div><Sidebar userName={username}/>

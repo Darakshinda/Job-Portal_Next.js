@@ -21,7 +21,7 @@ if(type=="small") return(
   
   <select className={`${cls}`} required={req} onChange={(event)=>onChange(keyy,event.target.value) } id={id} style={{display:"inline",width:"37%"}}>
   {body.map((option) => (
-        <option>
+        <option className='bg-[#101011]'>
           {option.label}
         </option>
       ))}
@@ -30,9 +30,9 @@ if(type=="small") return(
   
   return(
   
-  <select className={`${cls}`} required={req} onChange={(event)=>onChange(keyy,event.target.value)} id={id}>
+  <select className={`${cls} bg-[#101011]`} required={req} onChange={(event)=>onChange(keyy,event.target.value)} id={id}>
   {body.map((option) => (
-        <option>
+        <option className='bg-[#101011]'>
           {option.label}
         </option>
       ))}
