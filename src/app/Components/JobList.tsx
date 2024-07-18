@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-
 import ApplyPopup from "./ApplyPopup"; // Make sure to import the ApplyPopup component
-import { JobCard } from "@/app/Components/Job-Card";
+import { JobCard } from "./Job-Card";
 
 interface Job {
   id: number;
@@ -108,14 +107,12 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
   return (
     <div className="flex justify-center p-4 mt-8">
       <ul className="space-y-4 w-full flex flex-col items-center">
-       
+      
 
         {jobs.map((job) => (
           <JobCard
             key={job.id}
-            imgflg
             imgsrc=""
-            bdg
             position={job.position}
             company_name={job.company_name}
             location_restriction={job.location_restriction}
@@ -136,7 +133,7 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
               how2apply: job.how_to_apply,
             }}
             viewDetails={view}
-             // Pass the onApply function to JobCard
+            onApply={handleApplyClick} // Pass the onApply function to JobCard
           />
         ))}
         {loading && <p>Loading...</p>}

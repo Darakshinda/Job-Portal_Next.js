@@ -12,6 +12,7 @@ interface Props {
   created_at?: string;
   job?: object;
   viewDetails?: Function;
+  onApply?: Function;
   
 }
 interface tprop
@@ -59,7 +60,7 @@ export const JobCard = ({cls="",bdg = false,imgflg=false,divcls="flex justify-be
   location_restriction="Faridabad",
   tags="HTML,Css,JS",
   created_at="6/18/2024 1:00:21",
-  viewDetails,job,
+  viewDetails,job,onApply,
 }: Props) => {let l=parseInt(job.minsal)/1000,u=parseInt(job.maxsal)/1000;
   console.log(job.emptype);
 
@@ -96,7 +97,7 @@ if(company_name=="") company_name="Company";if(position=="") position="Position"
       
       <div className="ml-[1%] flex items-center mt-[19px]">
           
-          <button className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300">
+          <button className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300" onClick={() => onApply(job)}>
             Apply
           </button>
           <div className='ml-[75%]'>
