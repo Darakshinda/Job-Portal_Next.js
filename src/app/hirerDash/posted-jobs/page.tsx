@@ -11,6 +11,7 @@ import locationOptions from "../../post/data/location.json";
 import tagOptions from "../../post/data/tags.json";
 import Sidebar from "@/app/Components/HireDashSidebar";
 import JobDetailsModal from "@/app/Components/JobModal";
+import axios from "axios";
 
 const jobPositionOptions = [
   { label: "Software Engineer" },
@@ -27,7 +28,9 @@ const postedJobs = () => {
   const [selectedTagTags, setSelectedTagTags] = useState<string[]>([]);
   const [salaryRange, setSalaryRange] = useState([0, 100000]);
   const [selectedJob, setSelectedJob] = useState<any>(null);
+  const [userName, setUserName] = useState<string>("");
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const router = useRouter();
 
   const handleLocationTagSelection = (tags: string[]) => {
@@ -59,16 +62,36 @@ const postedJobs = () => {
     }
   };
 
+  const getUserName = () => {
+    const access_token = localStorage.getItem("access_token");
+    if(access_token){
+      const axiosInstance = axios.create({
+        baseURL: baseUrl,
+        headers: {
+          Authorization: `Bearer ${access_token}`
+        }
+      })
+      axiosInstance.get('/accounts/profile')
+        .then((response) => {
+          setUserName(response.data.first_name);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }
+
   useEffect(() => {
     checkLogIn();
+    getUserName();
   }, []);
 
   return (
-    <div>
+    <div className="bg-[#10161e]">
       <Sidebar userName="Praneeth" />
       <div className="flex flex-col gap-4 justify-center items-center pl-[200px]">
         <div>
-          <h1 className="text-2xl text-black font-semibold">Posted Jobs</h1>
+          <h1 className="text-4xl mt-3 text-grey-300 font-semibold">Posted Jobs</h1>
         </div>
         <div className="flex justify-around gap-4">
           <div>

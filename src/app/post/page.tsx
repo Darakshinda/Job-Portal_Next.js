@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TextInput, TextArea } from "../../stories/TextInput";
 import JoditEditor from "../Components/Jodit-Editor";
 import { Select } from "@/stories/Dropdown";
@@ -25,10 +25,10 @@ import Sidebar from "../Components/HireDashSidebar";
 import { Router } from "next/router";
 
 interface JobFormProps {
-  username: string;
+
 }
 
-const JobForm: React.FC<JobFormProps> = ({ username }) => {
+const JobForm: React.FC<JobFormProps> = ({ }) => {
   const [user, setuser] = useState({
     company: "",
     position: "",
@@ -70,6 +70,26 @@ const JobForm: React.FC<JobFormProps> = ({ username }) => {
 
   const [previewMode, setPreviewMode] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [username, setUserName] = useState<string>("");
+
+  const getUserName = () => {
+    const access_token = localStorage.getItem("access_token");
+    if (access_token) {
+      const axiosInstance = axios.create({
+        baseURL: baseUrl,
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+      axiosInstance.get(`${baseUrl}/accounts/profile`)
+        .then((response) => {
+          setUserName(response.data.first_name);
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+        })
+    }
+  }
 
   const handleCloseModal = () => {
     setSelectedJob(null);
@@ -147,15 +167,21 @@ const JobForm: React.FC<JobFormProps> = ({ username }) => {
         annual_salary_min: sal(user.minsal),
         company_email: user.compMail,
         company_name: user.company,
+        company_twitter: user.twtr,
         how_to_apply: user.how2apply,
         invoice_address: user.invAdrs,
         invoice_email: user.invMail,
+        invoice_notes: user.invNote,
+        pay_later: user.payLtr,
         job_description: user.desc,
         location_restriction: user.locns,
         primary_tag: user.primtg,
         benefits: user.benefits,
         position: user.position,
         tags: user.tags,
+        apply_url: user.applUrl,
+        apply_email_address: user.email4jobappl,
+        feedback: user.fdbck,
       }, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -170,6 +196,10 @@ const JobForm: React.FC<JobFormProps> = ({ username }) => {
         alert("Failed to register the job");
       });
   };
+
+  useEffect(() => {
+    getUserName();
+  }, []);
 
   return (
     <div className="flex bg-[#10161e]">
