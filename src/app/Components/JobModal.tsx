@@ -33,7 +33,7 @@ interface JobDetailsModalProps {
 
 const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
   const handleOverlayClick = () => {
-    onClose();
+    onClose(null);
   };
   const bgcol = "black";
   let comp = job.company,
@@ -51,7 +51,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
           event.stopPropagation();
         }}
       >
-        <button className="close-button" onClick={onClose}>
+        <button className="close-button" onClick={handleOverlayClick}>
           &times;
         </button>
         <div className="group" style={{ background: bgcol }}>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "../../Navbar";
@@ -62,7 +62,7 @@ const postedJobs = () => {
     }
   };
 
-  const getUserName = () => {
+  const getUserName = useCallback(() => {
     const access_token = localStorage.getItem("access_token");
     if(access_token){
       const axiosInstance = axios.create({
@@ -79,7 +79,7 @@ const postedJobs = () => {
           console.log(error);
         });
     }
-  }
+  }, [baseUrl]);
 
   useEffect(() => {
     checkLogIn();
@@ -88,7 +88,7 @@ const postedJobs = () => {
 
   return (
     <div className="bg-[#10161e]">
-      <Sidebar userName="Praneeth" />
+      <Sidebar userName={userName} />
       <div className="flex flex-col gap-4 justify-center items-center pl-[200px]">
         <div>
           <h1 className="text-4xl mt-3 text-grey-300 font-semibold">Posted Jobs</h1>

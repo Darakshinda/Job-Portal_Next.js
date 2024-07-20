@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Tag from '@/app/Components/Tag';
 import ClickOutsideDiv from '@/app/Components/ClickoutsideDiv';
 import "@/app/Components/Clickoutsidediv.css";
@@ -46,7 +46,9 @@ let mySet: Set<string> = new Set();
   const [typing, setTyping] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("$$");
 
-  settgs(keyy,tags.join(","));
+  useEffect(() => {
+    settgs(keyy,tags.join(","));
+  }, [tags, keyy, settgs]);
 
   const handleOutsideClick = () => {
     setsel(0);setSearchTerm("");

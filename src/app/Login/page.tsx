@@ -77,7 +77,7 @@ const Login = () => {
           title: "Login Successful",
           icon: "success",
           toast: true,
-          timer: 6000,
+          timer: 3000,
           position: 'top-right',
           timerProgressBar: true,
           showConfirmButton: false,

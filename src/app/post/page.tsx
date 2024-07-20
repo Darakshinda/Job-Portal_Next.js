@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { TextInput, TextArea } from "../../stories/TextInput";
 import JoditEditor from "../Components/Jodit-Editor";
 import { Select } from "@/stories/Dropdown";
@@ -23,12 +23,11 @@ import maxSal from "../post/data/maxsalary.json";
 import JobDetailsModal from "../Components/JobModal";
 import Sidebar from "../Components/HireDashSidebar";
 import { Router } from "next/router";
+import { useSearchParams } from "next/navigation";
 
-interface JobFormProps {
+interface JobFormProps {}
 
-}
-
-const JobForm: React.FC<JobFormProps> = ({ }) => {
+const JobForm: React.FC<JobFormProps> = ({}) => {
   const [user, setuser] = useState({
     company: "",
     position: "",
@@ -55,6 +54,8 @@ const JobForm: React.FC<JobFormProps> = ({ }) => {
     bgcolor: "#101011",
   });
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const searchParams = useSearchParams();
+  const jobID = searchParams.get("jobID");
 
   const handleChange = (key: string, value: string) => {
     setuser((prevState) => {
@@ -72,7 +73,7 @@ const JobForm: React.FC<JobFormProps> = ({ }) => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [username, setUserName] = useState<string>("");
 
-  const getUserName = () => {
+  const getUserName = useCallback(() => {
     const access_token = localStorage.getItem("access_token");
     if (access_token) {
       const axiosInstance = axios.create({
@@ -81,15 +82,16 @@ const JobForm: React.FC<JobFormProps> = ({ }) => {
           Authorization: `Bearer ${access_token}`,
         },
       });
-      axiosInstance.get(`${baseUrl}/accounts/profile`)
+      axiosInstance
+        .get(`${baseUrl}/accounts/profile`)
         .then((response) => {
           setUserName(response.data.first_name);
         })
         .catch((error) => {
           console.log(error.response.data);
-        })
+        });
     }
-  }
+  }, [baseUrl]);
 
   const handleCloseModal = () => {
     setSelectedJob(null);
@@ -121,8 +123,10 @@ const JobForm: React.FC<JobFormProps> = ({ }) => {
   }
   function isValidURL(url: string): boolean {
     if (url == "") return true;
+    console.log(url);
     const urlRegex =
       /^(https?:\/\/)?((([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})|localhost)(:\d+)?(\/\S*)?$/;
+    console.log(urlRegex.test(url));
     return urlRegex.test(url);
   }
   const [sbmt, setsbmt] = useState(false);
@@ -145,11 +149,13 @@ const JobForm: React.FC<JobFormProps> = ({ }) => {
     setsbmt(true);
     for (let i = 0; i < errors.length; i++)
       if (errors[i] == 1) {
+        console.log("Value 1 at index: ", i);
         alert("Kindly fill the necessary Details");
         return;
       }
     for (let i = 0; i < errors.length; i++)
       if (errors[i] == 2) {
+        console.log("Value 2 at index: ", i);
         alert("Enter valid details");
         return;
       }
@@ -158,30 +164,31 @@ const JobForm: React.FC<JobFormProps> = ({ }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const url = `${baseUrl}/jobs/create/`;
+    disp();
     const token = localStorage.getItem("access_token"); // Assuming you store your JWT token in localStorage
-
-    axios
-      .post(url, {
+    if (jobID) {
+      /*Update with url for edit job posting */
+      const url = `${baseUrl}/jobs/${jobID}/update/`;
+      axios.put(url, {
         annual_salary_max: sal(user.maxsal),
-        annual_salary_min: sal(user.minsal),
-        company_email: user.compMail,
-        company_name: user.company,
-        company_twitter: user.twtr,
-        how_to_apply: user.how2apply,
-        invoice_address: user.invAdrs,
-        invoice_email: user.invMail,
-        invoice_notes: user.invNote,
-        pay_later: user.payLtr,
-        job_description: user.desc,
-        location_restriction: user.locns,
-        primary_tag: user.primtg,
-        benefits: user.benefits,
-        position: user.position,
-        tags: user.tags,
-        apply_url: user.applUrl,
-        apply_email_address: user.email4jobappl,
-        feedback: user.fdbck,
+            annual_salary_min: sal(user.minsal),
+            company_email: user.compMail,
+            company_name: user.company,
+            company_twitter: user.twtr,
+            how_to_apply: user.how2apply,
+            invoice_address: user.invAdrs,
+            invoice_email: user.invMail,
+            invoice_notes: user.invNote,
+            pay_later: user.payLtr,
+            job_description: user.desc,
+            location_restriction: user.locns,
+            primary_tag: user.primtg,
+            benefits: user.benefits,
+            position: user.position,
+            tags: user.tags,
+            apply_url: user.applUrl,
+            apply_email_address: user.email4jobappl,
+            feedback: user.fdbck,
       }, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -189,17 +196,105 @@ const JobForm: React.FC<JobFormProps> = ({ }) => {
       })
       .then((response) => {
         console.log(response.data);
-        alert("Job registered successfully");
+        alert("Job updated successfully");
       })
       .catch((error) => {
-        console.error("There was an error registering the job!", error);
-        alert("Failed to register the job");
-      });
+        console.error("There was an error updating the job!", error);
+        alert("Failed to update the job");
+      })
+    } else {
+      const url = `${baseUrl}/jobs/create/`;
+      axios
+        .post(
+          url,
+          {
+            annual_salary_max: sal(user.maxsal),
+            annual_salary_min: sal(user.minsal),
+            company_email: user.compMail,
+            company_name: user.company,
+            company_twitter: user.twtr,
+            how_to_apply: user.how2apply,
+            invoice_address: user.invAdrs,
+            invoice_email: user.invMail,
+            invoice_notes: user.invNote,
+            pay_later: user.payLtr,
+            job_description: user.desc,
+            location_restriction: user.locns,
+            primary_tag: user.primtg,
+            benefits: user.benefits,
+            position: user.position,
+            tags: user.tags,
+            apply_url: user.applUrl,
+            apply_email_address: user.email4jobappl,
+            feedback: user.fdbck,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data);
+          alert("Job registered successfully");
+        })
+        .catch((error) => {
+          console.error("There was an error registering the job!", error);
+          alert("Failed to register the job");
+        });
+    }
   };
 
   useEffect(() => {
     getUserName();
   }, []);
+
+  useEffect(() => {
+    if (jobID) {
+      const token = localStorage.getItem("access_token");
+      const axiosInstance = axios.create({
+        baseURL: baseUrl,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      axiosInstance
+        .get(`${baseUrl}/posted-jobs/`)
+        .then((response) => {
+          console.log("Response:", response.data);
+          
+          const job = response.data.find((job) => job.id.toString() === jobID.toString());
+          setuser({
+            company: job.company_name,
+            position: job.position,
+            emptype: job.employment_type,
+            primtg: job.primary_tag,
+            tags: job.tags,
+            locns: job.location_restriction,
+            logo: job.company_logo,
+            minsal: "USD " + job.annual_salary_min.toString() + " per year",
+            maxsal: "USD " + job.annual_salary_max.toString() + " per year",
+            desc: job.job_description,
+            benefits: job.benefits,
+            how2apply: job.how_to_apply,
+            email4jobappl: job.apply_email_address,
+            applUrl: job.apply_url,
+            twtr: job.company_twitter,
+            compMail: job.company_email,
+            invMail: job.invoice_email,
+            invAdrs: job.invoice_address,
+            invNote: job.invoice_notes,
+            payLtr: job.pay_later,
+            pltrEml: job.pay_later_email,
+            fdbck: job.feedback,
+            bgcolor: job.background_color,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [jobID, baseUrl]);
 
   return (
     <div className="flex bg-[#10161e]">
@@ -859,7 +954,7 @@ const JobForm: React.FC<JobFormProps> = ({ }) => {
                 <div
                   className="w-full"
                   style={{
-                    border: `3px ${err(user.email4jobappl, "^~239874xzxdr46x?:trjan", isValidURL(user.email4jobappl), 12)} red`,
+                    border: `3px ${err(user.applUrl, "^~239874xzxdr46x?:trjan", isValidURL(user.applUrl), 12)} red`,
                   }}
                 >
                   <TextInput
@@ -909,7 +1004,7 @@ const JobForm: React.FC<JobFormProps> = ({ }) => {
                 type="submit"
                 className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded mr-4"
               >
-                Post
+                {jobID ? "Update" : "Post Job"}
               </button>
               <button
                 onClick={handlePreview}

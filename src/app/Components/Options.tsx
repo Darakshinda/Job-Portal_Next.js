@@ -1,5 +1,5 @@
 // SelectedOptions.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface Option {
   label: string;
@@ -7,11 +7,21 @@ interface Option {
 }
 
 interface SelectedOptionsProps {
-  options: Option[];keyy?:string;onChange:Function;
+  options: Option[];
+  keyy?: string;
+  onChange: (key: string | undefined, value: string) => void;
 }
 
-const SelectedOptions: React.FC<SelectedOptionsProps> = ({ options ,keyy,onChange}) => {
+const SelectedOptions: React.FC<SelectedOptionsProps> = ({ options, keyy, onChange }) => {
   const [selectedOptions, setSelectedOptions] = useState<Option[]>(options);
+
+  useEffect(() => {
+    setSelectedOptions(options);
+  }, [options]);
+
+  useEffect(() => {
+    onChange(keyy, getSelectedOptionsString());
+  }, [selectedOptions, keyy, onChange]);
 
   const handleOptionClick = (label: string) => {
     setSelectedOptions((prevOptions) =>
@@ -27,13 +37,13 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({ options ,keyy,onChang
       .map((option) => option.label)
       .join(', ');
   };
-  const fun=(keyy:string)=>{onChange(keyy,getSelectedOptionsString());return "";}
 
   return (
     <div>
       <div>
         {selectedOptions.map((option) => (
           <button
+            type='button'
             key={option.label}
             style={{
               margin: '5px',
@@ -43,12 +53,12 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({ options ,keyy,onChang
               borderRadius: '5px',
               cursor: 'pointer',
             }}
-            onClick={() => {handleOptionClick(option.label);}}
+            onClick={() => handleOptionClick(option.label)}
           >
             {option.label}
           </button>
         ))}
-      </div><a>{fun(keyy)}</a>
+      </div>
     </div>
   );
 };

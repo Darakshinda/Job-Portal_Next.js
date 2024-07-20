@@ -1,5 +1,10 @@
+"use client";
 import React from "react";
 import { getTimeDifference } from "../utils/timeutils";
+import { useState } from "react";
+import JobDetailsModal from "./JobModal";
+import ApplyPopup from "./ApplyPopup";
+import Link from "next/link";
 
 interface Props {
   cls?: string;
@@ -16,12 +21,26 @@ interface Props {
   tags?: string;
   created_at?: string;
   job?: object;
-  viewDetails?: Function;
   postedJobs?: boolean;
+  viewDetails?: Function;
 }
 interface tprop {
   tag?: string;
   index?: number;
+}
+
+interface Job {
+  id: number;
+  position: string;
+  company_name: string;
+  location_restriction: string;
+  tags: string;
+  created_at: string;
+  primary_tag: string;
+  annual_salary_max: string;
+  annual_salary_min: string;
+  job_description: string;
+  how_to_apply: string;
 }
 
 /**
@@ -77,13 +96,27 @@ export const JobCard = ({
   location_restriction = "Faridabad",
   tags = "HTML,Css,JS",
   created_at = "6/18/2024 1:00:21",
-  viewDetails,
   job,
   postedJobs,
+  viewDetails,
 }: Props) => {
   let l = parseInt(job.minsal) / 1000,
     u = parseInt(job.maxsal) / 1000;
   console.log(job.emptype);
+
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedjob, setSelectedjob] = useState(null);
+
+  const handleApplyClick = (job: Job) => {
+    setSelectedJob(job);
+    setShowPopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+    setSelectedJob(null);
+  };
 
   if (company_name == "") company_name = "Company";
   if (position == "") position = "Position";
@@ -92,9 +125,14 @@ export const JobCard = ({
       "https://tse4.mm.bing.net/th?id=OIP.jsRxsoSHWZurGmwk32OMcQAAAA&pid=Api&P=0&h=220";
   return (
     <div
-      className={`border text-white border-[#333333] p-5 rounded-lg transition duration-300 hover:border-[5px] hover:border-purple-500 w-[50%] mx-auto ${cls}`}
+      className={`border text-white border-[#333333] p-5 rounded-lg transition duration-300 hover:border-[5px] hover:border-purple-500 w-[90%] mx-auto ${cls}`}
       style={{ backgroundColor: `${bgcolor}`, width: "97%" }}
     >
+      {selectedjob && (
+        <JobDetailsModal job={selectedjob} onClose={setSelectedjob} />
+      )}
+      {showPopup && <ApplyPopup job={selectedJob} onClose={handleClosePopup} />}
+
       <div
         className={`flex items-center w-full mb-2`}
         style={{ marginLeft: "0px" }}
@@ -117,7 +155,7 @@ export const JobCard = ({
           <div className="flex gap-4 mt-2 ml-[12px]">
             <span className="bg-[#E01E5A] text-white px-2 py-1 rounded">{`$${l}-${u}K PA`}</span>
 
-            <span className="bg-[#7B3B00] text-white px-2 py-1 rounded">
+            <span className="bg-[rgb(123,59,0)] text-white px-2 py-1 rounded">
               {job.emptype}
             </span>
           </div>
@@ -135,7 +173,10 @@ export const JobCard = ({
 
       <div className="ml-[1%] flex items-center mt-[19px]">
         {!postedJobs && (
-          <button className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300">
+          <button
+            onClick={() => handleApplyClick(job)}
+            className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300"
+          >
             Apply
           </button>
         )}
@@ -144,14 +185,40 @@ export const JobCard = ({
             Show Applicants
           </button>
         )}
-        <div className="ml-[70%]">
-          <button
-            className="bg-purple-500 mr-1 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300"
-            onClick={() => viewDetails(job)}
-          >
-            {postedJobs ? "View/Edit Details" : "View Details"}
-          </button>
-        </div>
+        {postedJobs && (
+          <div className="ml-[60%]">
+            <button className="bg-purple-500 mr-1 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300">
+              <Link
+                href={{
+                  pathname: "/post",
+                  query: { jobID: job.id },
+                }}
+              >
+                Edit Details
+              </Link>
+            </button>
+          </div>
+        )}
+        {postedJobs && (
+          <div className="ml-3">
+            <button
+              className="bg-purple-500 mr-1 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300"
+              onClick={() => viewDetails(job)}
+            >
+              View Details
+            </button>
+          </div>
+        )}
+        {!postedJobs && (
+          <div className="ml-[70%]">
+            <button
+              className="bg-purple-500 mr-1 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300"
+              onClick={() => viewDetails(job)}
+            >
+              View Details
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
