@@ -102,9 +102,7 @@ return (
     <main className="bg-base-100">
       
       <main className=" fixed bottom-0 z-10 left-[2.5%] w-full" style={{width:"60%",}}>
-      {selectedJob && 
-        <JobDetailsModal job={selectedJob} onClose={handleCloseModal} />
-      }
+     
       <JobCard imgflg bdg imgsrc={user.logo} bgcolor={user.bgcolor} position={user.position} company_name={user.company} location_restriction={user.locns} tags={user.tags} created_at="5/17/2024 23:11:25" job={user} viewDetails={setSelectedJob}/>
        </main>
        <NavBar endIcon={false} post={true}/>

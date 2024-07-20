@@ -1,5 +1,9 @@
+"use client"
 import React from 'react';
 import { getTimeDifference } from "../utils/timeutils";
+import { useState} from "react";
+import JobDetailsModal from './JobModal';
+import ApplyPopup from './ApplyPopup';
 
 
 interface Props {
@@ -11,13 +15,26 @@ interface Props {
   tags?: string;
   created_at?: string;
   job?: object;
-  viewDetails?: Function;
-  onApply?: Function;
+ 
   
 }
 interface tprop
 {tag?: string;
   index?: number;}
+
+  interface Job {
+    id: number;
+    position: string;
+    company_name: string;
+    location_restriction: string;
+    tags: string;
+    created_at: string;
+    primary_tag: string;
+    annual_salary_max: string;
+    annual_salary_min: string;
+    job_description: string;
+    how_to_apply: string;
+  }
 
 
 /**
@@ -59,16 +76,35 @@ export const JobCard = ({cls="",bdg = false,imgflg=false,divcls="flex justify-be
   company_name="Sample Company",
   location_restriction="Faridabad",
   tags="HTML,Css,JS",
-  created_at="6/18/2024 1:00:21",
-  viewDetails,job,onApply,
+  created_at="6/18/2024 1:00:21",job,
 }: Props) => {let l=parseInt(job.minsal)/1000,u=parseInt(job.maxsal)/1000;
   console.log(job.emptype);
+
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedjob, setSelectedjob] = useState(null);
+
+  const handleApplyClick = (job: Job) => {
+    setSelectedJob(job);
+    setShowPopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+    setSelectedJob(null);
+  };
+
 
 if(company_name=="") company_name="Company";if(position=="") position="Position";if(imgsrc=="") imgsrc="https://tse4.mm.bing.net/th?id=OIP.jsRxsoSHWZurGmwk32OMcQAAAA&pid=Api&P=0&h=220";
  return (
     
     <div className={`border text-white border-[#333333] p-5 rounded-lg transition duration-300 hover:border-[5px] hover:border-purple-500 w-[90%] mx-auto ${cls}`} style={{backgroundColor:`${bgcolor}`,width:"97%",}}>
-    
+     {selectedjob && 
+        <JobDetailsModal job={selectedjob} onClose={setSelectedjob} />
+      }
+      {showPopup && (
+        <ApplyPopup job={selectedJob} onClose={handleClosePopup} />
+      )}
   
     <div className={`flex items-center w-full mb-2`}  style={{marginLeft:"0px"}}>
     {imgflg&&<div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
@@ -97,11 +133,11 @@ if(company_name=="") company_name="Company";if(position=="") position="Position"
       
       <div className="ml-[1%] flex items-center mt-[19px]">
           
-          <button className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300" onClick={() => onApply(job)}>
+          <button className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300" onClick={() => handleApplyClick(job)}>
             Apply
           </button>
           <div className='ml-[75%]'>
-          <button className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300" onClick={() => viewDetails(job)}>
+          <button className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300" onClick={() => setSelectedjob(job)}>
             View Details
           </button></div>
         </div> 

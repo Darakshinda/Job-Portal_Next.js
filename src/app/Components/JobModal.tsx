@@ -15,7 +15,7 @@ interface JobDetailsModalProps {
 const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
   const handleOverlayClick = () => {
    
-      onClose();
+      onClose(null);
     
   };
   const bgcol='black';
@@ -26,7 +26,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
    
     <div className="overlay" onClick={handleOverlayClick}>
       <div className="modale text-white scrollbar-hide" onClick={(event)=>{event.stopPropagation();}}>
-        <button className="close-button" onClick={onClose}>&times;</button>
+        <button className="close-button" onClick={handleOverlayClick}>&times;</button>
         <div className="group" style={{background:bgcol,}}>
           <div className="group-heading" style={{background:bgcol,color:'white',}}><p style={{textTransform:'none',}}>Details</p></div>
 

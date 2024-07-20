@@ -43,11 +43,9 @@ const Home: React.FC = () => {
     console.log('Selected Salary Range:', range);
   };
 
-  const [selectedJob, setSelectedJob] = useState(null);
+  
 
-  const handleCloseModal = () => {
-    setSelectedJob(null);
-  };
+  
 
   return (
     <main>
@@ -107,15 +105,13 @@ const Home: React.FC = () => {
             />
           </div>
         </div>
-        {selectedJob && 
-        <JobDetailsModal job={selectedJob} onClose={handleCloseModal} />
-      }
+       
       
         <JobList
           selectedLocationTags={selectedLocationTags}
           selectedJobTags={selectedJobTags}
           selectedTagTags={selectedTagTags}
-          view={setSelectedJob}
+        
         />
       </div>
     </main>

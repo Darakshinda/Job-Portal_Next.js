@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import ApplyPopup from "./ApplyPopup"; // Make sure to import the ApplyPopup component
 import { JobCard } from "./Job-Card";
+import JobDetailsModal from "./JobModal";
 
 interface Job {
   id: number;
@@ -23,15 +24,12 @@ interface JobListProps {
   selectedLocationTags: string[];
   selectedJobTags: string[];
   selectedTagTags: string[];
-  view: Function;
 }
 
-const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags, selectedTagTags, view }) => {
+const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags, selectedTagTags,}) => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
-  const [showPopup, setShowPopup] = useState<boolean>(false);
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const fetchCount = 10;
   const bottomBoundaryRef = useRef<HTMLDivElement>(null);
   const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -94,15 +92,7 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleApplyClick = (job: Job) => {
-    setSelectedJob(job);
-    setShowPopup(true);
-  };
 
-  const handleClosePopup = () => {
-    setShowPopup(false);
-    setSelectedJob(null);
-  };
 
   return (
     <div className="flex justify-center p-4 mt-8">
@@ -132,16 +122,12 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
               benefits: '',
               how2apply: job.how_to_apply,
             }}
-            viewDetails={view}
-            onApply={handleApplyClick} // Pass the onApply function to JobCard
           />
         ))}
         {loading && <p>Loading...</p>}
         <div ref={bottomBoundaryRef}></div>
       </ul>
-      {showPopup && (
-        <ApplyPopup job={selectedJob} onClose={handleClosePopup} />
-      )}
+     
     </div>
   );
 };
