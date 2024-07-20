@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { JobCard } from './Job-Card';
+import { JobCard } from '../app/Components/Job-Card';
 
 /**/
 

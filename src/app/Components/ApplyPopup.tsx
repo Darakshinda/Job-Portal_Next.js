@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import ClickOutsideDiv from './ClickoutsideDiv';
 
 const ApplyPopup = ({ job, onClose }) => {
   const [resume, setResume] = useState(null);
@@ -48,11 +49,12 @@ const ApplyPopup = ({ job, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+    
+    <div className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.5)]">
+      <ClickOutsideDiv cls="bg-[#3c3d71] p-6 rounded-lg shadow-lg w-96 text-white" onOutsideClick={onClose}>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Apply for {job.position} position</h2>
-          <button onClick={onClose}>
+          <button className='text-[#ff1717]' onClick={onClose}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
@@ -65,19 +67,19 @@ const ApplyPopup = ({ job, onClose }) => {
           </button>
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">Resume<span className="text-red-500">*</span></label>
+          <label className="block">Resume<span className="text-red-500">*</span></label>
           <input
             type="file"
             onChange={handleResumeChange}
             className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${resumeError ? 'border-red-500' : ''}`}
             required
           />
-          {resumeError && <p className="text-red-500 text-sm mt-1">Please upload your resume.</p>}
+          {resumeError && <p className="text-[#ff005f] text-sm mt-1">Please upload your resume.</p>}
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">Cover Letter</label>
+          <label className="block">Cover Letter</label>
           <textarea
-            className="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+            className="placeholder-white w-full bg-[#a3a3a3] border border-gray-300 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
             rows="4"
             value={coverLetter}
             onChange={handleCoverLetterChange}
@@ -85,12 +87,12 @@ const ApplyPopup = ({ job, onClose }) => {
           />
         </div>
         <button
-          className="bg-blue-500 text-white py-2 px-4 rounded-md"
+          className="bg-[#ff005f] text-white py-2 px-4 rounded-md"
           onClick={handleSubmit}
         >
           Submit
         </button>
-      </div>
+      </ClickOutsideDiv>
     </div>
   );
 };

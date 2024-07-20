@@ -33,7 +33,7 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({ options ,keyy,onChang
     <div>
       <div>
         {selectedOptions.map((option) => (
-          <button
+          <button type='button'
             key={option.label}
             style={{
               margin: '5px',

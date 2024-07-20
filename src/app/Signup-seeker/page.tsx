@@ -25,23 +25,17 @@ const Signup = () => {
   const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
   const router = useRouter();
 
+  console.log(formData);
+
+
   const handleChange = (key: string, value: string) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [key]: value,
-    }));
+
+    if(formData[key]===value) return;
+    setFormData({...formData,[key]: value,});
+     
   };
-  const handler = (key:string, value:string) => {
-    setFormData((prevState) => {
-      if (prevState[key] === value) {
-        return prevState; // Prevent unnecessary state updates
-      }
-      return {
-        ...prevState,
-        [key]: value,
-      };
-    });
-  };
+  
+
 
   const [errors, setErrors] = useState(new Array(20).fill(0));
   const [submitted, setSubmitted] = useState(false);
@@ -204,7 +198,7 @@ const Signup = () => {
         </div>
       </div>
       <div className="ml-16 mt-10 mr-8 mb-8 h-screen border border-white rounded-lg flex-1">
-        <div className="h-full overflow-y-auto p-8">
+        <div className="h-full overflow-y-auto p-8 scrollbar-hide">
           <div className="text-3xl text-white tracking-wider leading-relaxed font-bold pr-4 mb-8">
             Connect with Top Engineers
           </div>
@@ -320,7 +314,7 @@ const Signup = () => {
             >
               Location <span className="text-red-500">*</span>
             </label>
-            <Tags keyy='location'cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700" optionMrgn='0%' optionWdth='100%' settgs={handler} 
+            <Tags keyy='location'cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700" optionMrgn='0%' optionWdth='100%' settgs={handleChange} 
             dynamic={true} options={locOpns} border={`1px solid ${validateField(formData.location,"",true,7)}`} phdr='location' srchwdth='37%' 
             scrollht="107px"/>
             {submitted &&
@@ -396,7 +390,7 @@ const Signup = () => {
             >
               Technical Skills <span className="text-red-500">*</span>
             </label>
-            <Tags keyy='technical_skills'cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700" optionMrgn='0%' optionWdth='100%' settgs={handler} 
+            <Tags keyy='technical_skills'cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700" optionMrgn='0%' optionWdth='100%' settgs={handleChange} 
             dynamic={true} options={tagOpns} border={`1px solid ${validateField(formData.technical_skills,"",true,7)}`} phdr='Search and add a skill' srchwdth='37%' 
             scrollht="107px"/>
             {submitted &&
