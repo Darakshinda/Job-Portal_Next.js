@@ -107,11 +107,9 @@ if(company_name=="") company_name="Company";if(position=="") position="Position"
       )}
   
     <div className={`flex items-center w-full mb-2`}  style={{marginLeft:"0px"}}>
-    {imgflg&&<div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+   <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
               <div className="w-10 rounded-full border border-black">
-                <img alt="Tailwind CSS Navbar component" src={imgsrc} />
-              </div>
-            </div>}
+                <img alt="Tailwind CSS Navbar component" src={imgsrc} /> </div> </div>
         <div className={`flex items-center w-full mb-2`}><h2 className="text-xl font-semibold text-white ml-[7px]">{position}</h2>
               <div className="flex gap-4 mt-2 ml-[12px]">
                 <span className="bg-[#E01E5A] text-white px-2 py-1 rounded">{`$${l}-${u}K PA`}</span>
