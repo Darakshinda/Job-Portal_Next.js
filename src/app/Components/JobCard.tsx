@@ -5,6 +5,7 @@ import { useState } from "react";
 import JobDetailsModal from "./JobModal";
 import ApplyPopup from "./ApplyPopup";
 import Link from "next/link";
+import axios from "axios";
 
 interface Props {
   cls?: string;
@@ -107,6 +108,7 @@ export const JobCard = ({
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [selectedjob, setSelectedjob] = useState(null);
+  const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
 
   const handleApplyClick = (job: Job) => {
     setSelectedJob(job);
@@ -117,6 +119,25 @@ export const JobCard = ({
     setShowPopup(false);
     setSelectedJob(null);
   };
+
+  const handleDelete = (id: number) => {
+    const result = confirm("Are you sure you want to delete this job?");
+    if(result) {
+      axios.delete(`${baseurl}/jobs/${id}/delete/`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      })
+      .then(() => {
+        alert("Job Deleted Successfully");
+      })
+      .catch((error) => {
+        console.log(error.response.data || error.message);
+      })
+    } else {
+      return;
+    }
+  }
 
   if (company_name == "") company_name = "Company";
   if (position == "") position = "Position";
@@ -186,7 +207,17 @@ export const JobCard = ({
           </button>
         )}
         {postedJobs && (
-          <div className="ml-[60%]">
+          <div className="ml-[50%]">
+            <button
+              className="bg-red-500 mr-1 text-white px-4 py-5 rounded hover:bg-red-700 transition duration-300"
+              onClick={() => handleDelete(job.id)}
+            >
+              Delete
+            </button>
+          </div>
+        )}
+        {postedJobs && (
+          <div className="ml-3">
             <button className="bg-purple-500 mr-1 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300">
               <Link
                 href={{
