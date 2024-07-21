@@ -31,7 +31,7 @@ const Signup = () => {
       [key]: value,
     }));
   };
-  const handler = (key:string, value:string) => {
+  const handler = (key: string, value: string) => {
     setFormData((prevState) => {
       if (prevState[key] === value) {
         return prevState; // Prevent unnecessary state updates
@@ -81,7 +81,7 @@ const Signup = () => {
     valid: boolean,
     index: number
   ): string => {
-    if ((value === reference || !valid) &&submitted){
+    if ((value === reference || !valid) && submitted) {
       errors[index] = 1;
       return "red";
     } else {
@@ -117,8 +117,6 @@ const Signup = () => {
       checkError(formData.years_of_experience, "", true, 8),
       !isValidExperience(formData.years_of_experience),
       checkError(formData.technical_skills, "", true, 9),
-
-      // Add more checks as needed
     ];
 
     // Check if any field has errors
@@ -135,52 +133,38 @@ const Signup = () => {
       );
       console.log("Registration successful:", response.data);
 
-      // Show success message using SweetAlert2
+      // Show email verification popup using SweetAlert2
       Swal.fire({
         title: "Registration Successful",
-        text: "You have registered successfully!",
+        text: "Please check your email to verify your account.",
         showClass: {
           popup: `
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          `
+              animate__animated
+              animate__fadeInUp
+              animate__faster
+            `,
         },
         hideClass: {
           popup: `
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          `
-        }
+              animate__animated
+              animate__fadeOutDown
+              animate__faster
+            `,
+        },
       }).then(() => {
-        // Redirect to the homepage
-        router.push('/login');
+        // Redirect to the homepage or login page
+        router.push("/login");
       });
 
-      console.log("Signedup successfully");
-      // Optionally redirect or show success message to the user
+      console.log("Signed up successfully");
     } catch (error) {
-      console.error('Registration failed:', error);
+      console.error("Registration failed:", error);
       Swal.fire({
         title: "Registration Failed",
         text: "Please try again.",
-        showClass: {
-          popup: `
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          `
-        },
-        hideClass: {
-          popup: `
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          `
-        }
+        icon: "error",
+        confirmButtonText: "OK",
       });
-      // Handle error and display appropriate message to the user
     }
   };
 
@@ -314,21 +298,25 @@ const Signup = () => {
             )}
           </div>
           <div className="flex flex-col mt-6">
-            <label
-              className="text-gray-500 font-medium"
-              htmlFor="location"
-            >
+            <label className="text-gray-500 font-medium" htmlFor="location">
               Location <span className="text-red-500">*</span>
             </label>
-            <Tags keyy='location'cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700" optionMrgn='0%' optionWdth='100%' settgs={handler} 
-            dynamic={true} options={locOpns} border={`1px solid ${validateField(formData.location,"",true,7)}`} phdr='location' srchwdth='37%' 
-            scrollht="107px"/>
-            {submitted &&
-              checkError(formData.location, "", true, 1) && (
-                <p className="text-xs text-red-500 mt-1 ml-2">
-                  This is required
-                </p>
-              )}
+            <Tags
+              keyy="location"
+              cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
+              optionMrgn="0%"
+              optionWdth="100%"
+              settgs={handler}
+              dynamic={true}
+              options={locOpns}
+              border={`1px solid ${validateField(formData.location, "", true, 7)}`}
+              phdr="location"
+              srchwdth="37%"
+              scrollht="107px"
+            />
+            {submitted && checkError(formData.location, "", true, 1) && (
+              <p className="text-xs text-red-500 mt-1 ml-2">This is required</p>
+            )}
           </div>
           <div className="flex flex-col mt-6">
             <label className="text-gray-500 font-medium" htmlFor="phoneNumber">
@@ -383,9 +371,7 @@ const Signup = () => {
                 </p>
               )}
             {!isValidExperience(formData.years_of_experience) && (
-              <p className="text-xs text-red-500 mt-1 ml-2">
-                Enter a valid no
-              </p>
+              <p className="text-xs text-red-500 mt-1 ml-2">Enter a valid no</p>
             )}
           </div>
 
@@ -396,9 +382,19 @@ const Signup = () => {
             >
               Technical Skills <span className="text-red-500">*</span>
             </label>
-            <Tags keyy='technical_skills'cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700" optionMrgn='0%' optionWdth='100%' settgs={handler} 
-            dynamic={true} options={tagOpns} border={`1px solid ${validateField(formData.technical_skills,"",true,7)}`} phdr='Search and add a skill' srchwdth='37%' 
-            scrollht="107px"/>
+            <Tags
+              keyy="technical_skills"
+              cls="mt-1 p-2 bg-gray-900 text-white rounded border border-gray-700"
+              optionMrgn="0%"
+              optionWdth="100%"
+              settgs={handler}
+              dynamic={true}
+              options={tagOpns}
+              border={`1px solid ${validateField(formData.technical_skills, "", true, 7)}`}
+              phdr="Search and add a skill"
+              srchwdth="37%"
+              scrollht="107px"
+            />
             {submitted &&
               checkError(formData.technical_skills, "", true, 1) && (
                 <p className="text-xs text-red-500 mt-1 ml-2">

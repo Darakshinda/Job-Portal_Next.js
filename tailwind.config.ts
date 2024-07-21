@@ -10,7 +10,7 @@ const config: Config = {
   theme: {
     extend: {
       colors:{
-        blued: '#3a4b9a',
+        blued: '#9457CF',
 
       },
       backgroundImage: {

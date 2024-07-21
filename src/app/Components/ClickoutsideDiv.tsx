@@ -1,10 +1,11 @@
 import React, { useRef, useEffect } from 'react';
 
 interface ClickOutsideDivProps {
+  cls:string;
   onOutsideClick: () => void;
 }
 
-const ClickOutsideDiv: React.FC<ClickOutsideDivProps> = ({ children, onOutsideClick }) => {
+const ClickOutsideDiv: React.FC<ClickOutsideDivProps> = ({ children, onOutsideClick,cls='', }) => {
   const divRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -23,7 +24,7 @@ const ClickOutsideDiv: React.FC<ClickOutsideDivProps> = ({ children, onOutsideCl
   }, [onOutsideClick]);
 
   return (
-    <div ref={divRef}>
+    <div className={cls} ref={divRef}>
       {children}
     </div>
   );

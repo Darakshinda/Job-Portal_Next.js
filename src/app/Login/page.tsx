@@ -1,7 +1,7 @@
 // pages/login.tsx
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation';
@@ -15,6 +15,31 @@ const Login = () => {
   const [authError, setAuthError] = useState("");
   const router = useRouter();
   const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
+
+  const alreadyLoggedIn = async () => {
+    const access_token = localStorage.getItem('access_token');
+    const refresh_token = localStorage.getItem('refresh_token');
+
+    if (access_token && refresh_token) {
+      const axiosInstance = axios.create({
+        baseURL: baseurl,
+        headers: {
+          Authorization: `Bearer ${access_token}`
+        }
+      })
+      axiosInstance.get('/accounts/profile')
+        .then((response) => {
+          if (response.data.account_type === 'job_seeker') {
+            router.push(`/seekerDash/${response.data.first_name}`);
+          } else {
+            router.push(`/hireDash/${response.data.first_name}`);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,24 +66,11 @@ const Login = () => {
           password
         });
 
-        const { access, refresh} = response.data;
+        const { access, refresh } = response.data;
 
         // Save the tokens in localStorage or cookies
         localStorage.setItem('access_token', access);
         localStorage.setItem('refresh_token', refresh);
-        const profileResponse = await axios.get(`${baseurl}/accounts/profile/`, {
-          headers: {
-            'Authorization': `Bearer ${access}`
-          }
-        });
-
-        const { account_type } = profileResponse.data;
-        localStorage.setItem('account_type', account_type);
-
-        // Log the account_type to the console
-        console.log("Account Type:", account_type);
-
-       
 
         // Show success message
         Swal.fire({
@@ -70,25 +82,36 @@ const Login = () => {
           timerProgressBar: true,
           showConfirmButton: false,
         }).then(() => {
-          if (account_type === 'job_seeker') {
-            router.push('/Dashboard_seeker');
-
-          } else if (account_type === 'job_hirer') {
-            router.push('/Dashboard_hirer');
-
-          }
-          
+          // Redirect to the homepage
+          const axiosInstance = axios.create({
+            baseURL: baseurl,
+            headers: {
+              Authorization: `Bearer ${access}`
+            }
+          })
+          axiosInstance.get('/accounts/profile')
+            .then((response) => {
+              if (response.data.account_type === 'job_seeker') {
+                router.push(`/seekerDash/${response.data.first_name}`);
+              } else {
+                router.push(`/hirerDash/${response.data.first_name}`);
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         });
 
         console.log("Logged in successfully");
-
-        // Redirect to the desired page after login
-        // window.location.href = "/dashboard";
       } catch (error) {
         setAuthError("Invalid username or password");
       }
     }
   };
+
+  useEffect(() => {
+    alreadyLoggedIn();
+  }, []);
 
   return (
     <div className="min-h-screen flex">
@@ -156,7 +179,6 @@ const Login = () => {
               val={password}
               onChange={(key: string, value: string) => setPassword(value)}
               type="password"
-              iconColor="black"
             />
             {passwordError && (
               <p className="text-red-500 text-sm mt-1">{passwordError}</p>
@@ -166,7 +188,7 @@ const Login = () => {
             <p className="text-red-500 text-sm mb-4">{authError}</p>
           )}
           <div className="mb-6 flex justify-end">
-            <p className="text-black-400 cursor-pointer">Forgot Password?</p>
+            <Link href={'/reset-password'} className="text-black cursor-pointer">Forgot Password?</Link>
           </div>
           <div className="justify-center text-center">
             <button
@@ -180,7 +202,7 @@ const Login = () => {
         <h2 className="mt-8 text-black-600">Don't have an account?</h2>
         <div className="flex mt-4 space-x-10">
           <Link href="/Signup-seeker">
-            <button className="flex-1 bg-white border border-black rounded-lg text-black p-4 rounded-lg hover:border-pink-500 hover:bg-white transition duration-300 whitespace-nowrap">
+            <button className="flex-1 bg-white border border-black rounded-lg text-black p-4 hover:border-pink-500 hover:bg-white transition duration-300 whitespace-nowrap">
               <div>
                 <h2 className="text-lg font-bold">Explore Jobs</h2>
                 <h5 className="text-sm text-gray-600">Signup as a Talent</h5>
@@ -188,7 +210,7 @@ const Login = () => {
             </button>
           </Link>
           <Link href="/Signup-recruiter">
-            <button className="flex-1 bg-white border border-black rounded-lg text-black p-4 rounded-lg hover:border-pink-500 hover:bg-white transition duration-300 whitespace-nowrap">
+            <button className="flex-1 bg-white border border-black rounded-lg text-black p-4 hover:border-pink-500 hover:bg-white transition duration-300 whitespace-nowrap">
               <div>
                 <h2 className="text-lg font-bold">Hire Talent</h2>
                 <h5 className="text-sm text-gray-600">Signup as Recruiter</h5>

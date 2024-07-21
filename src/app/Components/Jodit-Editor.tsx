@@ -15,7 +15,8 @@ const JoditEditorComponent: React.FC<JoditEditorComponentProps> = ({ keyy,value,
       ref={editorRef}
       value={value}
       config={{
-        readonly: false, // all options from https://xdsoft.net/jodit/doc/
+        readonly: false,
+        theme: "dark" // all options from https://xdsoft.net/jodit/doc/
       }}
       tabIndex={1} // tabIndex of textarea
       onBlur={newContent => onChange(keyy,newContent)} // preferred to use only this option to update the content for performance reasons
