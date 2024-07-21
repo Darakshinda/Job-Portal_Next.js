@@ -151,20 +151,22 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
       if (errors[i] == 1) {
         console.log("Value 1 at index: ", i);
         alert("Kindly fill the necessary Details");
-        return;
+        return false;
       }
     for (let i = 0; i < errors.length; i++)
       if (errors[i] == 2) {
         console.log("Value 2 at index: ", i);
         alert("Enter valid details");
-        return;
+        return false;
       }
     console.log(user);
+    return true;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    disp();
+    const res = disp();
+    if(!res) return;
     const token = localStorage.getItem("access_token"); // Assuming you store your JWT token in localStorage
     if (jobID) {
       /*Update with url for edit job posting */

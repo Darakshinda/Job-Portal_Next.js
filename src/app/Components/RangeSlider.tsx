@@ -59,7 +59,7 @@ const SalaryRangeSlider: React.FC<SalaryRangeSliderProps> = ({
           />
         )}
       />
-      <output className="mt-2 text-black">${salaryRange[0]}</output>
+      <output className="mt-2 text-white">${salaryRange[0]}</output>
     </div>
   );
 };

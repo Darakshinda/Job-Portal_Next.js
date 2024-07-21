@@ -35,7 +35,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
   const handleOverlayClick = () => {
     onClose(null);
   };
-  const bgcol = "black";
+  const bgcol = "#101011";
   let comp = job.company,
     pos = job.position,
     jobdesc = job.desc,
@@ -55,12 +55,6 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
           &times;
         </button>
         <div className="group" style={{ background: bgcol }}>
-          <div
-            className="group-heading"
-            style={{ background: bgcol, color: "white" }}
-          >
-            <p style={{ textTransform: "none" }}>Details</p>
-          </div>
 
           <main className="w-full bg-grey-900 text-white">
             <br />

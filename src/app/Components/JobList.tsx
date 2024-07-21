@@ -61,6 +61,9 @@ const JobList: React.FC<JobListProps> = ({
       params.append("limit", fetchCount.toString());
       params.append("offset", ((page - 1) * fetchCount).toString());
 
+      console.log("Params:", params.toString());
+      
+
       const url = `${baseurl}/${postedJobs ? "posted-jobs" : "jobs"}/?${params.toString()}`;
       const token = localStorage.getItem("access_token");
       console.log("Token: ", token);
@@ -70,9 +73,9 @@ const JobList: React.FC<JobListProps> = ({
       const response = await axios.get(url, config);
       console.log("Fetched jobs:", response.data);
       if (postedJobs) {
-        setJobs(response.data); // Append new jobs to existing jobs
+        setJobs(response.data); // Replace new jobs to existing jobs
       } else {
-        setJobs(response.data.results); // Append new jobs to existing jobs
+        setJobs(response.data.results); // Replace new jobs to existing jobs
       }
     } catch (error) {
       console.error("Error fetching jobs:", error?.response.data);
@@ -80,8 +83,7 @@ const JobList: React.FC<JobListProps> = ({
     setLoading(false);
   };
 
-  useEffect(() => {
-    clearJobs(); // Clear previous jobs when tags change
+  useEffect(() => { // Clear previous jobs when tags change
     setPage(1); // Reset page number when tags change to refetch from the beginning
   }, [selectedLocationTags, selectedJobTags, selectedTagTags]);
 
