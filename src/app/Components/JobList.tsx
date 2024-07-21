@@ -34,6 +34,8 @@ const JobList: React.FC<JobListProps> = ({
   const [page, setPage] = useState<number>(1);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [logo, setLogo] = useState<string>("");
+
   const baseurl =
     process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000/api";
   const fetchCount = 10;
@@ -72,16 +74,29 @@ const JobList: React.FC<JobListProps> = ({
         : {};
       const response = await axios.get(url, config);
       console.log("Fetched jobs:", response.data);
-      if (postedJobs) {
-        setJobs(response.data); // Replace new jobs to existing jobs
-      } else {
-        setJobs(response.data.results); // Replace new jobs to existing jobs
-      }
+      setJobs(response.data.results); // Replace new jobs to existing jobs
     } catch (error) {
       console.error("Error fetching jobs:", error?.response.data);
     }
     setLoading(false);
   };
+
+  const fetchLogo = () => {
+    const url = `${baseurl}/accounts/profile/`;
+    const token = localStorage.getItem("access_token");
+    axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      console.log("Fetched logo:", response.data.company_photo);
+      setLogo(response.data.company_photo);
+    })
+    .catch((error) => {
+      console.error(error.response.data || error.message);
+    })
+  }
 
   useEffect(() => { // Clear previous jobs when tags change
     setPage(1); // Reset page number when tags change to refetch from the beginning
@@ -96,6 +111,10 @@ const JobList: React.FC<JobListProps> = ({
   useEffect(() => {
     if (page > 1) fetchJobs();
   }, [page]);
+
+  useEffect(() => {
+    fetchLogo();
+  }, []);
 
   // Function to handle scroll event
   const handleScroll = () => {
@@ -179,7 +198,7 @@ const JobList: React.FC<JobListProps> = ({
               primtg: job.primary_tag,
               tags: job.tags,
               locns: job.location_restriction,
-              logo: "https://tse4.mm.bing.net/th?id=OIP.jsRxsoSHWZurGmwk32OMcQAAAA&pid=Api&P=0&h=220",
+              logo: logo,
               minsal: job.annual_salary_min,
               maxsal: job.annual_salary_max,
               desc: job.job_description,

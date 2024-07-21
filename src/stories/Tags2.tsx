@@ -72,9 +72,13 @@ export const Tags2: React.FC<Props> = ({
     setTags(nextTags);
   };
 
+  const unicodeRemoval = (tag: string) => {
+    return tag.replace(/[^\p{L}\p{M}]/gu, '');
+  }
+
   const addTag = (tag: string) => {
     mySet.add(tag);
-    setTags((prevTags) => [...prevTags, tag]);
+    setTags((prevTags) => [...prevTags, unicodeRemoval(tag)]);
     setSearchTerm('');
   };
 

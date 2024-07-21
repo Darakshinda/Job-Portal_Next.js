@@ -72,6 +72,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
   const [previewMode, setPreviewMode] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [username, setUserName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
 
   const getUserName = useCallback(() => {
     const access_token = localStorage.getItem("access_token");
@@ -83,9 +84,10 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
         },
       });
       axiosInstance
-        .get(`${baseUrl}/accounts/profile`)
+        .get(`${baseUrl}/accounts/profile/`)
         .then((response) => {
           setUserName(response.data.first_name);
+          setEmail(response.data.working_email);
         })
         .catch((error) => {
           console.log(error.response.data);
@@ -166,84 +168,141 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const res = disp();
-    if(!res) return;
+    if (!res) return;
     const token = localStorage.getItem("access_token"); // Assuming you store your JWT token in localStorage
     if (jobID) {
       /*Update with url for edit job posting */
+      const profile = `${baseUrl}/accounts/profile/`;
       const url = `${baseUrl}/jobs/${jobID}/update/`;
-      axios.put(url, {
-        annual_salary_max: sal(user.maxsal),
-            annual_salary_min: sal(user.minsal),
-            company_email: user.compMail,
-            company_name: user.company,
-            company_twitter: user.twtr,
-            how_to_apply: user.how2apply,
-            invoice_address: user.invAdrs,
-            invoice_email: user.invMail,
-            invoice_notes: user.invNote,
-            pay_later: user.payLtr,
-            job_description: user.desc,
-            location_restriction: user.locns,
-            primary_tag: user.primtg,
-            benefits: user.benefits,
-            position: user.position,
-            tags: user.tags,
-            apply_url: user.applUrl,
-            apply_email_address: user.email4jobappl,
-            feedback: user.fdbck,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-        alert("Job updated successfully");
-      })
-      .catch((error) => {
+      try {
+        axios
+          .put(
+            profile,
+            {
+              company_photo: user.logo,
+            },
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response.data);
+            console.log("Profile updated successfully");
+          })
+          .catch((error) => {
+            console.log(error.response.data || error.message);
+          });
+        axios
+          .put(
+            url,
+            {
+              annual_salary_max: sal(user.maxsal),
+              annual_salary_min: sal(user.minsal),
+              company_email: user.compMail,
+              company_name: user.company,
+              company_twitter: user.twtr,
+              how_to_apply: user.how2apply,
+              invoice_address: user.invAdrs,
+              invoice_email: user.invMail,
+              invoice_notes: user.invNote,
+              pay_later: user.payLtr,
+              job_description: user.desc,
+              location_restriction: user.locns,
+              primary_tag: user.primtg,
+              benefits: user.benefits,
+              position: user.position,
+              tags: user.tags,
+              apply_url: user.applUrl,
+              apply_email_address: user.email4jobappl,
+              feedback: user.fdbck,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response.data);
+            alert("Job updated successfully");
+          })
+          .catch((error) => {
+            console.error("There was an error updating the job!", error);
+            alert("Failed to update the job");
+          });
+      } catch (error) {
         console.error("There was an error updating the job!", error);
         alert("Failed to update the job");
-      })
+      }
     } else {
-      const url = `${baseUrl}/jobs/create/`;
-      axios
-        .post(
-          url,
-          {
-            annual_salary_max: sal(user.maxsal),
-            annual_salary_min: sal(user.minsal),
-            company_email: user.compMail,
-            company_name: user.company,
-            company_twitter: user.twtr,
-            how_to_apply: user.how2apply,
-            invoice_address: user.invAdrs,
-            invoice_email: user.invMail,
-            invoice_notes: user.invNote,
-            pay_later: user.payLtr,
-            job_description: user.desc,
-            location_restriction: user.locns,
-            primary_tag: user.primtg,
-            benefits: user.benefits,
-            position: user.position,
-            tags: user.tags,
-            apply_url: user.applUrl,
-            apply_email_address: user.email4jobappl,
-            feedback: user.fdbck,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
+      const url_job = `${baseUrl}/jobs/create/`;
+      const profile = `${baseUrl}/accounts/profile/`;
+      try {
+        axios
+          .put(
+            profile,
+            {
+              company_photo: user.logo,
             },
-          }
-        )
-        .then((response) => {
-          console.log(response.data);
-          alert("Job registered successfully");
-        })
-        .catch((error) => {
-          console.error("There was an error registering the job!", error);
-          alert("Failed to register the job");
-        });
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response.data);
+            alert("Profile updated successfully");
+          })
+          .catch((error) => {
+            console.log(error.response.data || error.message);
+          });
+        axios
+          .post(
+            url_job,
+            {
+              annual_salary_max: sal(user.maxsal),
+              annual_salary_min: sal(user.minsal),
+              company_email: user.compMail,
+              company_name: user.company,
+              company_twitter: user.twtr,
+              how_to_apply: user.how2apply,
+              invoice_address: user.invAdrs,
+              invoice_email: user.invMail,
+              invoice_notes: user.invNote,
+              pay_later: user.payLtr,
+              job_description: user.desc,
+              location_restriction: user.locns,
+              primary_tag: user.primtg,
+              benefits: user.benefits,
+              position: user.position,
+              tags: user.tags,
+              apply_url: user.applUrl,
+              apply_email_address: user.email4jobappl,
+              feedback: user.fdbck,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response.data);
+            alert("Job registered successfully");
+          })
+          .catch((error) => {
+            console.error("There was an error registering the job!", error);
+            alert("Failed to register the job");
+          });
+      } catch (error) {
+        console.error("There was an error registering the job!", error);
+        alert("Failed to register the job");
+      }
     }
   };
 
@@ -264,8 +323,10 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
         .get(`${baseUrl}/posted-jobs/`)
         .then((response) => {
           console.log("Response:", response.data);
-          
-          const job = response.data.find((job) => job.id.toString() === jobID.toString());
+
+          const job = response.data.find(
+            (job) => job.id.toString() === jobID.toString()
+          );
           setuser({
             company: job.company_name,
             position: job.position,
