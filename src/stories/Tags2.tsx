@@ -78,7 +78,7 @@ export const Tags2: React.FC<Props> = ({
 
   const addTag = (tag: string) => {
     mySet.add(tag);
-    setTags((prevTags) => [...prevTags, unicodeRemoval(tag)]);
+    setTags((prevTags) => [...prevTags, tag]);
     setSearchTerm('');
   };
 

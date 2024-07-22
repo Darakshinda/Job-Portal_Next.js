@@ -174,13 +174,14 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
       /*Update with url for edit job posting */
       const profile = `${baseUrl}/accounts/profile/`;
       const url = `${baseUrl}/jobs/${jobID}/update/`;
+      const formData = new FormData();
+      formData.append("working_email", email);
+      formData.append("company_photo", user.logo);
       try {
         axios
           .put(
             profile,
-            {
-              company_photo: user.logo,
-            },
+            formData,
             {
               headers: {
                 "Content-Type": "multipart/form-data",

@@ -12,6 +12,12 @@ interface Job {
   location_restriction: string;
   tags: string;
   created_at: string;
+  primary_tag: string;
+  annual_salary_min: string;
+  annual_salary_max: string;
+  job_description: string;
+  how_to_apply: string;
+  company_logo: string;
 }
 
 interface JobListProps {
@@ -42,6 +48,10 @@ const JobList: React.FC<JobListProps> = ({
 
   const bottomBoundaryRef = useRef<HTMLLIElement>(null);
 
+  const unicodeRemoval = (tag: string) => {
+    return tag.replace(/[^\p{L}\p{M}]/gu, '');
+  }
+
   const clearJobs = () => {
     setJobs([]);
   };
@@ -51,13 +61,13 @@ const JobList: React.FC<JobListProps> = ({
     try {
       const params = new URLSearchParams();
       if (selectedJobTags.length > 0) {
-        params.append("position", selectedJobTags.join(","));
+        params.append("position", unicodeRemoval(selectedJobTags.join(",")));
       }
       if (selectedLocationTags.length > 0) {
-        params.append("location", selectedLocationTags.join(","));
+        params.append("location", unicodeRemoval(selectedLocationTags.join(",")));
       }
       if (selectedTagTags.length > 0) {
-        params.append("tags", selectedTagTags.join(","));
+        params.append("tags", unicodeRemoval(selectedTagTags.join(",")));
       }
 
       params.append("limit", fetchCount.toString());
@@ -114,7 +124,7 @@ const JobList: React.FC<JobListProps> = ({
 
   useEffect(() => {
     fetchLogo();
-  }, []);
+  }, [postedJobs]);
 
   // Function to handle scroll event
   const handleScroll = () => {
@@ -183,7 +193,7 @@ const JobList: React.FC<JobListProps> = ({
         {jobs.map((job) => (
           <JobCard
             imgflg
-            imgsrc=""
+            imgsrc={logo}
             bdg
             position={job.position}
             company_name={job.company_name}
