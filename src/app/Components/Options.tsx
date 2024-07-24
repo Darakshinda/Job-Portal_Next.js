@@ -52,6 +52,7 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({ options, keyy, onChan
               border: '1px solid black',
               borderRadius: '5px',
               cursor: 'pointer',
+              color: 'white',
             }}
             onClick={() => handleOptionClick(option.label)}
           >

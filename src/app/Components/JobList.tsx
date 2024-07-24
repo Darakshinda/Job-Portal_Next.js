@@ -18,6 +18,7 @@ interface Job {
   job_description: string;
   how_to_apply: string;
   company_logo: string;
+  applications: Object;
 }
 
 interface JobListProps {
@@ -214,6 +215,7 @@ const JobList: React.FC<JobListProps> = ({
               desc: job.job_description,
               benefits: "",
               how2apply: job.how_to_apply,
+              applications: job.applications,
             }}
             viewDetails={view}
             onApply={handleApplyClick}

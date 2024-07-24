@@ -179,16 +179,12 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
       formData.append("company_photo", user.logo);
       try {
         axios
-          .put(
-            profile,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          )
+          .put(profile, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          })
           .then((response) => {
             console.log(response.data);
             console.log("Profile updated successfully");
@@ -1090,16 +1086,27 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
             <div className="flex justify-center py-6">
               <JobCard
                 imgflg
-                bdg
-                bgcolor={user.bgcolor}
                 imgsrc={user.logo}
-                cls="w-12wh bg-[#101011]"
+                bdg
                 position={user.position}
                 company_name={user.company}
                 location_restriction={user.locns}
                 tags={user.tags}
                 created_at="5/17/2024 23:11:25"
-                job={user}
+                job={{
+                  company: user.company,
+                  position: user.position,
+                  emptype: "Full-time",
+                  primtg: user.primtg,
+                  tags: user.tags,
+                  locns: user.locns,
+                  logo: user.logo,
+                  minsal: sal(user.minsal),
+                  maxsal: sal(user.maxsal),
+                  desc: user.desc,
+                  benefits: user.benefits,
+                  how2apply: user.how2apply,
+                }}
                 viewDetails={setSelectedJob}
               />
             </div>

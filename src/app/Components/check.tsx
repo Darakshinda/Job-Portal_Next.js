@@ -34,7 +34,7 @@ const styles = {
   },
   checkbox: {
     marginRight: '8px',
-    color: 'white',
+    color: 'black',
   },
 };
 

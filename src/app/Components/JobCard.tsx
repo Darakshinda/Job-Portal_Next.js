@@ -6,6 +6,7 @@ import JobDetailsModal from "./JobModal";
 import ApplyPopup from "./ApplyPopup";
 import Link from "next/link";
 import axios from "axios";
+import ApplicantCard from "./ApplicantCard";
 
 interface Props {
   cls?: string;
@@ -42,6 +43,7 @@ interface Job {
   annual_salary_min: string;
   job_description: string;
   how_to_apply: string;
+  applications: Array<any>;
 }
 
 /**
@@ -106,9 +108,13 @@ export const JobCard = ({
   console.log(job.emptype);
 
   const [showPopup, setShowPopup] = useState<boolean>(false);
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [showApplicants, setShowApplicants] = useState<boolean>(false);
   const [selectedjob, setSelectedjob] = useState(null);
   const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
+
+  const handleShowApplicants = () => {
+    setShowApplicants(prev => !prev);
+  }
 
   const handleApplyClick = (job: Job) => {
     setSelectedJob(job);
@@ -130,6 +136,7 @@ export const JobCard = ({
       })
       .then(() => {
         alert("Job Deleted Successfully");
+        window.location.reload();
       })
       .catch((error) => {
         console.log(error.response.data || error.message);
@@ -202,8 +209,10 @@ export const JobCard = ({
           </button>
         )}
         {postedJobs && (
-          <button className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300">
-            Show Applicants
+          <button 
+            onClick={handleShowApplicants}
+            className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300">
+            {showApplicants ? "Hide Applicants" : "Show Applicants"}
           </button>
         )}
         {postedJobs && (
@@ -251,6 +260,12 @@ export const JobCard = ({
           </div>
         )}
       </div>
+      {showApplicants && (
+        <div className="mt-4 border-t pt-4">
+          {job.applications && job.applications.map((application) => <ApplicantCard applicant={application} />)}
+          {job.applications.length === 0 && <p className="text-white">No applicants yet</p>}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,15 +1,15 @@
-"use client"
-import React, { useEffect, useState } from 'react';
-import ClickOutsideDiv from './ClickoutsideDiv';
-import Link from 'next/link';
-import { access } from 'fs';
-import { useRouter } from 'next/navigation';
+"use client";
+import React, { useEffect, useState } from "react";
+import ClickOutsideDiv from "./ClickoutsideDiv";
+import Link from "next/link";
+import { access } from "fs";
+import { useRouter } from "next/navigation";
 
 interface SidebarProps {
   userName: string;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({userName}) => {
+const Sidebar: React.FC<SidebarProps> = ({ userName }) => {
   const [showTrialOptions, setShowTrialOptions] = useState(false);
   const [currUserName, setCurrUserName] = useState(userName);
   const Router = useRouter();
@@ -17,8 +17,8 @@ const Sidebar: React.FC<SidebarProps> = ({userName}) => {
   const handleLogOut = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
-    Router.push('/');
-  }
+    Router.push("/");
+  };
 
   useEffect(() => {
     setCurrUserName(userName);
@@ -41,25 +41,40 @@ const Sidebar: React.FC<SidebarProps> = ({userName}) => {
         </ul>
       </nav>
       <div className="p-4">
-      {showTrialOptions && (
-          
-            <ClickOutsideDiv onOutsideClick={() => setShowTrialOptions(!showTrialOptions)}>
-              <div className="mt-2 bg-gray-800">
-            <button className="block w-full text-left p-2 hover:bg-gray-700">Profile</button>
-            <button onClick={handleLogOut} className="block w-full text-left p-2 hover:bg-gray-700">Logout</button>
-          </div>
+        {showTrialOptions && (
+          <ClickOutsideDiv
+            onOutsideClick={() => setShowTrialOptions(!showTrialOptions)}
+          >
+            <div className="mt-2 bg-gray-800">
+              <Link href={`/hirerDash/profile`} className="block w-full text-left p-2 hover:bg-gray-700">
+                Profile
+              </Link>
+              <button
+                onClick={handleLogOut}
+                className="block w-full text-left p-2 hover:bg-gray-700"
+              >
+                Logout
+              </button>
+            </div>
           </ClickOutsideDiv>
         )}
         <button
           className="flex items-center p-2 w-full hover:bg-gray-700"
           onClick={() => setShowTrialOptions(!showTrialOptions)}
         >
-          <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar mr-[4px]">
-            <div className="w-[35px] rounded-full border border-black"><img src={`https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg`} /></div>
+          <div
+            tabIndex={0}
+            role="button"
+            className="btn btn-ghost btn-circle avatar mr-[4px]"
+          >
+            <div className="w-[35px] rounded-full border border-black">
+              <img
+                src={`https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg`}
+              />
+            </div>
           </div>
           {currUserName}
         </button>
-       
       </div>
     </div>
   );

@@ -25,7 +25,7 @@ interface Propd {
  */
 export const Select = ({
   keyy = "",
-  cls = `select select-bordered w-full max-w-xs`,
+  cls = `select select-bordered w-full max-w-xs text-white`,
   req = false,
   onChange,
   body = [],
@@ -42,7 +42,7 @@ export const Select = ({
         style={{ display: "inline", width: "37%" }}
       >
         {body.map((option) => (
-          <option className="bg-[#101011]">{option.label}</option>
+          <option className="bg-[#101011] text-white">{option.label}</option>
         ))}
       </select>
     );
@@ -55,7 +55,7 @@ export const Select = ({
       id={id}
     >
       {body.map((option) => (
-        <option className="bg-[#101011]">{option.label}</option>
+        <option className="bg-[#101011] text-white">{option.label}</option>
       ))}
     </select>
   );
