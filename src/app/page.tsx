@@ -44,9 +44,7 @@ const Home: React.FC = () => {
   };
 
   
-
-  
-
+  console.log('Selected Salary Range:', salaryRange);
   return (
     <main>
       <Navbar />

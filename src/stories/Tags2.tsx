@@ -46,7 +46,7 @@ let mySet: Set<string> = new Set();
   const [typing, setTyping] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("$$");
 
-  settgs(tags.join(","));
+  settgs(tags);
 
   const handleOutsideClick = () => {
     setsel(0);setSearchTerm("");

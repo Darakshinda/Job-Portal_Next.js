@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FiLinkedin, FiInstagram, FiGithub } from 'react-icons/fi'; // Import icons from react-icons
-import { format } from 'date-fns'; // Example for date formatting
+
 
 interface ProfileData {
   first_name: string;
