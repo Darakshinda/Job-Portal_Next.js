@@ -11,21 +11,21 @@ import { TextInput } from "@/stories/TextInput";
 
 
 const Home: React.FC = () => {
-  const aboutFetch={
+  const [aboutFetch, setaboutFetch]=useState({
     name: "",locn: "faridabad",primrole: "",yrs: "",openroles:[],
     logo:'',bio:"",
-  };
+  });
   const [about, setabout] = useState(aboutFetch);
 
-  const socialmediaFetch={
+  const [socialmediaFetch, setsocialmediaFetch]=useState({
     website: "",linkedin: "",github: "",twtr: "",
-  };
+  });
   const [socialmedia, setsocialmedia] = useState(socialmediaFetch);
 
-  const skillsFetch=[];
+  const [skillsFetch, setskillsFetch]=useState([]);
   const [skills, setskills] = useState(skillsFetch);  
   
-  const achievementsFetch='';
+  const [achievementsFetch, setachieveFetch]=useState('');
   const [achievements, setachieve] = useState(achievementsFetch);
 
   const deepEqual = (obj1:object, obj2:object) => {
@@ -107,17 +107,17 @@ const Home: React.FC = () => {
           <div className="flex flex-row w-[220%]">
           <div className="sm:col-span-2 w-[70%]">
             <label htmlFor="website" className="block text-sm font-medium text-gray-700">Select your primary role*</label>
-            <SearchableSelect options={primRole} phdr="Select your primary role" handle={(val:string)=>{handle('primrole',val,about,setabout);}}/>
+            <SearchableSelect options={primRole} phdr="Select your primary role" handle={(val:string)=>{handle('primrole',val,about,setabout);}} val={about.primrole}/>
           </div>
           <div className="sm:col-span-2 w-[25%] ml-[5%]">
             <label htmlFor="website" className="block text-sm font-medium text-gray-700">Years*</label>
-            <SearchableSelect options={expOpns} phdr='Experience' handle={(val:string)=>{handle('yrs',val,about,setabout);}}/>
+            <SearchableSelect options={expOpns} phdr='Experience' handle={(val:string)=>{handle('yrs',val,about,setabout);}} val={about.yrs}/>
           </div>
           </div>
 
           <div className="sm:col-span-2">
             <label htmlFor="website" className="block text-sm font-medium text-gray-700">Open to the following roles</label>
-            <SelectTags options={primRole} phdr='Select Roles' handle={(val:any)=>{handle('openroles',val,about,setabout);}}/>
+            <SelectTags options={primRole} phdr='Select Roles' handle={(val:any)=>{handle('openroles',val,about,setabout);}} val={about.openroles}/>
           </div>
 
           <div className="sm:col-span-2">
@@ -134,7 +134,7 @@ const Home: React.FC = () => {
     <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setabout(aboutFetch)}>
       Reset
     </button>
-    <button className="bg-purple-500 text-white font-bold px-8 rounded">
+    <button className="bg-purple-500 text-white font-bold px-8 rounded" onClick={(e)=>setaboutFetch(about)}>
       Save
     </button>
   </div>}
@@ -159,7 +159,7 @@ const Home: React.FC = () => {
             </label>
             <input
               className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4" placeholder="https://"
-              onChange={(e)=>handle('website',e.target.value,socialmedia,setsocialmedia)}
+              onChange={(e)=>handle('website',e.target.value,socialmedia,setsocialmedia)} value={socialmedia.website}
             /></div>
 
 <div className="sm:col-span-2">
@@ -171,7 +171,7 @@ const Home: React.FC = () => {
             </label>
             <input
               className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4" placeholder="https://linkedin.com/in/username"
-              onChange={(e)=>handle('linkedin',e.target.value,socialmedia,setsocialmedia)}/></div>
+              onChange={(e)=>handle('linkedin',e.target.value,socialmedia,setsocialmedia)} value={socialmedia.linkedin}/></div>
 
 <div className="sm:col-span-2">
             <label htmlFor="website" className="block text-sm font-medium text-gray-700">
@@ -182,7 +182,7 @@ const Home: React.FC = () => {
             </label>
             <input
               className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4" placeholder="https://github.com/username"
-              onChange={(e)=>handle('github',e.target.value,socialmedia,setsocialmedia)}/></div>
+              onChange={(e)=>handle('github',e.target.value,socialmedia,setsocialmedia)} value={socialmedia.github}/></div>
 
 <div className="sm:col-span-2">
             <label htmlFor="website" className="block text-sm font-medium text-gray-700">
@@ -193,13 +193,13 @@ const Home: React.FC = () => {
             </label>
             <input
               className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4" placeholder="https://twitter.com/username"
-              onChange={(e)=>handle('twtr',e.target.value,socialmedia,setsocialmedia)}/></div>
+              onChange={(e)=>handle('twtr',e.target.value,socialmedia,setsocialmedia)} value={socialmedia.twtr}/></div>
       
       {!deepEqual(socialmedia,socialmediaFetch) && <div className="flex space-x-4 p-4">
-    <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded">
+    <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setsocialmedia(socialmediaFetch)}>
       Reset
     </button>
-    <button className="bg-purple-500 text-white font-bold px-8 rounded">
+    <button className="bg-purple-500 text-white font-bold px-8 rounded" onClick={(e)=>setsocialmediaFetch(socialmedia)}>
       Save
     </button>
   </div>}
@@ -219,13 +219,13 @@ const Home: React.FC = () => {
           
 <div className="sm:col-span-2">
       
-            <SelectTags options={skillsOpns} phdr='Select Roles' handle={setskills}/></div>
+            <SelectTags options={skillsOpns} phdr='Select Roles' handle={setskills} val={skills}/></div>
       
             {!arraysEqual(skills,skillsFetch) && <div className="flex space-x-4 p-4">
-    <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded">
+    <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setskills(skillsFetch)}>
       Reset
     </button>
-    <button className="bg-purple-500 text-white font-bold px-8 rounded">
+    <button className="bg-purple-500 text-white font-bold px-8 rounded" onClick={(e)=>setskillsFetch(skills)}>
       Save
     </button>
   </div>}
@@ -246,13 +246,13 @@ const Home: React.FC = () => {
           <textarea
               className="mt-1 block w-full rounded-md border-gray-300 border border-gray-400 p-4 min-h-[205px]"
               placeholder="It's OK to brag - e.g. I launched 3 successful Facebook apps which in total reached 2M+ users and generated $100k+ in revenue. I built everything from the front-end to the back-end and everything in between."
-              onChange={(e)=>setachieve(e.target.value)}/></div>
+              onChange={(e)=>setachieve(e.target.value)} value={achievements}/></div>
       
       {achievements!=achievementsFetch && <div className="flex space-x-4 p-4">
-    <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded">
+    <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setachieve(achievementsFetch)}>
       Reset
     </button>
-    <button className="bg-purple-500 text-white font-bold px-8 rounded">
+    <button className="bg-purple-500 text-white font-bold px-8 rounded" onClick={(e)=>setachieveFetch(achievements)}>
       Save
     </button>
   </div>}

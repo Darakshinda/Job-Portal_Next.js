@@ -10,13 +10,41 @@ interface Option {
 
 interface Props {
  
-    options:Option[];phdr:string;handle:Function;
+    options:Option[];phdr:string;handle:Function;val:MultiValue<Option>;
   }
 
+  const deepEqual = (obj1:object, obj2:object) => {
+    if (obj1 === obj2) return true;
+    
+    if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 === null || obj2 === null) {
+      return false;
+    }
+    
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+    
+    if (keys1.length !== keys2.length) return false;
+    
+    for (let key of keys1) {
+      if (!keys2.includes(key) || !deepEqual(obj1[key], obj2[key])) return false;
+    }
+    
+    return true;
+  };
+
+  const areArraysEqual = (arr1, arr2) => {
+    if (arr1.length !== arr2.length) return false;
+    
+    for(let i=0;i<arr1.length;i++)
+      if(arr1[i]!=arr2[i].value)
+      return false;
+    return true;
+  };
 
 
-const SelectTags: React.FC<Props> = ({options,phdr='Select Options',handle}) => {
-  const [selectedOptions, setSelectedOptions] = useState<MultiValue<Option>>([]);
+
+const SelectTags: React.FC<Props> = ({options,phdr='Select Options',handle,val}) => {
+  const [selectedOptions, setSelectedOptions] = useState<MultiValue<Option>>(val);
   const [flg, setflg] = useState(0);
   
   const handleSelectChange = (selected: MultiValue<Option> | SingleValue<Option>) => {
@@ -28,6 +56,14 @@ const SelectTags: React.FC<Props> = ({options,phdr='Select Options',handle}) => 
   if(flg==1)
   {const valuesArray = selectedOptions.map(obj => obj.value);console.log(valuesArray);
     handle(valuesArray);setflg(0);}
+
+    if(!areArraysEqual(val,selectedOptions)) 
+      { const objectArray = val.map(item => ({
+        value: item,
+        label: item
+                      }));
+      
+        setSelectedOptions(objectArray);}
 
   return (
     

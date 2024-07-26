@@ -1,12 +1,11 @@
 [
-    { "value": "software-engineer", "label": "Software Engineer" },
-    { "value": "mobile-developer", "label": "Mobile Developer" },
-    { "value": "android-developer", "label": "Android Developer" },
-    { "value": "ios-developer", "label": "iOS Developer" },
-    { "value": "frontend-engineer", "label": "Frontend Engineer" },
-    { "value": "backend-engineer", "label": "Backend Engineer" },
-    { "value": "full-stack-engineer", "label": "Full-Stack Engineer" },
-    { "value": "software-architect", "label": "Software Architect" },
-    { "value": "machine-learning-engineer", "label": "Machine Learning Engineer" }
-  ]
-  
+  { "value": "Software Engineer", "label": "Software Engineer" },
+  { "value": "Mobile Developer", "label": "Mobile Developer" },
+  { "value": "Android Developer", "label": "Android Developer" },
+  { "value": "iOS Developer", "label": "iOS Developer" },
+  { "value": "Frontend Engineer", "label": "Frontend Engineer" },
+  { "value": "Backend Engineer", "label": "Backend Engineer" },
+  { "value": "Full-Stack Engineer", "label": "Full-Stack Engineer" },
+  { "value": "Software Architect", "label": "Software Architect" },
+  { "value": "Machine Learning Engineer", "label": "Machine Learning Engineer" }
+]

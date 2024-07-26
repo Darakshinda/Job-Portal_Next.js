@@ -21,9 +21,6 @@ const LocationSearch: React.FC<Props> = ({handle,val}) => {
   const [inputValue, setInputValue] = useState('');
   
   if(inputValue=='' && options.length) setOptions([]);
-
-  if(selectedOption!=null&&val!=selectedOption?.value) {const x={value:val,label:val};setSelectedOption(x);}
-
  
   const fetchOptions = async (input: string) => {
     if (!input) return;
@@ -71,7 +68,7 @@ const LocationSearch: React.FC<Props> = ({handle,val}) => {
     <ClickOutsideDiv onOutsideClick={()=>{if(options.length)setOptions([])}}>
       <Select
         options={options}
-        value={selectedOption}
+        value={{value:val,label:val}}
         onInputChange={handleInputChange}
         onChange={handleChange}
         placeholder="Search for a location"
