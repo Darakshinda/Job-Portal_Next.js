@@ -80,7 +80,7 @@ const Home: React.FC = () => {
   };
 
   console.log(about);console.log(identity);
-  const divcls='border-t border-t-white pt-[37px]',buttonbg='rgb(30, 7, 94)';
+  const divcls='border-t border-t-white pt-[37px]',buttonbg='rgb(30, 7, 94)',buttondiv="flex space-x-4",labelcls="block text-sm font-medium text-[17px] font-bold";
 
   return (
 
@@ -102,7 +102,7 @@ const Home: React.FC = () => {
         <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
           
           <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium ">Your name*</label>
+            <label htmlFor="website" className={labelcls}>Your name*</label>
             <input
               className="mt-1 h-[35px] w-full rounded-md border border-gray-400 p-4"
               value={about.name}
@@ -119,28 +119,28 @@ const Home: React.FC = () => {
 
 
           <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium ">Where are you based?*</label>
+            <label htmlFor="website" className={labelcls}>Where are you based?*</label>
             <LocationSearch val={about.locn} handle={(val:string)=>{handle('locn',val,about,setabout);}}/>
           </div>
 
           <div className="flex flex-row w-[220%]">
           <div className="sm:col-span-2 w-[70%]">
-            <label htmlFor="website" className="block text-sm font-medium ">Select your primary role*</label>
+            <label htmlFor="website" className={labelcls}>Select your primary role*</label>
            <SearchableSelect options={primRole} phdr="Select your primary role" handle={(val:string)=>{handle('primrole',val,about,setabout);}} val={about.primrole}/>
           </div>
           <div className="sm:col-span-2 w-[25%] ml-[5%]">
-            <label htmlFor="website" className="block text-sm font-medium ">Years*</label>
+            <label htmlFor="website" className={labelcls}>Years*</label>
             <SearchableSelect options={expOpns} phdr='Experience' handle={(val:string)=>{handle('yrs',val,about,setabout);}} val={about.yrs}/>
           </div>
           </div>
 
           <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium ">Open to the following roles</label>
+            <label htmlFor="website" className={labelcls}>Open to the following roles</label>
             <SelectTags options={primRole} phdr='Select Roles' handle={(val:any)=>{handle('openroles',val,about,setabout);}} val={about.openroles}/>
           </div>
 
           <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium ">Your bio</label>
+            <label htmlFor="website" className={labelcls}>Your bio</label>
             <textarea
               className="mt-1 block w-full rounded-md border-gray-300 border border-gray-400 p-4 min-h-[205px]"
               placeholder="Stanford CS, Full stack generalist; launched a successful Android app, worked at Google"
@@ -149,7 +149,7 @@ const Home: React.FC = () => {
             />
           </div>
 
-          {!deepEqual(about,aboutFetch) && <div className="flex space-x-4">
+          {!deepEqual(about,aboutFetch) && <div className={buttondiv}>
     <button className="text-white font-bold py-2 px-8 rounded" style={{backgroundColor:buttonbg}} onClick={(e)=>setabout(aboutFetch)}>
       Reset
     </button>
@@ -170,7 +170,7 @@ const Home: React.FC = () => {
         <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
           
 <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium ">
+            <label htmlFor="website" className={labelcls}>
               <div className="flex items-center space-x-4">
               <img src="https://img.freepik.com/free-vector/www-internet-globe-grid_78370-2008.jpg?size=338&ext=jpg&ga=GA1.1.1826414947.1720569600&semt=ais_hybrid" alt="Description of Image" className="w-[49px] h-[55px] object-cover rounded-lg shadow-md"/>
               <p className="">Website</p>
@@ -182,7 +182,7 @@ const Home: React.FC = () => {
             /></div>
 
 <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium ">
+            <label htmlFor="website" className={labelcls}>
               <div className="flex items-center space-x-4">
               <img src="https://banner2.cleanpng.com/20180518/yk/kisspng-computer-icons-linkedin-5aff0283a31f04.0344839015266617636682.jpg" alt="Description of Image" className="w-[49px] h-[55px] object-cover rounded-lg shadow-md"/>
               <p className="">LinkedIn</p>
@@ -193,7 +193,7 @@ const Home: React.FC = () => {
               onChange={(e)=>handle('linkedin',e.target.value,socialmedia,setsocialmedia)} value={socialmedia.linkedin}/></div>
 
 <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium ">
+            <label htmlFor="website" className={labelcls}>
               <div className="flex items-center space-x-4">
               <img src="https://static-00.iconduck.com/assets.00/github-icon-2048x2048-823jqxdr.png" alt="Description of Image" className="w-[49px] h-[55px] object-cover rounded-lg shadow-md"/>
               <p className="">GitHub</p>
@@ -204,7 +204,7 @@ const Home: React.FC = () => {
               onChange={(e)=>handle('github',e.target.value,socialmedia,setsocialmedia)} value={socialmedia.github}/></div>
 
 <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium ">
+            <label htmlFor="website" className={labelcls}>
               <div className="flex items-center space-x-4">
               <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSRVa8lLOwmvEjX6C_zHd7IzDOUShvDBpjLw&s" alt="Description of Image" className="w-[49px] h-[55px] object-cover rounded-lg shadow-md"/>
               <p className="">Twitter</p>
@@ -214,7 +214,7 @@ const Home: React.FC = () => {
               className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4" placeholder="https://twitter.com/username"
               onChange={(e)=>handle('twtr',e.target.value,socialmedia,setsocialmedia)} value={socialmedia.twtr}/></div>
       
-      {!deepEqual(socialmedia,socialmediaFetch) && <div className="flex space-x-4">
+      {!deepEqual(socialmedia,socialmediaFetch) && <div className={buttondiv}>
     <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setsocialmedia(socialmediaFetch)} style={{backgroundColor:buttonbg}}>
       Reset
     </button>
@@ -240,7 +240,7 @@ const Home: React.FC = () => {
       
             <SelectTags options={skillsOpns} phdr='Select Roles' handle={setskills} val={skills}/></div>
       
-            {!arraysEqual(skills,skillsFetch) && <div className="flex space-x-4">
+            {!arraysEqual(skills,skillsFetch) && <div className={buttondiv}>
     <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setskills(skillsFetch)} style={{backgroundColor:buttonbg}}>
       Reset
     </button>
@@ -267,7 +267,7 @@ const Home: React.FC = () => {
               placeholder="It's OK to brag - e.g. I launched 3 successful Facebook apps which in total reached 2M+ users and generated $100k+ in revenue. I built everything from the front-end to the back-end and everything in between."
               onChange={(e)=>setachieve(e.target.value)} value={achievements}/></div>
       
-      {achievements!=achievementsFetch && <div className="flex space-x-4">
+      {achievements!=achievementsFetch && <div className={buttondiv}>
     <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setachieve(achievementsFetch)} style={{backgroundColor:buttonbg}}>
       Reset
     </button>
@@ -291,14 +291,14 @@ Self identifying is completely optional, and we'll handle your information with 
         <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
           
 <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium ">
+            <label htmlFor="website" className={labelcls}>
               <p className="">Pronouns</p>
             </label>
              <SearchableSelect options={pronouns} handle={(val:string)=>{handle('pronouns',val,identity,setidentity);}} val={identity.pronouns}/>
              </div>
 
 <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium ">
+            <label htmlFor="website" className={labelcls}>
                <p className="">Gender Identity</p>
             </label>
             <SearchableSelect options={genderOpns} handle={(val:string)=>{handle('gender',val,identity,setidentity);}} val={identity.gender}/>
@@ -308,7 +308,7 @@ Self identifying is completely optional, and we'll handle your information with 
            </div>
 
 <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium ">
+            <label htmlFor="website" className={labelcls}>
                <p className="">Race/Ethnicity</p>
                <p className="text-[11px]" style={{color:'rgb(175, 175, 175)'}}>You can select multiple</p>
             </label><br/>
@@ -318,7 +318,7 @@ Self identifying is completely optional, and we'll handle your information with 
 
 
       
-      {!deepEqual(identity,identityFetch) && <div className="flex space-x-4">
+      {!deepEqual(identity,identityFetch) && <div className={buttondiv}>
     <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setidentity(identityFetch)} style={{backgroundColor:buttonbg}}>
       Reset
     </button>

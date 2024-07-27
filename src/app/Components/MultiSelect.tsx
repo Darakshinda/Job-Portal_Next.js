@@ -43,7 +43,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({ options, onSelectionChange,va
   return (
     <div>
       {options.map(option => (
-        <div key={option} className='mt-2'>
+        <div key={option} className='mt-2 text-[14px]'>
           <label>
             <input
               type="checkbox"
