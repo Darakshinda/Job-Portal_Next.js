@@ -310,7 +310,7 @@ Self identifying is completely optional, and we'll handle your information with 
 <div className="sm:col-span-2">
             <label htmlFor="website" className="block text-sm font-medium ">
                <p className="">Race/Ethnicity</p>
-               <p className="text-[8px]" style={{color:'rgb(175, 175, 175)'}}>You can select multiple</p>
+               <p className="text-[11px]" style={{color:'rgb(175, 175, 175)'}}>You can select multiple</p>
             </label><br/>
             <MultiSelect options={ethinicity} onSelectionChange={(val:string)=>{handle('ethnicity',val,identity,setidentity);}} val={identity.ethnicity} />
             
