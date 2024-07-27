@@ -80,7 +80,7 @@ const Home: React.FC = () => {
   };
 
   console.log(about);console.log(identity);
-  const divcls='border-t border-t-white pt-[37px]'
+  const divcls='border-t border-t-white pt-[37px]',buttonbg='rgb(30, 7, 94)';
 
   return (
 
@@ -149,11 +149,11 @@ const Home: React.FC = () => {
             />
           </div>
 
-          {!deepEqual(about,aboutFetch) && <div className="flex space-x-4 p-4">
-    <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setabout(aboutFetch)}>
+          {!deepEqual(about,aboutFetch) && <div className="flex space-x-4">
+    <button className="text-white font-bold py-2 px-8 rounded" style={{backgroundColor:buttonbg}} onClick={(e)=>setabout(aboutFetch)}>
       Reset
     </button>
-    <button className="bg-purple-500 text-white font-bold px-8 rounded" onClick={(e)=>setaboutFetch(about)}>
+    <button className="bg-purple-500 text-white font-bold px-8 rounded" style={{backgroundColor:buttonbg}} onClick={(e)=>setaboutFetch(about)}>
       Save
     </button>
   </div>}
@@ -214,11 +214,11 @@ const Home: React.FC = () => {
               className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4" placeholder="https://twitter.com/username"
               onChange={(e)=>handle('twtr',e.target.value,socialmedia,setsocialmedia)} value={socialmedia.twtr}/></div>
       
-      {!deepEqual(socialmedia,socialmediaFetch) && <div className="flex space-x-4 p-4">
-    <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setsocialmedia(socialmediaFetch)}>
+      {!deepEqual(socialmedia,socialmediaFetch) && <div className="flex space-x-4">
+    <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setsocialmedia(socialmediaFetch)} style={{backgroundColor:buttonbg}}>
       Reset
     </button>
-    <button className="bg-purple-500 text-white font-bold px-8 rounded" onClick={(e)=>setsocialmediaFetch(socialmedia)}>
+    <button className="bg-purple-500 text-white font-bold px-8 rounded" onClick={(e)=>setsocialmediaFetch(socialmedia)} style={{backgroundColor:buttonbg}}>
       Save
     </button>
   </div>}
@@ -240,11 +240,11 @@ const Home: React.FC = () => {
       
             <SelectTags options={skillsOpns} phdr='Select Roles' handle={setskills} val={skills}/></div>
       
-            {!arraysEqual(skills,skillsFetch) && <div className="flex space-x-4 p-4">
-    <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setskills(skillsFetch)}>
+            {!arraysEqual(skills,skillsFetch) && <div className="flex space-x-4">
+    <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setskills(skillsFetch)} style={{backgroundColor:buttonbg}}>
       Reset
     </button>
-    <button className="bg-purple-500 text-white font-bold px-8 rounded" onClick={(e)=>setskillsFetch(skills)}>
+    <button className="bg-purple-500 text-white font-bold px-8 rounded" onClick={(e)=>setskillsFetch(skills)} style={{backgroundColor:buttonbg}}>
       Save
     </button>
   </div>}
@@ -267,11 +267,11 @@ const Home: React.FC = () => {
               placeholder="It's OK to brag - e.g. I launched 3 successful Facebook apps which in total reached 2M+ users and generated $100k+ in revenue. I built everything from the front-end to the back-end and everything in between."
               onChange={(e)=>setachieve(e.target.value)} value={achievements}/></div>
       
-      {achievements!=achievementsFetch && <div className="flex space-x-4 p-4">
-    <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setachieve(achievementsFetch)}>
+      {achievements!=achievementsFetch && <div className="flex space-x-4">
+    <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setachieve(achievementsFetch)} style={{backgroundColor:buttonbg}}>
       Reset
     </button>
-    <button className="bg-purple-500 text-white font-bold px-8 rounded" onClick={(e)=>setachieveFetch(achievements)}>
+    <button className="bg-purple-500 text-white font-bold px-8 rounded" onClick={(e)=>setachieveFetch(achievements)} style={{backgroundColor:buttonbg}}>
       Save
     </button>
   </div>}
@@ -318,11 +318,11 @@ Self identifying is completely optional, and we'll handle your information with 
 
 
       
-      {!deepEqual(identity,identityFetch) && <div className="flex space-x-4 p-4">
-    <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setidentity(identityFetch)}>
+      {!deepEqual(identity,identityFetch) && <div className="flex space-x-4">
+    <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setidentity(identityFetch)} style={{backgroundColor:buttonbg}}>
       Reset
     </button>
-    <button className="bg-purple-500 text-white font-bold px-8 rounded" onClick={(e)=>setidentityFetch(identity)}>
+    <button className="bg-purple-500 text-white font-bold px-8 rounded" onClick={(e)=>setidentityFetch(identity)} style={{backgroundColor:buttonbg}}>
       Save
     </button>
   </div>}
