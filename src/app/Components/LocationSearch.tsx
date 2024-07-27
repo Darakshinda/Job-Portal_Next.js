@@ -59,23 +59,25 @@ const LocationSearch: React.FC<Props> = ({handle,val}) => {
         setInputValue(selected?.label || '');
      
     } else if (actionMeta.action === 'clear') {
-      setSelectedOption(null);
+      setSelectedOption(null);handle('');
       setInputValue('');
     }
   };
 
   return (
     <ClickOutsideDiv onOutsideClick={()=>{if(options.length)setOptions([])}}>
+      <div className="custom-select-container">
       <Select
         options={options}
         value={{value:val,label:val}}
+        classNamePrefix="react-select"
         onInputChange={handleInputChange}
         onChange={handleChange}
         placeholder="Search for a location"
         isClearable
         menuIsOpen={options.length > 0}
       />
-     
+     </div>
     </ClickOutsideDiv>
   );
 };

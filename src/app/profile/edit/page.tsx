@@ -6,6 +6,8 @@ import primRole from './data/primryRole.json';import expOpns from './data/expOpn
 import { useState } from "react";
 import SelectTags from "@/app/Components/SelectTags";import Select, { MultiValue, SingleValue } from 'react-select';
 import { TextInput } from "@/stories/TextInput";
+import Sidebar from "@/app/Components/HireDashSidebar";
+import "./Stylin.css"
 
 
 
@@ -70,23 +72,29 @@ const Home: React.FC = () => {
   };
 
   console.log(about);
-  const divcls='border-t border-t-black'
+  const divcls='border-t border-t-white pt-[37px]'
 
   return (
-    <div className="max-w-[65%] mx-auto py-10 px-4 sm:px-6 lg:px-8">
+
+    <div><Sidebar/>
+      
+      <main className="grid w-full h-full pl-[240px]">
+        <div className="min-h-screen bg-gray-900 text-white">
+        
+    <div className="max-w-[80%] mx-auto py-10 px-4 sm:px-6 lg:px-8">
    
-      <div className="space-y-8 border border-black rounded-md mt-[5px] mb-[5px] p-[5%]">
+      <div className="space-y-8 border border-white rounded-md mt-[5px] mb-[5px] p-[5%]">
 
       <div className={`flex flex-row`}>
         <div className="w-[35%]">
-        <h2 className="text-lg font-medium text-gray-900">About</h2>
-        <p className="text-sm text-gray-600">Tell us about yourself so startups know who you are.</p></div>
+        <h2 className="text-lg font-medium ">About</h2>
+        <p className="text-sm ">Tell us about yourself so startups know who you are.</p></div>
 
         <div className="w-[61%] ml-[4%]">
         <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
           
           <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium text-gray-700">Your name*</label>
+            <label htmlFor="website" className="block text-sm font-medium ">Your name*</label>
             <input
               className="mt-1 h-[35px] w-full rounded-md border border-gray-400 p-4"
               value={about.name}
@@ -94,34 +102,34 @@ const Home: React.FC = () => {
             />
             
             <div className="mt-[14px] flex flex-row align-center items-center">
-              <UploadButton keyy="logo" resetflg val={about.logo} onChange={(key: string, value: string) => {handle(key,value,about,setabout);}}/>
+              <UploadButton imgsrc='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTloMhHd2WEOdSnlj28yN-agPUzYU4U1iGekw&s' bgcol='rgb(62, 62, 62)' buttonBg="rgb(30, 7, 94)" keyy="logo" resetflg val={about.logo} onChange={(key: string, value: string) => {handle(key,value,about,setabout);}}/>
             <span className="ml-[4px]">Upload your Profile pic</span></div>
           </div>
 
 
           <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium text-gray-700">Where are you based?*</label>
+            <label htmlFor="website" className="block text-sm font-medium ">Where are you based?*</label>
             <LocationSearch val={about.locn} handle={(val:string)=>{handle('locn',val,about,setabout);}}/>
           </div>
 
           <div className="flex flex-row w-[220%]">
           <div className="sm:col-span-2 w-[70%]">
-            <label htmlFor="website" className="block text-sm font-medium text-gray-700">Select your primary role*</label>
-            <SearchableSelect options={primRole} phdr="Select your primary role" handle={(val:string)=>{handle('primrole',val,about,setabout);}} val={about.primrole}/>
+            <label htmlFor="website" className="block text-sm font-medium ">Select your primary role*</label>
+           <SearchableSelect options={primRole} phdr="Select your primary role" handle={(val:string)=>{handle('primrole',val,about,setabout);}} val={about.primrole}/>
           </div>
           <div className="sm:col-span-2 w-[25%] ml-[5%]">
-            <label htmlFor="website" className="block text-sm font-medium text-gray-700">Years*</label>
+            <label htmlFor="website" className="block text-sm font-medium ">Years*</label>
             <SearchableSelect options={expOpns} phdr='Experience' handle={(val:string)=>{handle('yrs',val,about,setabout);}} val={about.yrs}/>
           </div>
           </div>
 
           <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium text-gray-700">Open to the following roles</label>
+            <label htmlFor="website" className="block text-sm font-medium ">Open to the following roles</label>
             <SelectTags options={primRole} phdr='Select Roles' handle={(val:any)=>{handle('openroles',val,about,setabout);}} val={about.openroles}/>
           </div>
 
           <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium text-gray-700">Your bio</label>
+            <label htmlFor="website" className="block text-sm font-medium ">Your bio</label>
             <textarea
               className="mt-1 block w-full rounded-md border-gray-300 border border-gray-400 p-4 min-h-[205px]"
               placeholder="Stanford CS, Full stack generalist; launched a successful Android app, worked at Google"
@@ -144,17 +152,17 @@ const Home: React.FC = () => {
 
     <div className={`flex flex-row ${divcls}`}>
         <div className="w-[35%]">
-        <h2 className="text-lg font-medium text-gray-900">Social Profiles</h2>
-        <p className="text-sm text-gray-600">Where can people find you online?</p></div>
+        <h2 className="text-lg font-medium ">Social Profiles</h2>
+        <p className="text-sm ">Where can people find you online?</p></div>
 
         <div className="w-[61%] ml-[4%]">
         <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
           
 <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="website" className="block text-sm font-medium ">
               <div className="flex items-center space-x-4">
               <img src="https://img.freepik.com/free-vector/www-internet-globe-grid_78370-2008.jpg?size=338&ext=jpg&ga=GA1.1.1826414947.1720569600&semt=ais_hybrid" alt="Description of Image" className="w-[49px] h-[55px] object-cover rounded-lg shadow-md"/>
-              <p className="text-gray-700">Website</p>
+              <p className="">Website</p>
             </div>
             </label>
             <input
@@ -163,10 +171,10 @@ const Home: React.FC = () => {
             /></div>
 
 <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="website" className="block text-sm font-medium ">
               <div className="flex items-center space-x-4">
               <img src="https://banner2.cleanpng.com/20180518/yk/kisspng-computer-icons-linkedin-5aff0283a31f04.0344839015266617636682.jpg" alt="Description of Image" className="w-[49px] h-[55px] object-cover rounded-lg shadow-md"/>
-              <p className="text-gray-700">LinkedIn</p>
+              <p className="">LinkedIn</p>
             </div>
             </label>
             <input
@@ -174,10 +182,10 @@ const Home: React.FC = () => {
               onChange={(e)=>handle('linkedin',e.target.value,socialmedia,setsocialmedia)} value={socialmedia.linkedin}/></div>
 
 <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="website" className="block text-sm font-medium ">
               <div className="flex items-center space-x-4">
               <img src="https://static-00.iconduck.com/assets.00/github-icon-2048x2048-823jqxdr.png" alt="Description of Image" className="w-[49px] h-[55px] object-cover rounded-lg shadow-md"/>
-              <p className="text-gray-700">GitHub</p>
+              <p className="">GitHub</p>
             </div>
             </label>
             <input
@@ -185,10 +193,10 @@ const Home: React.FC = () => {
               onChange={(e)=>handle('github',e.target.value,socialmedia,setsocialmedia)} value={socialmedia.github}/></div>
 
 <div className="sm:col-span-2">
-            <label htmlFor="website" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="website" className="block text-sm font-medium ">
               <div className="flex items-center space-x-4">
               <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSRVa8lLOwmvEjX6C_zHd7IzDOUShvDBpjLw&s" alt="Description of Image" className="w-[49px] h-[55px] object-cover rounded-lg shadow-md"/>
-              <p className="text-gray-700">Twitter</p>
+              <p className="">Twitter</p>
             </div>
             </label>
             <input
@@ -211,8 +219,8 @@ const Home: React.FC = () => {
 
         <div className={`flex flex-row ${divcls}`}>
         <div className="w-[35%]">
-        <h2 className="text-lg font-medium text-gray-900">Your Skills</h2>
-        <p className="text-sm text-gray-600">This will help startups hone in on your strengths.</p></div>
+        <h2 className="text-lg font-medium ">Your Skills</h2>
+        <p className="text-sm ">This will help startups hone in on your strengths.</p></div>
 
         <div className="w-[61%] ml-[4%]">
         <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
@@ -235,8 +243,8 @@ const Home: React.FC = () => {
 
         <div className={`flex flex-row ${divcls}`}>
         <div className="w-[35%]">
-        <h2 className="text-lg font-medium text-gray-900">Achievements</h2>
-        <p className="text-sm text-gray-600">Sharing more details about yourself will help you stand out more.</p></div>
+        <h2 className="text-lg font-medium ">Achievements</h2>
+        <p className="text-sm ">Sharing more details about yourself will help you stand out more.</p></div>
 
         <div className="w-[61%] ml-[4%]">
         <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
@@ -262,6 +270,9 @@ const Home: React.FC = () => {
 
     </div>
     </div>
+
+
+    </div></main></div>
   );
 };
 

@@ -1,0 +1,35 @@
+.custom-select-container .react-select__control {
+    background-color: rgb(82, 82, 82); /* Change the background color */
+    color: rgb(255, 255, 255); /* Change the text color */
+  }
+  
+  .custom-select-container .react-select__placeholder {
+    color: rgb(175, 175, 175); /* Change the placeholder color */
+  }
+  
+  .custom-select-container .react-select__single-value {
+    color: rgb(255, 255, 255); /* Change the text color */
+  }
+  
+  .custom-select-container .react-select__menu {
+    background-color: rgb(62, 62, 62); /* Change the dropdown background color */
+  }
+  
+  .custom-select-container .react-select__option--is-selected {
+    color: white; /* Change the selected option text color */
+  }
+  
+  .custom-select-container .react-select__option--is-focused {
+    background-color: rgb(48, 44, 150); /* Change the hovered option background color */
+  }
+
+
+input,textarea {
+    background-color: rgb(82, 82, 82); /* Background color */
+    color: white; /* Text color */
+  }
+  
+  input::placeholder,textarea::placeholder {
+    color: rgb(175, 175, 175); /* Placeholder text color */
+  }
+  

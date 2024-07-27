@@ -67,6 +67,7 @@ const SelectTags: React.FC<Props> = ({options,phdr='Select Options',handle,val})
 
   return (
     
+    <div className="custom-select-container">
       <Select
         classNamePrefix="react-select"
         options={options}
@@ -102,7 +103,7 @@ const SelectTags: React.FC<Props> = ({options,phdr='Select Options',handle,val})
             },
           }),
         }}
-      />
+      /></div>
   
   );
 };

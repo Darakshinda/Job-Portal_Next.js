@@ -52,13 +52,15 @@ const SearchableSelect: React.FC<Props> = ({options,phdr='Select an Option',hand
 
 
   return (
+    <div className="custom-select-container">
     <Select
       options={options}
+      classNamePrefix="react-select"
       value={selectedOption}
       onChange={handleChange}
       placeholder={phdr}
       isClearable
-    />
+    /></div>
   );
 };
 
