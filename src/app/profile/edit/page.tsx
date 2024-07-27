@@ -3,6 +3,7 @@ import UploadButton from "@/app/Components/ImgUpload";
 import LocationSearch from "@/app/Components/LocationSearch";
 import SearchableSelect from "@/app/Components/SearchableSelect";
 import primRole from './data/primryRole.json';import expOpns from './data/expOpns.json';import skillsOpns from './data/skills.json';
+import pronouns from './data/pronouns.json';import genderOpns from './data/gender.json';import ethinicity from './data/ethinicity.json';
 import { useState } from "react";
 import SelectTags from "@/app/Components/SelectTags";import Select, { MultiValue, SingleValue } from 'react-select';
 import { TextInput } from "@/stories/TextInput";
@@ -293,14 +294,14 @@ Self identifying is completely optional, and we'll handle your information with 
             <label htmlFor="website" className="block text-sm font-medium ">
               <p className="">Pronouns</p>
             </label>
-             <SearchableSelect options={primRole} handle={(val:string)=>{handle('pronouns',val,identity,setidentity);}} val={identity.pronouns}/>
+             <SearchableSelect options={pronouns} handle={(val:string)=>{handle('pronouns',val,identity,setidentity);}} val={identity.pronouns}/>
              </div>
 
 <div className="sm:col-span-2">
             <label htmlFor="website" className="block text-sm font-medium ">
                <p className="">Gender Identity</p>
             </label>
-            <SearchableSelect options={primRole} handle={(val:string)=>{handle('gender',val,identity,setidentity);}} val={identity.gender}/>
+            <SearchableSelect options={genderOpns} handle={(val:string)=>{handle('gender',val,identity,setidentity);}} val={identity.gender}/>
             <div className="mt-[14px] flex flex-row align-center items-center">
             <ToggleSwitch isChecked={identity.pronounsdisp} onToggle={(val:boolean)=>{handle('pronounsdisp',val,identity,setidentity);}} />
             <span className="ml-[4px]">Display pronouns on my profile</span></div>
@@ -311,19 +312,7 @@ Self identifying is completely optional, and we'll handle your information with 
                <p className="">Race/Ethnicity</p>
                <p className="text-[8px]" style={{color:'rgb(175, 175, 175)'}}>You can select multiple</p>
             </label><br/>
-            <MultiSelect options={[
-    'Black / African-American',
-    'East Asian (including Chinese, Japanese, Korean, and Mongolian)',
-    'Hispanic or Latino/a/x',
-    'Middle Eastern',
-    'Native American or Alaskan Native',
-    'Pacific Islander',
-    'South Asian (including Bangladeshi, Bhutanese, Indian, Nepali, Pakistani, and Sri Lankan)',
-    'Southeast Asian (including Burmese, Cambodian, Filipino, Hmong, Indonesian, Laotian, Malaysian, Mien, Singaporean, Thai, and Vietnamese)',
-    'White',
-    'Prefer not to say',
-    'Self-describe',
-  ]} onSelectionChange={(val:string)=>{handle('ethnicity',val,identity,setidentity);}} val={identity.ethnicity} />
+            <MultiSelect options={ethinicity} onSelectionChange={(val:string)=>{handle('ethnicity',val,identity,setidentity);}} val={identity.ethnicity} />
             
            </div>
 
