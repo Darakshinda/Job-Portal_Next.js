@@ -80,7 +80,7 @@ const Home: React.FC = () => {
   };
 
   console.log(about);console.log(identity);
-  const divcls='border-t border-t-white pt-[37px]',buttonbg='rgb(30, 7, 94)',buttondiv="flex space-x-4",labelcls="block text-sm font-medium text-[17px] font-bold";
+  const divcls='border-t border-t-white pt-[37px]',buttonbg='rgb(30, 7, 94)',buttondiv="flex space-x-4",labelcls="block text-sm font-medium text-[16px] font-bold";
 
   return (
 
