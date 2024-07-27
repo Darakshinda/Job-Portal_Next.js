@@ -1,27 +1,39 @@
 .custom-select-container .react-select__control {
-    background-color: rgb(82, 82, 82); /* Change the background color */
-    color: rgb(255, 255, 255); /* Change the text color */
-  }
-  
-  .custom-select-container .react-select__placeholder {
-    color: rgb(175, 175, 175); /* Change the placeholder color */
-  }
-  
-  .custom-select-container .react-select__single-value {
-    color: rgb(255, 255, 255); /* Change the text color */
-  }
-  
-  .custom-select-container .react-select__menu {
-    background-color: rgb(62, 62, 62); /* Change the dropdown background color */
-  }
-  
-  .custom-select-container .react-select__option--is-selected {
-    color: white; /* Change the selected option text color */
-  }
-  
-  .custom-select-container .react-select__option--is-focused {
-    background-color: rgb(48, 44, 150); /* Change the hovered option background color */
-  }
+  background-color: rgb(82, 82, 82); /* Change the background color */
+  color: rgb(255, 255, 255); /* Change the text color */
+}
+
+.custom-select-container .react-select__placeholder {
+  color: rgb(175, 175, 175) !important; /* Change the placeholder color */
+}
+
+.custom-select-container .react-select__single-value {
+  color: rgb(255, 255, 255) !important; /* Change the text color */
+}
+
+.custom-select-container .react-select__menu {
+  background-color: rgb(62, 62, 62); /* Change the dropdown background color */
+}
+
+.custom-select-container .react-select__option--is-selected {
+  color: white !important; /* Change the selected option text color */
+}
+
+.custom-select-container .react-select__option--is-focused {
+  background-color: rgb(48, 44, 150) !important; /* Change the hovered option background color */
+}
+
+.custom-select-container .react-select__input {
+  color: rgb(255, 255, 255) !important; /* Change the search text color */
+}
+
+.custom-select-container .react-select__input input {
+  color: rgb(255, 255, 255) !important; /* Change the search text color */
+}
+
+.custom-select-container .react-select__input > div {
+  color: rgb(255, 255, 255) !important; /* Ensure search text color */
+}
 
 
 input,textarea {

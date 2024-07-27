@@ -8,6 +8,8 @@ import SelectTags from "@/app/Components/SelectTags";import Select, { MultiValue
 import { TextInput } from "@/stories/TextInput";
 import Sidebar from "@/app/Components/HireDashSidebar";
 import "./Stylin.css"
+import ToggleSwitch from "@/app/Components/ToggleSwitch";
+import MultiSelect from "@/app/Components/MultiSelect";
 
 
 
@@ -29,6 +31,11 @@ const Home: React.FC = () => {
   
   const [achievementsFetch, setachieveFetch]=useState('');
   const [achievements, setachieve] = useState(achievementsFetch);
+
+  const [identityFetch, setidentityFetch]=useState({
+    pronouns: "",pronounsdisp: false,gender: "",ethnicity: [],
+  });
+  const [identity, setidentity] = useState(identityFetch);
 
   const deepEqual = (obj1:object, obj2:object) => {
     if (obj1 === obj2) return true;
@@ -71,7 +78,7 @@ const Home: React.FC = () => {
      
   };
 
-  console.log(about);
+  console.log(about);console.log(identity);
   const divcls='border-t border-t-white pt-[37px]'
 
   return (
@@ -104,6 +111,9 @@ const Home: React.FC = () => {
             <div className="mt-[14px] flex flex-row align-center items-center">
               <UploadButton imgsrc='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTloMhHd2WEOdSnlj28yN-agPUzYU4U1iGekw&s' bgcol='rgb(62, 62, 62)' buttonBg="rgb(30, 7, 94)" keyy="logo" resetflg val={about.logo} onChange={(key: string, value: string) => {handle(key,value,about,setabout);}}/>
             <span className="ml-[4px]">Upload your Profile pic</span></div>
+            {about.logo!='' && <button className="text-white mt-[8px] font-bold py-2 px-8 rounded" onClick={(e)=>handle('logo','',about,setabout)} style={{backgroundColor:'rgb(30, 7, 94)'}}>
+      Remove
+    </button>}
           </div>
 
 
@@ -267,6 +277,72 @@ const Home: React.FC = () => {
         </div> 
 
         </div></div>
+
+
+    <div className={`flex flex-row ${divcls}`}>
+        <div className="w-[35%]">
+        <h2 className="text-lg font-medium ">Identity</h2>
+        <p className="text-sm ">At CodeUnity, we’re committed to helping companies hire in a more inclusive way. Part of that includes asking candidates to share demographic information so we can help recruiters understand and build their pipeline.
+
+Self identifying is completely optional, and we'll handle your information with care. Your responses to gender and ethnicity will not be displayed on your profile, and displaying your pronouns is optional.</p></div>
+
+        <div className="w-[61%] ml-[4%]">
+        <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
+          
+<div className="sm:col-span-2">
+            <label htmlFor="website" className="block text-sm font-medium ">
+              <p className="">Pronouns</p>
+            </label>
+             <SearchableSelect options={primRole} handle={(val:string)=>{handle('pronouns',val,identity,setidentity);}} val={identity.pronouns}/>
+             </div>
+
+<div className="sm:col-span-2">
+            <label htmlFor="website" className="block text-sm font-medium ">
+               <p className="">Gender Identity</p>
+            </label>
+            <SearchableSelect options={primRole} handle={(val:string)=>{handle('gender',val,identity,setidentity);}} val={identity.gender}/>
+            <div className="mt-[14px] flex flex-row align-center items-center">
+            <ToggleSwitch isChecked={identity.pronounsdisp} onToggle={(val:boolean)=>{handle('pronounsdisp',val,identity,setidentity);}} />
+            <span className="ml-[4px]">Display pronouns on my profile</span></div>
+           </div>
+
+<div className="sm:col-span-2">
+            <label htmlFor="website" className="block text-sm font-medium ">
+               <p className="">Race/Ethnicity</p>
+               <p className="text-[8px]" style={{color:'rgb(175, 175, 175)'}}>You can select multiple</p>
+            </label><br/>
+            <MultiSelect options={[
+    'Black / African-American',
+    'East Asian (including Chinese, Japanese, Korean, and Mongolian)',
+    'Hispanic or Latino/a/x',
+    'Middle Eastern',
+    'Native American or Alaskan Native',
+    'Pacific Islander',
+    'South Asian (including Bangladeshi, Bhutanese, Indian, Nepali, Pakistani, and Sri Lankan)',
+    'Southeast Asian (including Burmese, Cambodian, Filipino, Hmong, Indonesian, Laotian, Malaysian, Mien, Singaporean, Thai, and Vietnamese)',
+    'White',
+    'Prefer not to say',
+    'Self-describe',
+  ]} onSelectionChange={(val:string)=>{handle('ethnicity',val,identity,setidentity);}} val={identity.ethnicity} />
+            
+           </div>
+
+
+      
+      {!deepEqual(identity,identityFetch) && <div className="flex space-x-4 p-4">
+    <button className="bg-purple-500 text-white font-bold py-2 px-8 rounded" onClick={(e)=>setidentity(identityFetch)}>
+      Reset
+    </button>
+    <button className="bg-purple-500 text-white font-bold px-8 rounded" onClick={(e)=>setidentityFetch(identity)}>
+      Save
+    </button>
+  </div>}
+        </div> 
+
+        
+
+        </div></div>
+
 
     </div>
     </div>
