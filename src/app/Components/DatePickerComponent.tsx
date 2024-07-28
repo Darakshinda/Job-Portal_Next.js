@@ -1,33 +1,40 @@
 import React from 'react';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { registerLocale } from 'react-datepicker';
-import enUS from 'date-fns/locale/en-US';
+import "react-datepicker/dist/react-datepicker.css";
+import { registerLocale } from "react-datepicker";
+import { enUS } from 'date-fns/locale';
+import { format } from 'date-fns';
+import { SingleValue } from 'react-select';
 
-registerLocale('enUS', enUS);
+registerLocale('en-US', enUS);
 
-interface DatePickerComponentProps {
+interface DateSelectProps {
   value: Date | null;
-  handleChange: (date: Date | null) => void;
+  handleChange: (date:string) => void;
 }
 
-const DatePickerComponent: React.FC<DatePickerComponentProps> = ({ value, handleChange }) => {
+
+const DateSelect: React.FC<DateSelectProps> = ({ value, handleChange }) => {
+
+  
+
+  const handleDateChange = (date: Date | null) => {
+    handleChange(date);
+  };
+
   return (
-   
+    <div className="date-select-container">
       <DatePicker
         selected={value}
-        onChange={handleChange}
-        placeholderText="Start date"
-        dateFormat="yyyy-MM-dd"
-        todayButton="Today"
-        showMonthDropdown
-        showYearDropdown
-        dropdownMode="select"
-        locale="enUS"
-        className="mt-1 h-[35px] w-full rounded-md border border-gray-400 p-4"
+        onChange={handleDateChange}
+        dateFormat="MM-yyyy"
+        showMonthYearPicker
+        locale="en-US"
+        placeholderText="Select month and year"
+        className="w-full p-2 border rounded"
       />
-
+    </div>
   );
 };
 
-export default DatePickerComponent;
+export default DateSelect;

@@ -11,9 +11,12 @@ import Sidebar from "@/app/Components/HireDashSidebar";
 import "./Stylin.css"
 import ToggleSwitch from "@/app/Components/ToggleSwitch";
 import MultiSelect from "@/app/Components/MultiSelect";
-import DatePickerComponent from "@/app/Components/DatePickerComponent";
 import CompanySelect from "@/app/Components/CompanySelect";
 import EducationSelect from "@/app/Components/EducationSelect";
+import ExperienceCard from "@/app/Components/ExperienceCard";
+
+import { format } from 'date-fns';
+import DateSelect from "@/app/Components/DatePickerComponent";
 
 
 
@@ -34,6 +37,11 @@ const Home: React.FC = () => {
     company: "",title:'',start:null,end:null,currentlyWorking:false,desc: "",
   });
   const [exp, setexp] = useState(expDef);
+
+  const [eduDef, seteduDef]=useState({
+    education: "",graduation:null,degree: "",gpa:'',maxgpa:'',
+  });
+  const [edu, setedu] = useState(eduDef);
 
   const [skillsFetch, setskillsFetch]=useState([]);
   const [skills, setskills] = useState(skillsFetch);  
@@ -87,9 +95,88 @@ const Home: React.FC = () => {
      
   };
 
-  const [addExp, setaddExp] = useState(false);
+  const updateItem = (index: number, newItem: object[]) => {
+    Exps[index]=newItem;
+  };
+  const updateEdusItem = (index: number, newItem: object[]) => {
+    Edus[index]=newItem;
+  };
 
-  const [Exps, setExps] = useState([]);console.log(Exps);
+  const deleteItem = (index: number) => {
+    const newItems = [...Exps];
+    newItems.splice(index, 1);
+    setExps(newItems);
+  };
+  const deleteEdusItem = (index: number) => {
+    const newItems = [...Edus];
+    newItems.splice(index, 1);
+    setEdus(newItems);
+  };
+
+const renderExp = (experience:object,ind:number) => {
+
+return (<ExperienceCard
+  company={experience.company}
+  title={experience.title}
+  start={experience.start}
+  end={experience.end}
+  currentlyWorking={experience.currentlyWorking}
+  description={experience.desc}
+  ind={ind} Exps={Exps} update={updateItem} del={deleteItem}
+   flgedit={seteditedflg}
+/>);
+  }
+const renderEdu = (experience:object,ind:number) => {
+
+return (<ExperienceCard
+  company={experience.company}
+  title={experience.title}
+  start={experience.start}
+  end={experience.end}
+  currentlyWorking={experience.currentlyWorking}
+  description={experience.desc}
+  ind={ind} Edus={Edus} update={updateItem} del={deleteItem}
+   flgedit={seteditedflg}
+/>);
+  }
+
+const renderEditedExp = (experience:object,ind:number) => {
+
+  seteditedflg(false);
+
+return (<ExperienceCard
+  company={experience.company}
+  title={experience.title}
+  start={experience.start}
+  end={experience.end}
+  currentlyWorking={experience.currentlyWorking}
+  description={experience.desc}
+  ind={ind} Exps={Exps} update={updateItem} flgedit={seteditedflg}
+/>);
+  }
+
+const renderEditedEdu = (experience:object,ind:number) => {
+
+  seteditedflg(false);
+
+return (<ExperienceCard
+  company={experience.company}
+  title={experience.title}
+  start={experience.start}
+  end={experience.end}
+  currentlyWorking={experience.currentlyWorking}
+  description={experience.desc}
+  ind={ind} Edus={Edus} update={updateItem} flgedit={seteditedflg}
+/>);
+  }
+
+  const [addExp, setaddExp] = useState(false);
+  const [addEdu, setaddEdu] = useState(false);
+  const [editedflg, seteditedflg] = useState(false);
+
+  const [Exps, setExps] = useState([]);const [Edus, setEdus] = useState([]);
+
+
 
   console.log(about);console.log(identity);
   if(exp.currentlyWorking) handle('end',null,exp,setexp);
@@ -248,7 +335,16 @@ const Home: React.FC = () => {
         <p className="text-sm ">What other positions have you held?</p></div>
 
         <div className="w-[61%] ml-[4%]">
-        {Exps.length}<br/> 
+   
+      
+      {!editedflg&&Exps.map((experience, index) => (
+        renderExp(experience,index)
+      ))}
+      {editedflg&&Exps.map((experience, index) => (
+        renderEditedExp(experience,index)
+      ))}
+  
+        
         {!addExp&&<button className="text-[#2563eb]" onClick={(e)=>setaddExp(true)}>+ Add work experience</button>}
         {addExp&&<div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[black] p-[8px] border  border-white rounded">
 
@@ -267,12 +363,12 @@ const Home: React.FC = () => {
         
           <div className="sm:col-span-2">
             <label htmlFor="website" className={labelcls}>Start date*</label>
-            <DatePickerComponent value={exp.start} handleChange={(val:Date | null)=>{handle('start',val,exp,setexp);}}/>
+            <DateSelect value={exp.start} handleChange={(val:string)=>{handle('start',val,exp,setexp);}}/>
           </div>
 
           <div className="sm:col-span-2">
             {!exp.currentlyWorking && <div><label htmlFor="website" className={labelcls}>End date*</label>
-            <DatePickerComponent value={exp.end} handleChange={(val:Date | null)=>{handle('end',val,exp,setexp);}}/></div>}
+            <DateSelect value={exp.end} handleChange={(val:string)=>{handle('end',val,exp,setexp);}}/></div>}
             <div className="mt-[14px] flex flex-row align-center items-center"><ToggleSwitch isChecked={exp.currentlyWorking} onToggle={(val:boolean)=>{handle('currentlyWorking',val,exp,setexp);}} />
             <span className="ml-[4px]">I currently work here</span></div></div>
 
@@ -298,6 +394,79 @@ const Home: React.FC = () => {
     </button>
   </div>
         </div> }
+
+        </div></div>
+
+<div className={`flex flex-row ${divcls}`}>
+        <div className="w-[35%]">
+        <h2 className="text-lg font-medium ">Education</h2>
+        <p className="text-sm ">Which Institutions have you studied at?</p></div>
+
+        <div className="w-[61%] ml-[4%]">
+   
+      
+      {!editedflg&&Edus.map((experience, index) => (
+        renderExp(experience,index)
+      ))}
+      {editedflg&&Edus.map((experience, index) => (
+        renderEditedExp(experience,index)
+      ))}
+  
+        
+        {!addEdu&&<button className="text-[#2563eb]" onClick={(e)=>setaddEdu(true)}>+ Add Education</button>}
+        {addEdu&&<div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[black] p-[8px] border  border-white rounded">
+
+        <div className="sm:col-span-2">
+            <label htmlFor="website" className={labelcls}>Education*</label>
+            <EducationSelect handle={(val:string)=>{handle('education',val,edu,setedu);}} val={edu.education || ''}  />
+          </div>
+        
+        <div className="sm:col-span-2">
+            <label htmlFor="website" className={labelcls}>Graduation*</label>
+            <DateSelect value={exp.start} handleChange={(val:string)=>{handle('graduation',val,edu,setedu);}}/>
+          </div>
+
+          <div className="sm:col-span-2">
+           <label htmlFor="website" className={labelcls}>Degree & Major</label>
+            <SearchableSelect options={pronouns} handle={(val:string)=>{handle('degree',val,edu,setedu);}} val={edu.degree}/>
+           </div>
+
+           <div className="sm:col-span-2">
+           <label htmlFor="website" className={labelcls}>GPA</label>
+           <div className="flex flex-row ">
+          <div className="sm:col-span-2 w-[47.5%]">
+            <input
+              className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
+              placeholder="GPA"
+              value={edu.gpa}
+              onChange={(e)=>handle('gpa',e.target.value,edu,setedu)}
+            />
+          </div>
+          <div className="sm:col-span-2 w-[47.5%] ml-[5%]">
+            <input
+              className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
+              placeholder="Max"
+              value={edu.maxgpa}
+              onChange={(e)=>handle('maxgpa',e.target.value,edu,setedu)}
+            />
+          </div>
+          </div>
+ 
+
+       
+        </div>
+        <div className={buttondiv}>
+    <button className="text-white font-bold py-2 px-8 rounded" style={{backgroundColor:buttonbg}} onClick={(e)=>{setedu(eduDef);setaddEdu(false)}}>
+      Cancel
+    </button>
+    <button className="bg-purple-500 text-white font-bold px-8 rounded" style={{backgroundColor:buttonbg}} 
+    onClick={(e)=>{Edus.push(edu);setedu(eduDef);setaddEdu(false);}}>
+      Save
+    </button>
+  </div>
+        </div> 
+        
+        }
 
         </div></div>
 
