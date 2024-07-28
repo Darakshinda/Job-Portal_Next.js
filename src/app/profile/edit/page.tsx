@@ -345,7 +345,7 @@ return (<ExperienceCard
       ))}
   
         
-        {!addExp&&<button className="text-[#2563eb]" onClick={(e)=>setaddExp(true)}>+ Add work experience</button>}
+        {!addExp&&<button className="text-[#2563eb] mt-[9px]" onClick={(e)=>setaddExp(true)}>+ Add work experience</button>}
         {addExp&&<div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[black] p-[8px] border  border-white rounded">
 
         <div className="sm:col-span-2">
@@ -413,7 +413,7 @@ return (<ExperienceCard
       ))}
   
         
-        {!addEdu&&<button className="text-[#2563eb]" onClick={(e)=>setaddEdu(true)}>+ Add Education</button>}
+        {!addEdu&&<button className="text-[#2563eb] mt-[9px]" onClick={(e)=>setaddEdu(true)}>+ Add Education</button>}
         {addEdu&&<div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[black] p-[8px] border  border-white rounded">
 
         <div className="sm:col-span-2">
