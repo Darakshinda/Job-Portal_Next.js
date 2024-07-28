@@ -12,7 +12,7 @@
 }
 
 .custom-select-container .react-select__menu {
-  background-color: rgb(62, 62, 62); /* Change the dropdown background color */
+  background-color: black; /* Change the dropdown background color */
 }
 
 .custom-select-container .react-select__option--is-selected {

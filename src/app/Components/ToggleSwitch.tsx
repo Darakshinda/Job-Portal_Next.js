@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 interface ToggleSwitchProps {
   isChecked: boolean;
-  onToggle: (checked: boolean) => void;val:boolean;
+  onToggle: (checked: boolean) => void;
 }
 
 const Switch = styled.div<{ isChecked: boolean }>`
@@ -34,7 +34,7 @@ const Label = styled.label`
   cursor: pointer;
 `;
 
-const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ isChecked, onToggle,val }) => {
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ isChecked, onToggle,}) => {
   return (
       <Switch isChecked={isChecked} onClick={() => onToggle(!isChecked)}>
         <Slider isChecked={isChecked} />

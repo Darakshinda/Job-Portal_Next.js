@@ -11,6 +11,9 @@ import Sidebar from "@/app/Components/HireDashSidebar";
 import "./Stylin.css"
 import ToggleSwitch from "@/app/Components/ToggleSwitch";
 import MultiSelect from "@/app/Components/MultiSelect";
+import DatePickerComponent from "@/app/Components/DatePickerComponent";
+import CompanySelect from "@/app/Components/CompanySelect";
+import EducationSelect from "@/app/Components/EducationSelect";
 
 
 
@@ -26,6 +29,11 @@ const Home: React.FC = () => {
     website: "",linkedin: "",github: "",twtr: "",
   });
   const [socialmedia, setsocialmedia] = useState(socialmediaFetch);
+
+  const [expDef, setexpDef]=useState({
+    company: "",title:'',start:null,end:null,currentlyWorking:false,desc: "",
+  });
+  const [exp, setexp] = useState(expDef);
 
   const [skillsFetch, setskillsFetch]=useState([]);
   const [skills, setskills] = useState(skillsFetch);  
@@ -79,7 +87,13 @@ const Home: React.FC = () => {
      
   };
 
+  const [addExp, setaddExp] = useState(false);
+
+  const [Exps, setExps] = useState([]);console.log(Exps);
+
   console.log(about);console.log(identity);
+  if(exp.currentlyWorking) handle('end',null,exp,setexp);
+  console.log(exp);
   const divcls='border-t border-t-white pt-[37px]',buttonbg='rgb(30, 7, 94)',buttondiv="flex space-x-4",labelcls="block text-sm font-medium text-[16px] font-bold";
 
   return (
@@ -225,6 +239,65 @@ const Home: React.FC = () => {
         </div> 
 
         
+
+        </div></div>
+
+ <div className={`flex flex-row ${divcls}`}>
+        <div className="w-[35%]">
+        <h2 className="text-lg font-medium ">Your work experience</h2>
+        <p className="text-sm ">What other positions have you held?</p></div>
+
+        <div className="w-[61%] ml-[4%]">
+        {Exps.length}<br/> 
+        {!addExp&&<button className="text-[#2563eb]" onClick={(e)=>setaddExp(true)}>+ Add work experience</button>}
+        {addExp&&<div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[black] p-[8px] border  border-white rounded">
+
+        <div className="sm:col-span-2">
+            <label htmlFor="website" className={labelcls}>Company*</label>
+            <CompanySelect handle={(val:string)=>{handle('company',val,exp,setexp);}} val={exp.company || ''} />
+          </div>
+          
+          <div className="sm:col-span-2">
+            <label htmlFor="website" className={labelcls}>Title*</label>
+            <input
+              className="mt-1 h-[35px] w-full rounded-md border border-gray-400 p-4"
+              value={exp.title}
+              onChange={(e)=>handle('title',e.target.value,exp,setexp)}
+            /></div>
+        
+          <div className="sm:col-span-2">
+            <label htmlFor="website" className={labelcls}>Start date*</label>
+            <DatePickerComponent value={exp.start} handleChange={(val:Date | null)=>{handle('start',val,exp,setexp);}}/>
+          </div>
+
+          <div className="sm:col-span-2">
+            {!exp.currentlyWorking && <div><label htmlFor="website" className={labelcls}>End date*</label>
+            <DatePickerComponent value={exp.end} handleChange={(val:Date | null)=>{handle('end',val,exp,setexp);}}/></div>}
+            <div className="mt-[14px] flex flex-row align-center items-center"><ToggleSwitch isChecked={exp.currentlyWorking} onToggle={(val:boolean)=>{handle('currentlyWorking',val,exp,setexp);}} />
+            <span className="ml-[4px]">I currently work here</span></div></div>
+
+          <div className="sm:col-span-2">
+            <label htmlFor="website" className={labelcls}>Description</label>
+            <textarea
+              className="mt-1 block w-full rounded-md border-gray-300 border border-gray-400 p-4 min-h-[205px]"
+              placeholder="Description"
+              value={exp.desc}
+              onChange={(e)=>handle('desc',e.target.value,exp,setexp)}
+            />
+          </div>
+
+          
+
+       <div className={buttondiv}>
+    <button className="text-white font-bold py-2 px-8 rounded" style={{backgroundColor:buttonbg}} onClick={(e)=>{setexp(expDef);setaddExp(false)}}>
+      Cancel
+    </button>
+    <button className="bg-purple-500 text-white font-bold px-8 rounded" style={{backgroundColor:buttonbg}} 
+    onClick={(e)=>{Exps.push(exp);setexp(expDef);setaddExp(false);}}>
+      Save
+    </button>
+  </div>
+        </div> }
 
         </div></div>
 
