@@ -1,6 +1,7 @@
 .custom-select-container .react-select__control {
   background-color: rgb(82, 82, 82); /* Change the background color */
   color: rgb(255, 255, 255); /* Change the text color */
+   
 }
 
 .custom-select-container .react-select__placeholder {
@@ -13,6 +14,14 @@
 
 .custom-select-container .react-select__menu {
   background-color: black; /* Change the dropdown background color */
+  /* For modern browsers */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+  /* For WebKit-based browsers */
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;}
 }
 
 .custom-select-container .react-select__option--is-selected {

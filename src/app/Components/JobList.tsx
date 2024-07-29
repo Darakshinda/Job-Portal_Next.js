@@ -24,9 +24,10 @@ interface JobListProps {
   selectedLocationTags: string[];
   selectedJobTags: string[];
   selectedTagTags: string[];
+  minsal:number[];maxsal:number[];
 }
 
-const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags, selectedTagTags,}) => {
+const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags, selectedTagTags,minsal,maxsal,}) => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
@@ -46,6 +47,12 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
       }
       if (selectedTagTags.length > 0) {
         params.append('tags', selectedTagTags.join(','));
+      }
+      if (minsal.length ==1) {
+        params.append('salary_min', minsal[0].toString());
+      }
+      if (maxsal.length ==1) {
+        params.append('salary_max', maxsal[0].toString());
       }
 
       params.append('limit', fetchCount.toString());
@@ -69,12 +76,12 @@ const JobList: React.FC<JobListProps> = ({ selectedLocationTags, selectedJobTags
   useEffect(() => {
     setJobs([]); // Clear previous jobs when tags or salary range change
     setPage(1); // Reset page number when tags or salary range change to refetch from the beginning
-  }, [selectedLocationTags, selectedJobTags, selectedTagTags]);
+  }, [selectedLocationTags, selectedJobTags, selectedTagTags,minsal,maxsal]);
 
   // Refetch jobs when tags, salary range or page change
   useEffect(() => {
     fetchJobs();
-  }, [selectedLocationTags, selectedJobTags, selectedTagTags, page]);
+  }, [selectedLocationTags, selectedJobTags, selectedTagTags,minsal,maxsal, page]);
 
   // Function to handle scroll event
   const handleScroll = () => {
