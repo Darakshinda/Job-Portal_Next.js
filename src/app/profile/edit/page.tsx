@@ -52,7 +52,7 @@ const Home: React.FC = () => {
   const [achievements, setachieve] = useState(achievementsFetch);
 
   const [identityFetch, setidentityFetch]=useState({
-    pronouns: "",PronounsSelfdescribe:'',pronounsdisp: false,gender: "",ethnicity: [],
+    pronouns: "",PronounsSelfdescribe:'',pronounsdisp: false,gender: "",genderSelfDescribe:'',ethnicity: [],
   });
   const [identity, setidentity] = useState(identityFetch);
 
@@ -181,6 +181,9 @@ return (<ExperienceCard
   EdusAtInd={EdusAtIndex}
 />);
   }
+
+  if(identity.PronounsSelfdescribe!='' && identity.pronouns!='Self-describe') handle('PronounsSelfdescribe','',identity,setidentity);
+  if(identity.genderSelfDescribe!='' && identity.gender!='Self-describe') handle('genderSelfDescribe','',identity,setidentity);
 
   const [addExp, setaddExp] = useState(false);
   const [addEdu, setaddEdu] = useState(false);
@@ -549,9 +552,7 @@ Self identifying is completely optional, and we'll handle your information with 
               <p className="">Pronouns</p>
             </label>
              <SearchableSelect options={pronouns} handle={(val:string)=>{handle('pronouns',val,identity,setidentity);}} val={identity.pronouns}/>
-             </div>
-
-{identity.pronouns=='Self-describe'&&<div className="sm:col-span-2">
+             {identity.pronouns=='Self-describe'&&<div className="sm:col-span-2 mt-4">
             <label htmlFor="website" className={labelcls}>
               <p className="">Pronouns – Self-describe</p>
             </label>
@@ -560,15 +561,29 @@ Self identifying is completely optional, and we'll handle your information with 
               placeholder="eg. She/They"
               onChange={(e)=>handle('PronounsSelfdescribe',e.target.value,identity,setidentity)} value={identity.PronounsSelfdescribe}/>
              </div>}
+             <div className="mt-[14px] flex flex-row align-center items-center">
+            <ToggleSwitch isChecked={identity.pronounsdisp} onToggle={(val:boolean)=>{handle('pronounsdisp',val,identity,setidentity);}} />
+            <span className="ml-[4px]">Display pronouns on my profile</span></div>
+             
+             </div>
+
 
 <div className="sm:col-span-2">
             <label htmlFor="website" className={labelcls}>
                <p className="">Gender Identity</p>
             </label>
             <SearchableSelect options={genderOpns} handle={(val:string)=>{handle('gender',val,identity,setidentity);}} val={identity.gender}/>
-            <div className="mt-[14px] flex flex-row align-center items-center">
-            <ToggleSwitch isChecked={identity.pronounsdisp} onToggle={(val:boolean)=>{handle('pronounsdisp',val,identity,setidentity);}} />
-            <span className="ml-[4px]">Display pronouns on my profile</span></div>
+            {identity.gender=='Self-describe'&&<div className="sm:col-span-2 mt-4">
+            <label htmlFor="website" className={labelcls}>
+              <p className="">Gender Identity – Self-describe
+              </p>
+            </label>
+            <input
+              className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
+              placeholder="Please write in your description"
+              onChange={(e)=>handle('genderSelfDescribe',e.target.value,identity,setidentity)} value={identity.genderSelfDescribe}/>
+             </div>}
+           
            </div>
 
 <div className="sm:col-span-2">
