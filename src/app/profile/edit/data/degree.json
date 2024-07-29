@@ -1,0 +1,22 @@
+[
+    { "label": "Associate's Degree", "value": "Associate's Degree" },
+    { "label": "Bachelor of Arts (BA)", "value": "Bachelor of Arts (BA)" },
+    { "label": "Bachelor of Business Administration (BBA)", "value": "Bachelor of Business Administration (BBA)" },
+    { "label": "Bachelor of Engineering (BEng)", "value": "Bachelor of Engineering (BEng)" },
+    { "label": "Bachelor of Fine Arts (BFA)", "value": "Bachelor of Fine Arts (BFA)" },
+    { "label": "Bachelor of Science (BS)", "value": "Bachelor of Science (BS)" },
+    { "label": "Bachelor's Degree", "value": "Bachelor's Degree" },
+    { "label": "Engineer's Degree", "value": "Engineer's Degree" },
+    { "label": "Master of Arts (MA)", "value": "Master of Arts (MA)" },
+    { "label": "Master of Business Administration (MBA)", "value": "Master of Business Administration (MBA)" },
+    { "label": "Master of Fine Arts (MFA)", "value": "Master of Fine Arts (MFA)" },
+    { "label": "Master of Science (MS)", "value": "Master of Science (MS)" },
+    { "label": "Master's Degree", "value": "Master's Degree" },
+    { "label": "Doctor of Philosophy (PhD)", "value": "Doctor of Philosophy (PhD)" },
+    { "label": "Doctor of Medicine (MD)", "value": "Doctor of Medicine (MD)" },
+    { "label": "Juris Doctor (JD)", "value": "Juris Doctor (JD)" },
+    { "label": "High School Diploma", "value": "High School Diploma" },
+    { "label": "Non-Degree Program (e.g. Coursera certificate)", "value": "Non-Degree Program (e.g. Coursera certificate)" },
+    { "label": "Other", "value": "Other" }
+  ]
+  

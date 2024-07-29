@@ -10,11 +10,11 @@ interface ExperienceCardProps {
   title: string;
   start: Date | null;currentlyWorking:boolean;
   end: Date | null;
-  description: string;Exps:object[];ind:number;
-  update:Function;del:Function;flgedit:boolean;
+  description: string;ind:number;
+  update:Function;del:Function;flgedit:boolean;ExpsAtInd:Function;
 }
 
-const ExperienceCard: React.FC<ExperienceCardProps> = ({ company, title, start=null, end=null, description,currentlyWorking,ind,update,flgedit,del }) => {
+const ExperienceCard: React.FC<ExperienceCardProps> = ({ company, title, start=null, end=null, description,currentlyWorking,ind,update,flgedit,del,ExpsAtInd }) => {
     const [edit, setedit] = useState(false);const buttonbg='rgb(30, 7, 94)',buttondiv="flex space-x-4",labelcls="block text-sm font-medium text-[16px] font-bold";
     
     const handle = (key: string, value: string,obj:object,setObj:Function) => {
@@ -33,10 +33,6 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ company, title, start=n
 
       const formatDate = (date: Date | null) => {
         return date ? format(date, 'MMM yyyy') : '';
-      };
-
-      const updater = (exps: object[]) => {
-        update(exps)
       };
 
       let startStr=formatDate(start),endStr=formatDate(end);
@@ -113,7 +109,9 @@ return (
     <button className="text-white text-[12px] ml-[11px] font-bold"
      onClick=
      {(e)=>{if (window.confirm('Are you sure you want to delete this Experience?'))
-            {del(ind);flgedit(false);}}}>
+            {del(ind);flgedit(false);console.log(ExpsAtInd(ind+1));setexpdef(ExpsAtInd(ind+1));setexp(ExpsAtInd(ind+1));
+              setedit(false);
+            }}}>
       Remove Experience
     </button>
   </div>

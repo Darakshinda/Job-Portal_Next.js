@@ -17,6 +17,8 @@ import ExperienceCard from "@/app/Components/ExperienceCard";
 
 import { format } from 'date-fns';
 import DateSelect from "@/app/Components/DatePickerComponent";
+import EducationCard from "@/app/Components/EducationCard";
+import degreeOpns from "./data/degree.json";
 
 
 
@@ -50,7 +52,7 @@ const Home: React.FC = () => {
   const [achievements, setachieve] = useState(achievementsFetch);
 
   const [identityFetch, setidentityFetch]=useState({
-    pronouns: "",pronounsdisp: false,gender: "",ethnicity: [],
+    pronouns: "",PronounsSelfdescribe:'',pronounsdisp: false,gender: "",ethnicity: [],
   });
   const [identity, setidentity] = useState(identityFetch);
 
@@ -95,6 +97,16 @@ const Home: React.FC = () => {
      
   };
 
+  const EdusAtIndex = (index: number) => {
+    if(index==Edus.length) return null;
+    return Edus[index];
+  };
+
+  const ExpsAtIndex = (index: number) => {
+    if(index==Exps.length) return null;
+    return Exps[index];
+  };
+
   const updateItem = (index: number, newItem: object[]) => {
     Exps[index]=newItem;
   };
@@ -123,20 +135,19 @@ return (<ExperienceCard
   currentlyWorking={experience.currentlyWorking}
   description={experience.desc}
   ind={ind} Exps={Exps} update={updateItem} del={deleteItem}
-   flgedit={seteditedflg}
+   flgedit={seteditedflg} ExpsAtInd={ExpsAtIndex}
 />);
   }
 const renderEdu = (experience:object,ind:number) => {
 
-return (<ExperienceCard
-  company={experience.company}
-  title={experience.title}
-  start={experience.start}
-  end={experience.end}
-  currentlyWorking={experience.currentlyWorking}
-  description={experience.desc}
-  ind={ind} Edus={Edus} update={updateItem} del={deleteItem}
-   flgedit={seteditedflg}
+return (<EducationCard
+  education={experience.education}
+  graduation={experience.graduation}
+  degree={experience.degree}
+  gpa={experience.gpa}
+  maxgpa={experience.maxgpa}
+  ind={ind} Edus={Edus} update={updateEdusItem} del={deleteEdusItem}
+   flgedit={seteditedflg} EdusAtInd={EdusAtIndex}
 />);
   }
 
@@ -144,15 +155,15 @@ const renderEditedExp = (experience:object,ind:number) => {
 
   seteditedflg(false);
 
-return (<ExperienceCard
-  company={experience.company}
-  title={experience.title}
-  start={experience.start}
-  end={experience.end}
-  currentlyWorking={experience.currentlyWorking}
-  description={experience.desc}
-  ind={ind} Exps={Exps} update={updateItem} flgedit={seteditedflg}
-/>);
+  return (<EducationCard
+    education={experience.education}
+    graduation={experience.graduation}
+    degree={experience.degree}
+    gpa={experience.gpa}
+    maxgpa={experience.maxgpa}
+    ind={ind} Edus={Edus} update={updateEdusItem} del={deleteEdusItem}
+     flgedit={seteditedflg} ExpsAtInd={ExpsAtIndex}
+  />);
   }
 
 const renderEditedEdu = (experience:object,ind:number) => {
@@ -167,6 +178,7 @@ return (<ExperienceCard
   currentlyWorking={experience.currentlyWorking}
   description={experience.desc}
   ind={ind} Edus={Edus} update={updateItem} flgedit={seteditedflg}
+  EdusAtInd={EdusAtIndex}
 />);
   }
 
@@ -406,10 +418,10 @@ return (<ExperienceCard
    
       
       {!editedflg&&Edus.map((experience, index) => (
-        renderExp(experience,index)
+        renderEdu(experience,index)
       ))}
       {editedflg&&Edus.map((experience, index) => (
-        renderEditedExp(experience,index)
+        renderEditedEdu(experience,index)
       ))}
   
         
@@ -423,12 +435,12 @@ return (<ExperienceCard
         
         <div className="sm:col-span-2">
             <label htmlFor="website" className={labelcls}>Graduation*</label>
-            <DateSelect value={exp.start} handleChange={(val:string)=>{handle('graduation',val,edu,setedu);}}/>
+            <DateSelect value={edu.graduation} handleChange={(val:string)=>{handle('graduation',val,edu,setedu);}}/>
           </div>
 
           <div className="sm:col-span-2">
            <label htmlFor="website" className={labelcls}>Degree & Major</label>
-            <SearchableSelect options={pronouns} handle={(val:string)=>{handle('degree',val,edu,setedu);}} val={edu.degree}/>
+            <SearchableSelect options={degreeOpns} handle={(val:string)=>{handle('degree',val,edu,setedu);}} val={edu.degree}/>
            </div>
 
            <div className="sm:col-span-2">
@@ -538,6 +550,16 @@ Self identifying is completely optional, and we'll handle your information with 
             </label>
              <SearchableSelect options={pronouns} handle={(val:string)=>{handle('pronouns',val,identity,setidentity);}} val={identity.pronouns}/>
              </div>
+
+{identity.pronouns=='Self-describe'&&<div className="sm:col-span-2">
+            <label htmlFor="website" className={labelcls}>
+              <p className="">Pronouns – Self-describe</p>
+            </label>
+            <input
+              className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
+              placeholder="eg. She/They"
+              onChange={(e)=>handle('PronounsSelfdescribe',e.target.value,identity,setidentity)} value={identity.PronounsSelfdescribe}/>
+             </div>}
 
 <div className="sm:col-span-2">
             <label htmlFor="website" className={labelcls}>
