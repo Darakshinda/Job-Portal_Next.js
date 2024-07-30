@@ -23,7 +23,7 @@ const Home: React.FC = () => {
   const [selectedLocationTags, setSelectedLocationTags] = useState<string[]>([]);
   const [selectedJobTags, setSelectedJobTags] = useState<string[]>([]);
   const [selectedTagTags, setSelectedTagTags] = useState<string[]>([]);
-  const [minsal, setminsal] = useState([0, 100000]);const [maxsal, setmaxsal] = useState([0, 100000]);
+  const [minsal, setminsal] = useState([0]);const [maxsal, setmaxsal] = useState([200000]);
 
   const handleLocationTagSelection = (tags: string[]) => {
     setSelectedLocationTags(tags);

@@ -19,7 +19,6 @@ const SalaryRangeSlider: React.FC<SalaryRangeSliderProps> = ({
   return (
     <div className="salary-range-slider">
       <div className="flex justify-between items-center mb-2">
-        <span>{label}</span> {/* Display label */}
         <span>${salaryRange[0]}</span> {/* Display selected salary */}
       </div>
       <Range
