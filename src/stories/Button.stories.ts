@@ -12,7 +12,6 @@ const meta = {
   argTypes: {
     backgroundColor: { control: 'color' },
   },
-  
   args: { onClick: fn() },
 } satisfies Meta<typeof Button>;
 

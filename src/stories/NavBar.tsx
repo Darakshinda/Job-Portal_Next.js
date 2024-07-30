@@ -1,11 +1,12 @@
 import React from 'react';
+import Link from "next/link";
 
 interface NavBarProps {
   starticon?: boolean;
   menu?: boolean;
   endIcon?: boolean;
   variant?: 'default' | 'neutral' | 'primary';
-  withSearch?: boolean;
+  withSearch?: boolean;post?:boolean;
 }
 
 export const NavBar = ({
@@ -13,7 +14,7 @@ export const NavBar = ({
   menu = false,
   endIcon = true,
   variant = 'default',
-  withSearch = false,
+  withSearch = false,post=false,
 }: NavBarProps) => {
   let navbarClass = "navbar";
   let buttonClass = "btn btn-ghost text-xl";
@@ -30,7 +31,7 @@ export const NavBar = ({
   }
 
   return (
-    <div className={`${navbarClass} border border-gray-300 shadow-lg rounded-md`} style={{ width: "600px" }}>
+    <div className={`${navbarClass} border border-gray-300 shadow-lg rounded-md`}>
       {starticon && (
         <div className="flex-none">
           <button className="btn btn-square btn-ghost">
@@ -40,8 +41,10 @@ export const NavBar = ({
           </button>
         </div>
       )}
-      <div className="flex-1">
-        <a className={buttonClass}>daisyUI</a>
+      <div className="flex-1"> 
+        <a className={`text-black p-6 text-3xl `} >CodeUnity</a>
+        {post&&<main className="flex-1"><a className={`${buttonClass} text-black ml-[25%] font-serif p-21`} style={{fontSize:"250%"}}>{"Hire remotely"}</a>
+        <Link href="/"><button className='btn btn-error ml-[27%] text-white font-bold'>Back{" <--"}</button></Link></main>}
       </div>
       {menu && (
         <div className="flex-none">

@@ -16,6 +16,7 @@
   }
 }
 
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -29,5 +30,17 @@ body {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+.scrollbar-hide {
+  /* For modern browsers */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+  /* For WebKit-based browsers */
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
   }
 }
