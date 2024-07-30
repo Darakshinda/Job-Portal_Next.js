@@ -2,11 +2,16 @@ import React from 'react'
 
 const ApplicantCard = ({ applicant }) => (
     <div className="flex items-center mb-4 bg-gray-800 p-4 rounded-lg">
-      <div className="avatar">
+      {applicant.profilePicture && <div className="avatar">
         <div className="w-16 rounded-full">
-          <img src={applicant.profilePicture || 'default-avatar.png'} alt={applicant.name} />
+          <img src={applicant.profilePicture} alt={applicant.name} />
         </div>
-      </div>
+      </div>}
+      {!applicant.profilePicture && <div className="avatar placeholder">
+          <div className="w-16 rounded-full">
+            <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y" alt={applicant.name} />
+          </div>
+        </div>}
       <div className="ml-4">
         <h4 className="text-lg font-medium text-white">{applicant.applicant_name}</h4>
         <p className="text-gray-500">Email: {applicant.applicant_email}</p>

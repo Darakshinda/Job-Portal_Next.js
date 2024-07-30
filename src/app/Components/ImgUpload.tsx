@@ -3,11 +3,18 @@ import React, { useRef, useState } from 'react';
 interface ImgProps {
     keyy:string;
     onChange: Function;
+    resetflg: boolean;
+    val: string;
   }
 
-const UploadButton: React.FC<ImgProps> = ({onChange,keyy}) => {
+const UploadButton: React.FC<ImgProps> = ({onChange,keyy,resetflg=false,val}) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+
+  if(resetflg && val!= backgroundImage){
+    setBackgroundImage(val);
+    console.log("Background Image",backgroundImage);
+  }
 
   const handleButtonClick = () => {
     fileInputRef.current?.click();

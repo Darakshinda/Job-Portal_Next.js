@@ -46,7 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userName }) => {
             onOutsideClick={() => setShowTrialOptions(!showTrialOptions)}
           >
             <div className="mt-2 bg-gray-800">
-              <Link href={`/hirerDash/profile`} className="block w-full text-left p-2 hover:bg-gray-700">
+              <Link href={`/profile`} className="block w-full text-left p-2 hover:bg-gray-700">
                 Profile
               </Link>
               <button

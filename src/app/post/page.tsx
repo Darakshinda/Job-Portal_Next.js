@@ -359,7 +359,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
   return (
     <div className="flex bg-[#10161e]">
       <Sidebar userName={username} />
-      <div className="md:pl-[15%] sm:pl-[19%]">
+      <div className="ml-[230px] pl-10">
         {!previewMode && (
           <form
             onSubmit={handleSubmit}

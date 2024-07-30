@@ -75,10 +75,10 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
                 className="btn btn-ghost btn-circle avatar top-[82px] left-[13%]"
               >
                 <div
-                  className="w-20 rounded-full border border-white"
+                  className="w-20 rounded-full border border-white bg-white"
                   style={{ marginLeft: "0%" }}
                 >
-                  <img alt="Tailwind CSS Navbar component" src={job.logo} />
+                  <img alt="Profile Picture" src={job.logo} />
                 </div>
               </div>
 
@@ -122,7 +122,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
                   className="head"
                   style={{ background: bgcol, color: "white" }}
                 >
-                  EMPLOYMENT TYPE:{" "}
+                  Employment Type:{" "}
                 </span>
                 <div style={{ marginTop: "18px" }}>{job.emptype}</div>
               </div>
@@ -139,7 +139,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
                       className="head"
                       style={{ background: bgcol, color: "white" }}
                     >
-                      PRIMARY TAG:
+                      Primary Tag:
                     </span>
                     <div style={{ marginTop: "18px" }}>{job.primtg}</div>
                   </div>
@@ -155,7 +155,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
                   className="head"
                   style={{ background: bgcol, color: "white" }}
                 >
-                  TECHNICAL SKILLS:
+                  Technical Skills:
                 </span>
                 <div style={{ marginTop: "18px" }}>{job.tags}</div>
               </div>
@@ -171,7 +171,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
                     className="head"
                     style={{ background: bgcol, color: "white" }}
                   >
-                    LOCATIONS ALLOWED:
+                    Locations Allowed:
                   </span>
                   <div style={{ marginTop: "18px" }}>{job.locns}</div>
                 </div>
@@ -187,7 +187,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
                   className="head"
                   style={{ background: bgcol, color: "white" }}
                 >
-                  SALARY RANGE:
+                  Salary Range:
                 </span>
                 <div
                   style={{ marginTop: "18px" }}
@@ -204,7 +204,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
                   className="head"
                   style={{ background: bgcol, color: "white" }}
                 >
-                  BENEFITS:
+                  Benefits:
                 </span>
                 <div style={{ marginTop: "18px" }}>{job.benefits}</div>
               </div>
@@ -217,7 +217,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
                   color: "white",
                 }}
               >
-                JOB DESCRIPTION:
+                Job Description:
               </span>
               <div
                 className=" scrollbar-hide"
@@ -244,7 +244,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
                       color: "white",
                     }}
                   >
-                    HOW TO APPLY:
+                    How to Apply:
                   </span>
                   <div
                     className=" scrollbar-hide"

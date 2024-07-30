@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Tag from '@/app/Components/Tag';
 import ClickOutsideDiv from '../app/Components/ClickoutsideDiv';
-// import "../app/Components/ClickoutsideDiv.css";
+import "../app/Components/ClickoutsideDiv.css";
 
 
 interface Option {
@@ -46,7 +46,7 @@ export const Tags2: React.FC<Props> = ({
   const [tags, setTags] = useState<string[]>([]);
 
   useEffect(() => {
-    settgs(tags.join(','));
+    settgs(tags);
     onSelect(tags); // Notify parent component of the selected tags
   }, [tags]);
 
