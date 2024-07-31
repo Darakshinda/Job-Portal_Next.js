@@ -24,6 +24,7 @@ interface ProfileData {
   preferred_hourly_pay: string | null;
   years_of_experience: number | null;
   profile_picture: string | null;
+  account_type: string;
   // Add other fields as per your API response
 }
 
@@ -31,6 +32,7 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 const ProfilePage = () => {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [isHirer, setIsHirer] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -49,6 +51,9 @@ const ProfilePage = () => {
         });
 
         setProfileData(response.data);
+        if(response.data.account_type === 'job_hirer'){
+          setIsHirer(true);
+        }
       } catch (error) {
         console.error("Error fetching profile:", error);
       }
@@ -90,7 +95,7 @@ const ProfilePage = () => {
             </div>
 
             <div className="flex gap-2">
-              <Link href={`/profile/edit`}>
+              <Link href={`/profile/edit/${isHirer}`}>
                 <FaEdit
                   size={20}
                   className="text-gray-500 hover:text-orange-500 cursor-pointer"

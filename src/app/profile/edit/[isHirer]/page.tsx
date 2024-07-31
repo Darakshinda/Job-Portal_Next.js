@@ -13,7 +13,7 @@ import SelectTags from "@/app/Components/SelectTags";
 import Select, { MultiValue, SingleValue } from "react-select";
 import { TextInput } from "@/stories/TextInput";
 import Sidebar from "@/app/Components/HireDashSidebar";
-import "./Stylin.css";
+import './Stylin.css'
 import ToggleSwitch from "@/app/Components/ToggleSwitch";
 import MultiSelect from "@/app/Components/MultiSelect";
 import CompanySelect from "@/app/Components/CompanySelect";
@@ -26,7 +26,9 @@ import DateSelect from "@/app/Components/DatePickerComponent";
 import EducationCard from "@/app/Components/EducationCard";
 import degreeOpns from "./data/degree.json";
 
-const Home: React.FC = () => {
+const Home = ({params}: {params: {isHirer : boolean}}) => {
+  const [hirer, setHirer] = useState(params.isHirer);
+  const [seeker, setSeeker] = useState(!params.isHirer);
   const [aboutFetch, setaboutFetch] = useState({
     name: "",
     company_name: "",
@@ -314,21 +316,25 @@ const Home: React.FC = () => {
                         }
                       />
 
-                      <label htmlFor="website" className={labelcls}>
-                        Company Name*
-                      </label>
-                      <input
-                        className="mt-1 h-[35px] w-full rounded-md border bg-gray-100 text-black border-gray-400 p-4"
-                        value={about.company_name}
-                        onChange={(e) =>
-                          handle(
-                            "company_name",
-                            e.target.value,
-                            about,
-                            setabout
-                          )
-                        }
-                      />
+                      {hirer && (
+                        <div>
+                          <label htmlFor="website" className={labelcls}>
+                            Company Name*
+                          </label>
+                          <input
+                            className="mt-1 h-[35px] w-full rounded-md border bg-gray-100 text-black border-gray-400 p-4"
+                            value={about.company_name}
+                            onChange={(e) =>
+                              handle(
+                                "company_name",
+                                e.target.value,
+                                about,
+                                setabout
+                              )
+                            }
+                          />
+                        </div>
+                      )}
 
                       <div className="mt-[14px] flex flex-row align-center items-center">
                         <UploadButton
@@ -357,111 +363,134 @@ const Home: React.FC = () => {
                       )}
                     </div>
 
-                    <label htmlFor="website" className={labelcls}>
-                      Designation*
-                    </label>
-                    <input
-                      className="mt-1 h-[35px] w-full rounded-md border bg-gray-100 text-black border-gray-400 p-4"
-                      value={about.designation}
-                      onChange={(e) =>
-                        handle("designation", e.target.value, about, setabout)
-                      }
-                    />
-
-                    {/* <div className="sm:col-span-2">
-                      <label htmlFor="website" className={labelcls}>
-                        Where are you based?*
-                      </label>
-                      <LocationSearch
-                        val={about.locn}
-                        handle={(val: string) => {
-                          handle("locn", val, about, setabout);
-                        }}
-                      />
-                    </div> */}
-
-                    {/* <div className="flex flex-row w-[220%]">
-                      <div className="sm:col-span-2 w-[70%]">
+                    {hirer && (
+                      <div>
                         <label htmlFor="website" className={labelcls}>
-                          Select your primary role*
+                          Designation*
                         </label>
-                        <SearchableSelect
+                        <input
+                          className="mt-1 h-[35px] w-full rounded-md border bg-gray-100 text-black border-gray-400 p-4"
+                          value={about.designation}
+                          onChange={(e) =>
+                            handle(
+                              "designation",
+                              e.target.value,
+                              about,
+                              setabout
+                            )
+                          }
+                        />
+                      </div>
+                    )}
+
+                    {seeker && (
+                      <div className="sm:col-span-2">
+                        <label htmlFor="website" className={labelcls}>
+                          Where are you based?*
+                        </label>
+                        <LocationSearch
+                          val={about.locn}
+                          handle={(val: string) => {
+                            handle("locn", val, about, setabout);
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    {seeker && (
+                      <div className="flex flex-row w-[220%]">
+                        <div className="sm:col-span-2 w-[70%]">
+                          <label htmlFor="website" className={labelcls}>
+                            Select your primary role*
+                          </label>
+                          <SearchableSelect
+                            options={primRole}
+                            phdr="Select your primary role"
+                            handle={(val: string) => {
+                              handle("primrole", val, about, setabout);
+                            }}
+                            val={about.primrole}
+                          />
+                        </div>
+                        <div className="sm:col-span-2 w-[25%] ml-[5%]">
+                          <label htmlFor="website" className={labelcls}>
+                            Years*
+                          </label>
+                          <SearchableSelect
+                            options={expOpns}
+                            phdr="Experience"
+                            handle={(val: string) => {
+                              handle("yrs", val, about, setabout);
+                            }}
+                            val={about.yrs}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {seeker && (
+                      <div className="sm:col-span-2">
+                        <label htmlFor="website" className={labelcls}>
+                          Open to the following roles
+                        </label>
+                        <SelectTags
                           options={primRole}
-                          phdr="Select your primary role"
-                          handle={(val: string) => {
-                            handle("primrole", val, about, setabout);
+                          phdr="Select Roles"
+                          handle={(val: any) => {
+                            handle("openroles", val, about, setabout);
                           }}
-                          val={about.primrole}
+                          val={about.openroles}
                         />
                       </div>
-                      <div className="sm:col-span-2 w-[25%] ml-[5%]">
+                    )}
+
+                    {hirer && (
+                      <div>
                         <label htmlFor="website" className={labelcls}>
-                          Years*
+                          Type of Company (Product based or Service Based)*
                         </label>
-                        <SearchableSelect
-                          options={expOpns}
-                          phdr="Experience"
-                          handle={(val: string) => {
-                            handle("yrs", val, about, setabout);
-                          }}
-                          val={about.yrs}
+                        <input
+                          className="mt-1 h-[35px] w-full rounded-md border bg-gray-100 text-black border-gray-400 p-4"
+                          value={about.product_service}
+                          onChange={(e) =>
+                            handle(
+                              "product_service",
+                              e.target.value,
+                              about,
+                              setabout
+                            )
+                          }
                         />
                       </div>
-                    </div> */}
+                    )}
 
-                    {/* <div className="sm:col-span-2">
-                      <label htmlFor="website" className={labelcls}>
-                        Open to the following roles
-                      </label>
-                      <SelectTags
-                        options={primRole}
-                        phdr="Select Roles"
-                        handle={(val: any) => {
-                          handle("openroles", val, about, setabout);
-                        }}
-                        val={about.openroles}
-                      />
-                    </div> */}
-
-                    <label htmlFor="website" className={labelcls}>
-                      Type of Company (Product based or Service Based)*
-                    </label>
-                    <input
-                      className="mt-1 h-[35px] w-full rounded-md border bg-gray-100 text-black border-gray-400 p-4"
-                      value={about.product_service}
-                      onChange={(e) =>
-                        handle(
-                          "product_service",
-                          e.target.value,
-                          about,
-                          setabout
-                        )
-                      }
-                    />
-
-                    <label htmlFor="website" className={labelcls}>
-                      Company Stage*
-                    </label>
-                    <input
-                      className="mt-1 h-[35px] w-full rounded-md border bg-gray-100 text-black border-gray-400 p-4"
-                      value={about.company_stage}
-                      onChange={(e) =>
-                        handle(
-                          "company_stage",
-                          e.target.value,
-                          about,
-                          setabout
-                        )
-                      }
-                    />
+                    {hirer && (
+                      <div>
+                        <label htmlFor="website" className={labelcls}>
+                          Company Stage*
+                        </label>
+                        <input
+                          className="mt-1 h-[35px] w-full rounded-md border bg-gray-100 text-black border-gray-400 p-4"
+                          value={about.company_stage}
+                          onChange={(e) =>
+                            handle(
+                              "company_stage",
+                              e.target.value,
+                              about,
+                              setabout
+                            )
+                          }
+                        />
+                      </div>
+                    )}
 
                     <div className="sm:col-span-2">
                       <label htmlFor="website" className={labelcls}>
-                        Company Description
+                        {seeker ? "Bio" : "Company Description"}
                       </label>
                       <textarea
                         className="mt-1 block w-full rounded-md border bg-gray-100 text-black border-gray-400 p-4 min-h-[205px]"
-                        placeholder="Stanford CS, Full stack generalist; launched a successful Android app, worked at Google"
+                        placeholder={seeker ? "Stanford CS, Full stack generalist; launched a successful Android app, worked at Google" : "AI-first startup based on LLMs"}
                         value={about.bio}
                         onChange={(e) =>
                           handle("bio", e.target.value, about, setabout)
@@ -625,342 +654,352 @@ const Home: React.FC = () => {
                 </div>
               </div>
 
-              {/* <div className={`flex flex-row ${divcls}`}>
-                <div className="w-[35%]">
-                  <h2 className="text-lg font-medium ">Your work experience</h2>
-                  <p className="text-sm ">
-                    What other positions have you held?
-                  </p>
-                </div>
+              {seeker && (
+                <div className={`flex flex-row ${divcls}`}>
+                  <div className="w-[35%]">
+                    <h2 className="text-lg font-medium ">
+                      Your work experience
+                    </h2>
+                    <p className="text-sm ">
+                      What other positions have you held?
+                    </p>
+                  </div>
 
-                <div className="w-[61%] ml-[4%]">
-                  {!editedflg &&
-                    Exps.map((experience, index) =>
-                      renderExp(experience, index)
+                  <div className="w-[61%] ml-[4%]">
+                    {!editedflg &&
+                      Exps.map((experience, index) =>
+                        renderExp(experience, index)
+                      )}
+                    {editedflg &&
+                      Exps.map((experience, index) =>
+                        renderEditedExp(experience, index)
+                      )}
+
+                    {!addExp && (
+                      <button
+                        className="text-[#2563eb] mt-[9px]"
+                        onClick={(e) => setaddExp(true)}
+                      >
+                        + Add work experience
+                      </button>
                     )}
-                  {editedflg &&
-                    Exps.map((experience, index) =>
-                      renderEditedExp(experience, index)
-                    )}
+                    {addExp && (
+                      <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[#fffff0] p-[8px] border border-grey-100 rounded text-black">
+                        <div className="sm:col-span-2">
+                          <label htmlFor="website" className={labelcls}>
+                            Company*
+                          </label>
+                          <CompanySelect
+                            handle={(val: string) => {
+                              handle("company", val, exp, setexp);
+                            }}
+                            val={exp.company || ""}
+                          />
+                        </div>
 
-                  {!addExp && (
-                    <button
-                      className="text-[#2563eb] mt-[9px]"
-                      onClick={(e) => setaddExp(true)}
-                    >
-                      + Add work experience
-                    </button>
-                  )}
-                  {addExp && (
-                    <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[#fffff0] p-[8px] border border-grey-100 rounded text-black">
-                      <div className="sm:col-span-2">
-                        <label htmlFor="website" className={labelcls}>
-                          Company*
-                        </label>
-                        <CompanySelect
-                          handle={(val: string) => {
-                            handle("company", val, exp, setexp);
-                          }}
-                          val={exp.company || ""}
-                        />
-                      </div>
+                        <div className="sm:col-span-2">
+                          <label htmlFor="website" className={labelcls}>
+                            Title*
+                          </label>
+                          <input
+                            className="mt-1 h-[35px] w-full rounded-md border border-gray-400 p-4"
+                            value={exp.title}
+                            onChange={(e) =>
+                              handle("title", e.target.value, exp, setexp)
+                            }
+                          />
+                        </div>
 
-                      <div className="sm:col-span-2">
-                        <label htmlFor="website" className={labelcls}>
-                          Title*
-                        </label>
-                        <input
-                          className="mt-1 h-[35px] w-full rounded-md border border-gray-400 p-4"
-                          value={exp.title}
-                          onChange={(e) =>
-                            handle("title", e.target.value, exp, setexp)
-                          }
-                        />
-                      </div>
-
-                      <div className="sm:col-span-2">
-                        <label htmlFor="website" className={labelcls}>
-                          Start date*
-                        </label>
-                        <DateSelect
-                          value={exp.start}
-                          handleChange={(val: string) => {
-                            handle("start", val, exp, setexp);
-                          }}
-                        />
-                      </div>
-
-                      <div className="sm:col-span-2">
-                        {!exp.currentlyWorking && (
-                          <div>
-                            <label htmlFor="website" className={labelcls}>
-                              End date*
-                            </label>
-                            <DateSelect
-                              value={exp.end}
-                              handleChange={(val: string) => {
-                                handle("end", val, exp, setexp);
-                              }}
-                            />
-                          </div>
-                        )}
-                        <div className="mt-[14px] flex flex-row align-center items-center">
-                          <ToggleSwitch
-                            isChecked={exp.currentlyWorking}
-                            onToggle={(val: boolean) => {
-                              handle("currentlyWorking", val, exp, setexp);
+                        <div className="sm:col-span-2">
+                          <label htmlFor="website" className={labelcls}>
+                            Start date*
+                          </label>
+                          <DateSelect
+                            value={exp.start}
+                            handleChange={(val: string) => {
+                              handle("start", val, exp, setexp);
                             }}
                           />
-                          <span className="ml-[4px]">
-                            I currently work here
-                          </span>
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          {!exp.currentlyWorking && (
+                            <div>
+                              <label htmlFor="website" className={labelcls}>
+                                End date*
+                              </label>
+                              <DateSelect
+                                value={exp.end}
+                                handleChange={(val: string) => {
+                                  handle("end", val, exp, setexp);
+                                }}
+                              />
+                            </div>
+                          )}
+                          <div className="mt-[14px] flex flex-row align-center items-center">
+                            <ToggleSwitch
+                              isChecked={exp.currentlyWorking}
+                              onToggle={(val: boolean) => {
+                                handle("currentlyWorking", val, exp, setexp);
+                              }}
+                            />
+                            <span className="ml-[4px]">
+                              I currently work here
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label htmlFor="website" className={labelcls}>
+                            Description
+                          </label>
+                          <textarea
+                            className="mt-1 block w-full rounded-md border-gray-300 border border-gray-400 p-4 min-h-[205px]"
+                            placeholder="Description"
+                            value={exp.desc}
+                            onChange={(e) =>
+                              handle("desc", e.target.value, exp, setexp)
+                            }
+                          />
+                        </div>
+
+                        <div className={buttondiv}>
+                          <button
+                            className="text-white font-bold py-2 px-8 rounded"
+                            style={{ backgroundColor: buttonbg }}
+                            onClick={(e) => {
+                              setexp(expDef);
+                              setaddExp(false);
+                            }}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="bg-purple-500 text-white font-bold px-8 rounded"
+                            style={{ backgroundColor: buttonbg }}
+                            onClick={(e) => {
+                              Exps.push(exp);
+                              setexp(expDef);
+                              setaddExp(false);
+                            }}
+                          >
+                            Save
+                          </button>
                         </div>
                       </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
+              {seeker && (
+                <div className={`flex flex-row ${divcls}`}>
+                  <div className="w-[35%]">
+                    <h2 className="text-lg font-medium ">Education</h2>
+                    <p className="text-sm ">
+                      Which Institutions have you studied at?
+                    </p>
+                  </div>
+
+                  <div className="w-[61%] ml-[4%]">
+                    {!editedflg &&
+                      Edus.map((experience, index) =>
+                        renderEdu(experience, index)
+                      )}
+                    {editedflg &&
+                      Edus.map((experience, index) =>
+                        renderEditedEdu(experience, index)
+                      )}
+
+                    {!addEdu && (
+                      <button
+                        className="text-[#2563eb] mt-[9px]"
+                        onClick={(e) => setaddEdu(true)}
+                      >
+                        + Add Education
+                      </button>
+                    )}
+                    {addEdu && (
+                      <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[#fffff0] p-[8px] border border-grey-100 rounded text-black">
+                        <div className="sm:col-span-2">
+                          <label htmlFor="website" className={labelcls}>
+                            Education*
+                          </label>
+                          <EducationSelect
+                            handle={(val: string) => {
+                              handle("education", val, edu, setedu);
+                            }}
+                            val={edu.education || ""}
+                          />
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label htmlFor="website" className={labelcls}>
+                            Graduation*
+                          </label>
+                          <DateSelect
+                            value={edu.graduation}
+                            handleChange={(val: string) => {
+                              handle("graduation", val, edu, setedu);
+                            }}
+                          />
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label htmlFor="website" className={labelcls}>
+                            Degree & Major
+                          </label>
+                          <SearchableSelect
+                            options={degreeOpns}
+                            handle={(val: string) => {
+                              handle("degree", val, edu, setedu);
+                            }}
+                            val={edu.degree}
+                          />
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label htmlFor="website" className={labelcls}>
+                            GPA
+                          </label>
+                          <div className="flex flex-row ">
+                            <div className="sm:col-span-2 w-[47.5%]">
+                              <input
+                                className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
+                                placeholder="GPA"
+                                value={edu.gpa}
+                                onChange={(e) =>
+                                  handle("gpa", e.target.value, edu, setedu)
+                                }
+                              />
+                            </div>
+                            <div className="sm:col-span-2 w-[47.5%] ml-[5%]">
+                              <input
+                                className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
+                                placeholder="Max"
+                                value={edu.maxgpa}
+                                onChange={(e) =>
+                                  handle("maxgpa", e.target.value, edu, setedu)
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className={buttondiv}>
+                          <button
+                            className="text-white font-bold py-2 px-8 rounded"
+                            style={{ backgroundColor: buttonbg }}
+                            onClick={(e) => {
+                              setedu(eduDef);
+                              setaddEdu(false);
+                            }}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="bg-purple-500 text-white font-bold px-8 rounded"
+                            style={{ backgroundColor: buttonbg }}
+                            onClick={(e) => {
+                              Edus.push(edu);
+                              setedu(eduDef);
+                              setaddEdu(false);
+                            }}
+                          >
+                            Save
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {seeker && (
+                <div className={`flex flex-row ${divcls}`}>
+                  <div className="w-[35%]">
+                    <h2 className="text-lg font-medium ">Your Skills</h2>
+                    <p className="text-sm ">
+                      This will help startups hone in on your strengths.
+                    </p>
+                  </div>
+
+                  <div className="w-[61%] ml-[4%]">
+                    <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
                       <div className="sm:col-span-2">
-                        <label htmlFor="website" className={labelcls}>
-                          Description
-                        </label>
+                        <SelectTags
+                          options={skillsOpns}
+                          phdr="Select Roles"
+                          handle={setskills}
+                          val={skills}
+                        />
+                      </div>
+
+                      {!arraysEqual(skills, skillsFetch) && (
+                        <div className={buttondiv}>
+                          <button
+                            className="bg-purple-500 text-white font-bold py-2 px-8 rounded"
+                            onClick={(e) => setskills(skillsFetch)}
+                            style={{ backgroundColor: buttonbg }}
+                          >
+                            Reset
+                          </button>
+                          <button
+                            className="bg-purple-500 text-white font-bold px-8 rounded"
+                            onClick={(e) => setskillsFetch(skills)}
+                            style={{ backgroundColor: buttonbg }}
+                          >
+                            Save
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {seeker && (
+                <div className={`flex flex-row ${divcls}`}>
+                  <div className="w-[35%]">
+                    <h2 className="text-lg font-medium ">Achievements</h2>
+                    <p className="text-sm ">
+                      Sharing more details about yourself will help you stand
+                      out more.
+                    </p>
+                  </div>
+
+                  <div className="w-[61%] ml-[4%]">
+                    <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
+                      <div className="sm:col-span-2">
                         <textarea
-                          className="mt-1 block w-full rounded-md border-gray-300 border border-gray-400 p-4 min-h-[205px]"
-                          placeholder="Description"
-                          value={exp.desc}
-                          onChange={(e) =>
-                            handle("desc", e.target.value, exp, setexp)
-                          }
+                          className="mt-1 block w-full rounded-md bg-gray-100 text-black border border-gray-400 p-4 min-h-[205px]"
+                          placeholder="It's OK to brag - e.g. I launched 3 successful Facebook apps which in total reached 2M+ users and generated $100k+ in revenue. I built everything from the front-end to the back-end and everything in between."
+                          onChange={(e) => setachieve(e.target.value)}
+                          value={achievements}
                         />
                       </div>
 
-                      <div className={buttondiv}>
-                        <button
-                          className="text-white font-bold py-2 px-8 rounded"
-                          style={{ backgroundColor: buttonbg }}
-                          onClick={(e) => {
-                            setexp(expDef);
-                            setaddExp(false);
-                          }}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          className="bg-purple-500 text-white font-bold px-8 rounded"
-                          style={{ backgroundColor: buttonbg }}
-                          onClick={(e) => {
-                            Exps.push(exp);
-                            setexp(expDef);
-                            setaddExp(false);
-                          }}
-                        >
-                          Save
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className={`flex flex-row ${divcls}`}>
-                <div className="w-[35%]">
-                  <h2 className="text-lg font-medium ">Education</h2>
-                  <p className="text-sm ">
-                    Which Institutions have you studied at?
-                  </p>
-                </div>
-
-                <div className="w-[61%] ml-[4%]">
-                  {!editedflg &&
-                    Edus.map((experience, index) =>
-                      renderEdu(experience, index)
-                    )}
-                  {editedflg &&
-                    Edus.map((experience, index) =>
-                      renderEditedEdu(experience, index)
-                    )}
-
-                  {!addEdu && (
-                    <button
-                      className="text-[#2563eb] mt-[9px]"
-                      onClick={(e) => setaddEdu(true)}
-                    >
-                      + Add Education
-                    </button>
-                  )}
-                  {addEdu && (
-                    <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[#fffff0] p-[8px] border border-grey-100 rounded text-black">
-                      <div className="sm:col-span-2">
-                        <label htmlFor="website" className={labelcls}>
-                          Education*
-                        </label>
-                        <EducationSelect
-                          handle={(val: string) => {
-                            handle("education", val, edu, setedu);
-                          }}
-                          val={edu.education || ""}
-                        />
-                      </div>
-
-                      <div className="sm:col-span-2">
-                        <label htmlFor="website" className={labelcls}>
-                          Graduation*
-                        </label>
-                        <DateSelect
-                          value={edu.graduation}
-                          handleChange={(val: string) => {
-                            handle("graduation", val, edu, setedu);
-                          }}
-                        />
-                      </div>
-
-                      <div className="sm:col-span-2">
-                        <label htmlFor="website" className={labelcls}>
-                          Degree & Major
-                        </label>
-                        <SearchableSelect
-                          options={degreeOpns}
-                          handle={(val: string) => {
-                            handle("degree", val, edu, setedu);
-                          }}
-                          val={edu.degree}
-                        />
-                      </div>
-
-                      <div className="sm:col-span-2">
-                        <label htmlFor="website" className={labelcls}>
-                          GPA
-                        </label>
-                        <div className="flex flex-row ">
-                          <div className="sm:col-span-2 w-[47.5%]">
-                            <input
-                              className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
-                              placeholder="GPA"
-                              value={edu.gpa}
-                              onChange={(e) =>
-                                handle("gpa", e.target.value, edu, setedu)
-                              }
-                            />
-                          </div>
-                          <div className="sm:col-span-2 w-[47.5%] ml-[5%]">
-                            <input
-                              className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
-                              placeholder="Max"
-                              value={edu.maxgpa}
-                              onChange={(e) =>
-                                handle("maxgpa", e.target.value, edu, setedu)
-                              }
-                            />
-                          </div>
+                      {achievements != achievementsFetch && (
+                        <div className={buttondiv}>
+                          <button
+                            className="bg-purple-500 text-white font-bold py-2 px-8 rounded"
+                            onClick={(e) => setachieve(achievementsFetch)}
+                            style={{ backgroundColor: buttonbg }}
+                          >
+                            Reset
+                          </button>
+                          <button
+                            className="bg-purple-500 text-white font-bold px-8 rounded"
+                            onClick={(e) => setachieveFetch(achievements)}
+                            style={{ backgroundColor: buttonbg }}
+                          >
+                            Save
+                          </button>
                         </div>
-                      </div>
-                      <div className={buttondiv}>
-                        <button
-                          className="text-white font-bold py-2 px-8 rounded"
-                          style={{ backgroundColor: buttonbg }}
-                          onClick={(e) => {
-                            setedu(eduDef);
-                            setaddEdu(false);
-                          }}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          className="bg-purple-500 text-white font-bold px-8 rounded"
-                          style={{ backgroundColor: buttonbg }}
-                          onClick={(e) => {
-                            Edus.push(edu);
-                            setedu(eduDef);
-                            setaddEdu(false);
-                          }}
-                        >
-                          Save
-                        </button>
-                      </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </div>
-
-              <div className={`flex flex-row ${divcls}`}>
-                <div className="w-[35%]">
-                  <h2 className="text-lg font-medium ">Your Skills</h2>
-                  <p className="text-sm ">
-                    This will help startups hone in on your strengths.
-                  </p>
-                </div>
-
-                <div className="w-[61%] ml-[4%]">
-                  <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
-                    <div className="sm:col-span-2">
-                      <SelectTags
-                        options={skillsOpns}
-                        phdr="Select Roles"
-                        handle={setskills}
-                        val={skills}
-                      />
-                    </div>
-
-                    {!arraysEqual(skills, skillsFetch) && (
-                      <div className={buttondiv}>
-                        <button
-                          className="bg-purple-500 text-white font-bold py-2 px-8 rounded"
-                          onClick={(e) => setskills(skillsFetch)}
-                          style={{ backgroundColor: buttonbg }}
-                        >
-                          Reset
-                        </button>
-                        <button
-                          className="bg-purple-500 text-white font-bold px-8 rounded"
-                          onClick={(e) => setskillsFetch(skills)}
-                          style={{ backgroundColor: buttonbg }}
-                        >
-                          Save
-                        </button>
-                      </div>
-                    )}
                   </div>
                 </div>
-              </div>
-
-              <div className={`flex flex-row ${divcls}`}>
-                <div className="w-[35%]">
-                  <h2 className="text-lg font-medium ">Achievements</h2>
-                  <p className="text-sm ">
-                    Sharing more details about yourself will help you stand out
-                    more.
-                  </p>
-                </div>
-
-                <div className="w-[61%] ml-[4%]">
-                  <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
-                    <div className="sm:col-span-2">
-                      <textarea
-                        className="mt-1 block w-full rounded-md bg-gray-100 text-black border border-gray-400 p-4 min-h-[205px]"
-                        placeholder="It's OK to brag - e.g. I launched 3 successful Facebook apps which in total reached 2M+ users and generated $100k+ in revenue. I built everything from the front-end to the back-end and everything in between."
-                        onChange={(e) => setachieve(e.target.value)}
-                        value={achievements}
-                      />
-                    </div>
-
-                    {achievements != achievementsFetch && (
-                      <div className={buttondiv}>
-                        <button
-                          className="bg-purple-500 text-white font-bold py-2 px-8 rounded"
-                          onClick={(e) => setachieve(achievementsFetch)}
-                          style={{ backgroundColor: buttonbg }}
-                        >
-                          Reset
-                        </button>
-                        <button
-                          className="bg-purple-500 text-white font-bold px-8 rounded"
-                          onClick={(e) => setachieveFetch(achievements)}
-                          style={{ backgroundColor: buttonbg }}
-                        >
-                          Save
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div> */}
+              )}
 
               <div className={`flex flex-row ${divcls}`}>
                 <div className="w-[35%]">

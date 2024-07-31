@@ -6,7 +6,7 @@ import DateSelect from "./DatePickerComponent";
 import { format } from "date-fns";
 import EducationSelect from "./EducationSelect";
 import SearchableSelect from "./SearchableSelect";
-import degreeOpns from "../profile/edit/data/degree.json";
+import degreeOpns from "../../app/profile/edit/[isHirer]/data/degree.json";
 
 interface EducationCardProps {
   education: string;
