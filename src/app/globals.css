@@ -36,6 +36,10 @@ body {
   }
 }
 
+input[type="checkbox"] {
+  @apply bg-gray-100 !important;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

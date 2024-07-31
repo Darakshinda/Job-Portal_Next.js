@@ -86,7 +86,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
       axiosInstance
         .get(`${baseUrl}/accounts/profile/`)
         .then((response) => {
-          setUserName(response.data.first_name);
+          setUserName(response.data.first_name.split(' ')[0]);
           setEmail(response.data.working_email);
         })
         .catch((error) => {
@@ -165,7 +165,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
     return true;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     const res = disp();
     if (!res) return;
@@ -319,9 +319,9 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
       axiosInstance
         .get(`${baseUrl}/posted-jobs/`)
         .then((response) => {
-          console.log("Response:", response.data);
+          console.log("Response:", response.data.results);
 
-          const job = response.data.find(
+          const job = response.data.results.find(
             (job) => job.id.toString() === jobID.toString()
           );
           setuser({

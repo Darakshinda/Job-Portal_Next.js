@@ -9,7 +9,7 @@ interface SidebarProps {
   userName: string;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ userName }) => {
+const Sidebar: React.FC<SidebarProps> = ({userName}) => {
   const [showTrialOptions, setShowTrialOptions] = useState(false);
   const [currUserName, setCurrUserName] = useState(userName);
   const Router = useRouter();

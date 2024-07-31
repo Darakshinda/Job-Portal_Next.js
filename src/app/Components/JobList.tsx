@@ -50,7 +50,7 @@ const JobList: React.FC<JobListProps> = ({
   const bottomBoundaryRef = useRef<HTMLLIElement>(null);
 
   const unicodeRemoval = (tag: string) => {
-    return tag.replace(/[^\p{L}\p{M}]/gu, '');
+    return tag.replace(/[^\p{L}\p{M}\s]/gu, '');
   }
 
   const clearJobs = () => {
@@ -62,13 +62,24 @@ const JobList: React.FC<JobListProps> = ({
     try {
       const params = new URLSearchParams();
       if (selectedJobTags.length > 0) {
-        params.append("position", unicodeRemoval(selectedJobTags.join(",")));
+        const cleanedPosition = unicodeRemoval(selectedJobTags.join(","));
+        if(cleanedPosition){
+          params.append("position", cleanedPosition);
+        }
       }
       if (selectedLocationTags.length > 0) {
-        params.append("location", unicodeRemoval(selectedLocationTags.join(",")));
+        const cleanedLocation = unicodeRemoval(selectedLocationTags.join(","));
+        console.log("Cleaned Location:", cleanedLocation);
+        if(cleanedLocation){
+          params.append("location", cleanedLocation);
+        }
       }
       if (selectedTagTags.length > 0) {
-        params.append("tags", unicodeRemoval(selectedTagTags.join(",")));
+        const cleanedTags = unicodeRemoval(selectedTagTags.join(","));
+        console.log("Cleaned Tags:", cleanedTags);
+        if(cleanedTags){
+          params.append("tags", cleanedTags);
+        }
       }
 
       params.append("limit", fetchCount.toString());
@@ -78,13 +89,15 @@ const JobList: React.FC<JobListProps> = ({
       
 
       const url = `${baseurl}/${postedJobs ? "posted-jobs" : "jobs"}/?${params.toString()}`;
+      console.log("URL:", url);
+      
       const token = localStorage.getItem("access_token");
       console.log("Token: ", token);
       const config = postedJobs
         ? { headers: { Authorization: `Bearer ${token}` } }
         : {};
       const response = await axios.get(url, config);
-      console.log("Fetched jobs:", response.data);
+      console.log("Fetched jobs:", response.data.results);
       setJobs(response.data.results); // Replace new jobs to existing jobs
     } catch (error) {
       console.error("Error fetching jobs:", error?.response.data);
@@ -162,35 +175,6 @@ const JobList: React.FC<JobListProps> = ({
   return (
     <div className="flex justify-center p-4">
       <ul className="space-y-4 w-full flex flex-col items-center">
-        <JobCard
-          imgflg
-          bgcolor="#99ffff"
-          imgsrc="https://media-exp1.licdn.com/dms/image/C4D0BAQHNwdJlZmUh8g/company-logo_200_200/0/1593941980738?e=2159024400&v=beta&t=3rDBEuT39uXrBRU7KsCbJipH7WFm7A3hv0KeNDBCGb0"
-          bdg
-          position={"Manager"}
-          company_name={`CodeUnity`}
-          location_restriction={`🇮🇳 India ,⛩ Asia ,🕌 Middle East`}
-          tags={`🤓 Web Developer , ⚛️ React , ➡️ Next , 🟦 Typescript , 🤠 Django`}
-          created_at={`7/8/2024 00:56:23`}
-          job={{
-            company: `CodeUnity`,
-            position: "Manager",
-            emptype: "Full-time",
-            primtg: "",
-            tags: `🤓 Web Developer , ⚛️ React , ➡️ Next , 🟦 Typescript , 🤠 Django`,
-            locns: `🇮🇳 India ,⛩ Asia ,🕌 Middle East`,
-            logo: "https://media-exp1.licdn.com/dms/image/C4D0BAQHNwdJlZmUh8g/company-logo_200_200/0/1593941980738?e=2159024400&v=beta&t=3rDBEuT39uXrBRU7KsCbJipH7WFm7A3hv0KeNDBCGb0",
-            minsal: `USD 20,000 per year`,
-            maxsal: `USD 50,000 per year`,
-            desc: `job.job_description`,
-            benefits: "💰 401(k) , 🌎 Distributed team , 📆 4 day workweek",
-            how2apply: ``,
-          }}
-          viewDetails={view}
-          onApply={handleApplyClick}
-          postedJobs={postedJobs}
-        />
-
         {jobs.map((job) => (
           <JobCard
             imgflg

@@ -84,8 +84,8 @@ const SelectTags: React.FC<Props> = ({options,phdr='Select Options',handle,val})
             '&:hover': {
               borderColor: 'border-gray-400',
             },
-            backgroundColor: 'black',
-            color: 'white',
+            backgroundColor: '#f3f4f6',
+            color: 'black',
           }),
           multiValue: (provided) => ({
             ...provided,
@@ -106,8 +106,8 @@ const SelectTags: React.FC<Props> = ({options,phdr='Select Options',handle,val})
           option: (styles, { isSelected }) => {
             return {
               ...styles,
-              backgroundColor: isSelected ? 'black' : 'white',
-              color: isSelected ? 'white' : 'black',
+              backgroundColor: isSelected ? 'black' : '#f3f4f6',
+              color: isSelected ? '#f3f4f6' : 'black',
             };
           },
           input: (styles) => ({ ...styles, color: 'white' }),

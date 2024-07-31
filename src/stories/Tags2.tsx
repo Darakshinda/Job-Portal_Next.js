@@ -73,7 +73,7 @@ export const Tags2: React.FC<Props> = ({
   };
 
   const unicodeRemoval = (tag: string) => {
-    return tag.replace(/[^\p{L}\p{M}]/gu, '');
+    return tag.replace(/[^\p{L}\p{M}\s]/gu, '');
   }
 
   const addTag = (tag: string) => {

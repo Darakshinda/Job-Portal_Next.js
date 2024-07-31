@@ -62,21 +62,21 @@ const SearchableSelect: React.FC<Props> = ({options,phdr='Select an Option',hand
         singleValue: (styles) => {
           return {
             ...styles,
-            color: 'white',
+            color: 'black',
           }
         },
         control: (styles) => {
           return {
             ...styles,
-            backgroundColor: 'black',
-            color: 'white',
+            backgroundColor: '#f3f4f6',
+            color: 'black',
           }
         },
         option: (styles, isSelected) => {
           return {
             ...styles,
-            backgroundColor: isSelected ? 'white' : 'black',
-            color: isSelected ? 'black' : 'white',
+            backgroundColor: isSelected ? '#f3f4f6' : 'black',
+            color: isSelected ? 'black' : '#f3f4f6',
           }
         }
       }}

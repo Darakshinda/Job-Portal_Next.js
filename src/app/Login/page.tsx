@@ -32,7 +32,7 @@ const Login = () => {
           if (response.data.account_type === 'job_seeker') {
             router.push('/seeker-dashboard');
           } else {
-            router.push(`/hirerDash/${response.data.first_name}`);
+            router.push(`/hirerDash/${response.data.first_name.split(' ')[0]}`);
           }
         })
         .catch((error) => {
@@ -94,7 +94,7 @@ const Login = () => {
               if (response.data.account_type === 'job_seeker') {
                 router.push('/seeker-dashboard');
               } else {
-                router.push(`/hirerDash/${response.data.first_name}`);
+                router.push(`/hirerDash/${response.data.first_name.split(' ')[0]}`);
               }
             })
             .catch((error) => {
