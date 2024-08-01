@@ -1,64 +1,61 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import Link from 'next/link';
-import { FiLinkedin, FiInstagram, FiGithub } from 'react-icons/fi';
-import { format } from 'date-fns';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { profile } from "console";
+import { FaGithub, FaLinkedin, FaEdit, FaTelegram, FaGlobe } from "react-icons/fa";
+import Link from "next/link";
+import Sidebar from "../Components/HireDashSidebar";
 
 interface ProfileData {
   first_name: string;
   last_name: string;
   phone_number: string;
-  location?: string;
-  linkedin?: string | null;
-  instagram?: string | null;
-  bio?: string | null;
-  telegram?: string | null;
-  github?: string | null;
-  gender?: string | null;
-  spoken_languages?: string | null;
-  available_for_work_from_date?: string | null;
-  preferred_annual_pay?: string | null;
-  preferred_hourly_pay?: string | null;
-  years_of_experience?: number | null;
-  company_name?: string;
-  designation?: string;
-  company_description?: string;
-  company_stage?: string;
-  product_service?: string;
-  company_photo?: string;
-  working_email?: string;
+  location: string;
+  linkedin: string | null;
+  instagram: string | null;
+  bio: string | null;
+  telegram: string | null;
+  github: string | null;
+  gender: string | null;
+  spoken_languages: string | null;
+  available_for_work_from_date: string | null;
+  preferred_annual_pay: string | null;
+  preferred_hourly_pay: string | null;
+  years_of_experience: number | null;
+  profile_picture: string | null;
   account_type: string;
+  // Add other fields as per your API response
 }
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 const ProfilePage = () => {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [isHirer, setIsHirer] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const accessToken = localStorage.getItem('access_token');
-        const accountType = localStorage.getItem('account_type');
+        const accessToken = localStorage.getItem("access_token");
+        //const accountType = localStorage.getItem('account_type');
 
-        if (!accessToken || !accountType) {
-          throw new Error('Access token or account type not found');
+        if (!accessToken) {
+          throw new Error("Access token or account type not found");
         }
 
         const response = await axios.get(`${baseUrl}/accounts/profile/`, {
           headers: {
-            Authorization: `Bearer ${accessToken}`
+            Authorization: `Bearer ${accessToken}`,
           },
-          params: {
-            account_type: accountType
-          }
         });
 
         setProfileData(response.data);
+        if(response.data.account_type === 'job_hirer'){
+          setIsHirer(true);
+        }
       } catch (error) {
-        console.error('Error fetching profile:', error);
+        console.error("Error fetching profile:", error);
       }
     };
 
@@ -70,65 +67,185 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <div className="max-w-3xl w-full mx-auto p-4 bg-white shadow-md rounded-md">
-        <h1 className="text-3xl font-bold mb-4">{profileData.first_name} {profileData.last_name}</h1>
-        
-        {profileData.account_type === 'job_seeker' ? (
-          <div className="grid grid-cols-2 gap-x-4">
-            <div>
-              <p className="mb-2"><strong>Phone Number:</strong> {profileData.phone_number}</p>
-              <p className="mb-2"><strong>Location:</strong> {profileData.location}</p>
-              <p className="mb-2"><strong>Gender:</strong> {profileData.gender || 'Not provided'}</p>
-              <p className="mb-2"><strong>Years of Experience:</strong> {profileData.years_of_experience || 'Not provided'}</p>
+    <div className="bg-white">
+      <Sidebar userName={profileData.first_name.split(' ')[0]} />
+      <div className="w-full pl-[250px] py-6 flex justify-center">
+        <div className="bg-[#fffff0] shadow-lg rounded-lg py-6 px-12 w-2/3">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-2">
+              <img
+                className="w-16 h-16 rounded-full mr-4"
+                src={
+                  profileData.profile_picture || "https://via.placeholder.com/150"
+                }
+                alt="Profile Picture"
+              />
+              <div className="text-gray-700">
+                <h2 className="text-2xl font-semibold">
+                  {profileData.first_name} {profileData.last_name}
+                </h2>
+                <p className="text-gray-500">
+                  {profileData.designation} • {profileData.company_name} •{" "}
+                  {profileData.company_stage}
+                </p>
+                {/* <button className="mt-1 px-4 py-0.5 bg-gray-200 text-gray-800 rounded-lg">
+                Resume
+              </button> */}
+              </div>
             </div>
-            
-            <div>
-              <p className="mb-2"><strong>LinkedIn:</strong> {profileData.linkedin ? (
-                <Link href={profileData.linkedin} target="_blank" legacyBehavior>
-                  <a className="text-blue-600"><FiLinkedin className="inline-block align-middle mr-1" /> LinkedIn</a>
-                </Link>
-              ) : 'Not provided'}</p>
-              <p className="mb-2"><strong>Instagram:</strong> {profileData.instagram ? (
-                <Link href={profileData.instagram} target="_blank" legacyBehavior>
-                  <a className="text-purple-600"><FiInstagram className="inline-block align-middle mr-1" /> Instagram</a>
-                </Link>
-              ) : 'Not provided'}</p>
-              <p className="mb-2"><strong>Github:</strong> {profileData.github ? (
-                <Link href={profileData.github} target="_blank" legacyBehavior>
-                  <a className="text-gray-800"><FiGithub className="inline-block align-middle mr-1" /> GitHub</a>
-                </Link>
-              ) : 'Not provided'}</p>
+
+            <div className="flex gap-2">
+              <Link href={`/profile/edit/${isHirer}`}>
+                <FaEdit
+                  size={20}
+                  className="text-gray-500 hover:text-orange-500 cursor-pointer"
+                />
+              </Link>
+              <Link href={profileData.telegram as string}>
+                  <FaTelegram 
+                    size={20}
+                    className="text-gray-500 hover:text-blue-500 cursor-pointer"
+                  />
+              </Link>
+              <Link href={profileData.github as string}>
+                <FaGithub
+                  size={20}
+                  className="text-gray-500 hover:text-purple-600 cursor-pointer"
+                />
+              </Link>
+              <Link href={profileData.linkedin as string}>
+                <FaLinkedin
+                  size={20}
+                  className="text-gray-500 hover:text-blue-500 cursor-pointer"
+                />
+              </Link>
+              <Link href={profileData.website as string}>
+                  <FaGlobe
+                    size={20}
+                    className="text-gray-500 hover:text-black cursor-pointer"
+                  />
+              </Link>
             </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-x-4">
-            <div>
-              <p className="mb-2"><strong>Phone Number:</strong> {profileData.phone_number}</p>
-              <p className="mb-2"><strong>Company Name:</strong> {profileData.company_name}</p>
-              <p className="mb-2"><strong>Designation:</strong> {profileData.designation}</p>
-              <p className="mb-2"><strong>Company Description:</strong> {profileData.company_description}</p>
-            </div>
-            
-            <div>
-              <p className="mb-2"><strong>Company Stage:</strong> {profileData.company_stage}</p>
-              <p className="mb-2"><strong>Product/Service:</strong> {profileData.product_service}</p>
-              <p className="mb-2"><strong>Company Photo:</strong> {profileData.company_photo ? <img src={profileData.company_photo} alt="Company" className="inline-block align-middle mr-1" /> : 'Not provided'}</p>
-              <p className="mb-2"><strong>Working Email:</strong> {profileData.working_email}</p>
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-700">About Company</h3>
+            <p className="text-gray-500">{profileData.company_description || "No Details provided"}</p>
+          </div>
+          <div className="mb-">
+            <h3 className="text-lg font-semibold text-gray-700">Company Type</h3>
+            <div className="flex flex-wrap gap-x-2.5 gap-y-1.5 text-gray-500">
+              <span className="bg-gray-200/80 text-gray-600 px-2.5 py-1 rounded-full">
+                  {profileData.product_service} based - {profileData.company_stage}
+              </span>
             </div>
           </div>
-        )}
-        
-        {profileData.account_type === 'job_seeker' && (
-          <div className="mt-4">
-            <p className="mb-2"><strong>Bio:</strong> {profileData.bio || 'Not provided'}</p>
-            <p className="mb-2"><strong>Spoken Languages:</strong> {profileData.spoken_languages || 'Not provided'}</p>
-            <p className="mb-2"><strong>Available for Work From:</strong> {profileData.available_for_work_from_date ? format(new Date(profileData.available_for_work_from_date), 'MM/dd/yyyy') : 'Not provided'}</p>
-            <p className="mb-2"><strong>Preferred Annual Pay:</strong> {profileData.preferred_annual_pay || 'Not provided'}</p>
-            <p className="mb-2"><strong>Preferred Hourly Pay:</strong> {profileData.preferred_hourly_pay || 'Not provided'}</p>
+          {/* <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-700">Achievements</h3>
+            <p className="text-gray-500">
+              Winner of 'Avadhan 2023' business case study competition conducted
+              as part of PARSEC 3.0; Finalists of 'DevHack 4.0' hackathon as part
+              of PARSEC 4.0.
+            </p>
           </div>
-        )}
-      </div>
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-700">Education</h3>
+            <p className="text-gray-500">BEng, Electrical Engineering</p>
+            <p className="text-gray-500">Indian Institute Of Technology • 2025</p>
+          </div>
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-700">Skills</h3>
+            <div className="flex flex-wrap gap-x-2.5 gap-y-1.5 text-gray-500">
+              <span className="bg-gray-200/80 text-gray-600 px-2.5 py-1 rounded-full">
+                Python
+              </span>
+              <span className="bg-gray-200/80 text-gray-600 px-2.5 py-1 rounded-full">
+                C++
+              </span>
+              <span className="bg-gray-200/80 text-gray-600 px-2.5 py-1 rounded-full">
+                MongoDB
+              </span>
+              <span className="bg-gray-200/80 text-gray-600 px-2.5 py-1 rounded-full">
+                Node.js
+              </span>
+              <span className="bg-gray-200/80 text-gray-600 px-2.5 py-1 rounded-full">
+                Express.js
+              </span>
+              <span className="bg-gray-200/80 text-gray-600 px-2.5 py-1 rounded-full">
+                React
+              </span>
+              <span className="bg-gray-200/80 text-gray-600 px-2.5 py-1 rounded-full">
+                Matlab/Simulink
+              </span>
+              <span className="bg-gray-200/80 text-gray-600 px-2.5 py-1 rounded-full">
+                MERN Stack - Javascript (ES5 & ES6), MongoDB, Express.Js, React,
+                Node.Js
+              </span>
+            </div>
+          </div>
+          <div className="mb-4 text-gray-500">
+            <h3 className="text-lg font-semibold text-gray-700">Ideal next opportunity</h3>
+            <p>Desired Salary: US$16,719 / ₹1,400,000</p>
+            <p>Desired Role: Full-Stack Engineer</p>
+            <p>Remote Work: Onsite Or Remote</p>
+            <p>Desired Location: India (current)</p>
+            <div className="mb-4">
+              <h4 className="text-lg font-semibold text-gray-700">Desired Tech Stack</h4>
+              <div className="flex flex-wrap gap-2">
+                <span className="bg-gray-200/80 rounded-full text-gray-500 px-2.5 py-1.5">
+                  Node.js
+                </span>
+                <span className="bg-gray-200/80 rounded-full text-gray-500 px-2.5 py-1.5">
+                  React
+                </span>
+                <span className="bg-gray-200/80 rounded-full text-gray-500 px-2.5 py-1.5">
+                  Express.js
+                </span>
+                <span className="bg-gray-200/80 rounded-full text-gray-500 px-2.5 py-1.5">
+                  C++
+                </span>
+                <span className="bg-gray-200/80 rounded-full text-gray-500 px-2.5 py-1.5">
+                  Python
+                </span>
+              </div>
+            </div>
+            <div className="mb-4">
+              <h4 className="text-lg font-semibold text-gray-700">Desired Company Size</h4>
+              <div className="flex flex-wrap gap-2">
+                <span className="bg-gray-200/80 text-gray-500 px-2.5 py-1.5 rounded-full">
+                  51-200
+                </span>
+                <span className="bg-gray-200/80 text-gray-500 px-2.5 py-1.5 rounded-full">
+                  201-500
+                </span>
+                <span className="bg-gray-200/80 text-gray-500 px-2.5 py-1.5 rounded-full">
+                  501-1000
+                </span>
+                <span className="bg-gray-200/80 text-gray-500 px-2.5 py-1.5 rounded-full">
+                  1000+
+                </span>
+                <span className="bg-gray-200/80 text-gray-500 px-2.5 py-1.5 rounded-full">
+                  Open to 11-50
+                </span>
+                <span className="bg-gray-200/80 text-gray-500 px-2.5 py-1.5 rounded-full text-red-600">
+                  Not interested in 1-10
+                </span>
+              </div>
+            </div>
+            <div className="mb-4">
+              <h4 className="text-lg font-semibold text-gray-700">Wants</h4>
+              <ul className="list-disc list-inside text-gray-500">
+                <li>To solve technical problems</li>
+                <li>Company with clear roles</li>
+                <li>To learn new things and develop skills</li>
+                <li>Quiet office</li>
+                <li>Progression to management</li>
+                <li>Team members to learn from</li>
+                <li>A flexible remote work policy</li>
+              </ul>
+            </div>
+          </div>*/}
+        </div>
+      </div> 
     </div>
   );
 };

@@ -2,12 +2,15 @@ import React, { useRef, useState } from 'react';
 
 interface ImgProps {
     keyy:string;
-    onChange: Function;
+    onChange: Function;resetflg:boolean;
+    val:string;bgcol:string;buttonBg:string;imgsrc:string;
   }
 
-const UploadButton: React.FC<ImgProps> = ({onChange,keyy}) => {
+const UploadButton: React.FC<ImgProps> = ({onChange,keyy,resetflg=false,val,bgcol='#fff',buttonBg="#e6ffff",imgsrc="https://cdn3.iconfinder.com/data/icons/photo-tools/65/upload-1024.png",}) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+
+  if(resetflg && val!=backgroundImage) {setBackgroundImage(val);console.log(backgroundImage);}
 
   const handleButtonClick = () => {
     fileInputRef.current?.click();
@@ -34,16 +37,16 @@ const UploadButton: React.FC<ImgProps> = ({onChange,keyy}) => {
         borderRadius: '50%',
         cursor: 'pointer',
         position: 'relative',
-        backgroundColor: '#fff',
+        backgroundColor: bgcol,
         backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
       onClick={handleButtonClick}
     >
-      {!backgroundImage && <div style={{display:"flex",backgroundColor:"#e6ffff",border:"solid",borderWidth:"1px",borderRadius:"3px"}} >
+      {!backgroundImage && <div style={{display:"flex",backgroundColor:buttonBg,border:"solid",borderWidth:"1px",borderRadius:"3px"}} >
           <img
-            src="https://cdn3.iconfinder.com/data/icons/photo-tools/65/upload-1024.png"
+            src={imgsrc}
             alt="Upload Icon"
             style={{ width: '20px', height: '20px', marginRight: '8px',marginLeft:"3px",marginTop:"2px"  }}
           />

@@ -1,11 +1,10 @@
-// SalaryRangeSlider.tsx
-
 import React from 'react';
 import { Range, getTrackBackground } from 'react-range';
 
 interface SalaryRangeSliderProps {
   onRangeChange: (values: number[]) => void;
   salaryRange: number[];
+  label?: string; // Add label prop
 }
 
 const STEP = 1000;
@@ -15,22 +14,26 @@ const MAX = 200000;
 const SalaryRangeSlider: React.FC<SalaryRangeSliderProps> = ({
   onRangeChange,
   salaryRange,
+  label = "Salary", // Default label value
 }) => {
   return (
     <div className="salary-range-slider">
+      <div className="flex justify-between items-center mb-2">
+        <span>${salaryRange[0]}</span> {/* Display selected salary */}
+      </div>
       <Range
         step={STEP}
         min={MIN}
         max={MAX}
-        values={[salaryRange[0]]} // Only one thumb at the beginning
+        values={[salaryRange[0]]}
         onChange={onRangeChange}
         renderTrack={({ props, children }) => (
           <div
             {...props}
             style={{
               ...props.style,
-              height: '8px', // Adjust the height of the track
-              width: '200px', // Full width of the container
+              height: '8px',
+              width: '200px',
               background: getTrackBackground({
                 values: salaryRange,
                 colors: ['#ccc', '#548BF4', '#ccc'],
@@ -48,18 +51,17 @@ const SalaryRangeSlider: React.FC<SalaryRangeSliderProps> = ({
             {...props}
             style={{
               ...props.style,
-              height: '24px', // Adjust the height of the thumb
-              width: '24px', // Adjust the width of the thumb
+              height: '24px',
+              width: '24px',
               backgroundColor: '#FFF',
               border: '1px solid #CCC',
               borderRadius: '50%',
               boxShadow: '0px 2px 6px #AAA',
-              zIndex: 1, // Ensure thumb stays above the track
+              zIndex: 1,
             }}
           />
         )}
       />
-      <output className="mt-2">${salaryRange[0]}</output>
     </div>
   );
 };

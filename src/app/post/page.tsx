@@ -72,6 +72,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
   const [previewMode, setPreviewMode] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [username, setUserName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
 
   const getUserName = useCallback(() => {
     const access_token = localStorage.getItem("access_token");
@@ -83,9 +84,10 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
         },
       });
       axiosInstance
-        .get(`${baseUrl}/accounts/profile`)
+        .get(`${baseUrl}/accounts/profile/`)
         .then((response) => {
-          setUserName(response.data.first_name);
+          setUserName(response.data.first_name.split(' ')[0]);
+          setEmail(response.data.working_email);
         })
         .catch((error) => {
           console.log(error.response.data);
@@ -151,97 +153,153 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
       if (errors[i] == 1) {
         console.log("Value 1 at index: ", i);
         alert("Kindly fill the necessary Details");
-        return;
+        return false;
       }
     for (let i = 0; i < errors.length; i++)
       if (errors[i] == 2) {
         console.log("Value 2 at index: ", i);
         alert("Enter valid details");
-        return;
+        return false;
       }
     console.log(user);
+    return true;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
-    disp();
+    const res = disp();
+    if (!res) return;
     const token = localStorage.getItem("access_token"); // Assuming you store your JWT token in localStorage
     if (jobID) {
       /*Update with url for edit job posting */
+      const profile = `${baseUrl}/accounts/profile/`;
       const url = `${baseUrl}/jobs/${jobID}/update/`;
-      axios.put(url, {
-        annual_salary_max: sal(user.maxsal),
-            annual_salary_min: sal(user.minsal),
-            company_email: user.compMail,
-            company_name: user.company,
-            company_twitter: user.twtr,
-            how_to_apply: user.how2apply,
-            invoice_address: user.invAdrs,
-            invoice_email: user.invMail,
-            invoice_notes: user.invNote,
-            pay_later: user.payLtr,
-            job_description: user.desc,
-            location_restriction: user.locns,
-            primary_tag: user.primtg,
-            benefits: user.benefits,
-            position: user.position,
-            tags: user.tags,
-            apply_url: user.applUrl,
-            apply_email_address: user.email4jobappl,
-            feedback: user.fdbck,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-        alert("Job updated successfully");
-      })
-      .catch((error) => {
-        console.error("There was an error updating the job!", error);
-        alert("Failed to update the job");
-      })
-    } else {
-      const url = `${baseUrl}/jobs/create/`;
-      axios
-        .post(
-          url,
-          {
-            annual_salary_max: sal(user.maxsal),
-            annual_salary_min: sal(user.minsal),
-            company_email: user.compMail,
-            company_name: user.company,
-            company_twitter: user.twtr,
-            how_to_apply: user.how2apply,
-            invoice_address: user.invAdrs,
-            invoice_email: user.invMail,
-            invoice_notes: user.invNote,
-            pay_later: user.payLtr,
-            job_description: user.desc,
-            location_restriction: user.locns,
-            primary_tag: user.primtg,
-            benefits: user.benefits,
-            position: user.position,
-            tags: user.tags,
-            apply_url: user.applUrl,
-            apply_email_address: user.email4jobappl,
-            feedback: user.fdbck,
-          },
-          {
+      const formData = new FormData();
+      formData.append("working_email", email);
+      formData.append("company_photo", user.logo);
+      try {
+        axios
+          .put(profile, formData, {
             headers: {
+              "Content-Type": "multipart/form-data",
               Authorization: `Bearer ${token}`,
             },
-          }
-        )
-        .then((response) => {
-          console.log(response.data);
-          alert("Job registered successfully");
-        })
-        .catch((error) => {
-          console.error("There was an error registering the job!", error);
-          alert("Failed to register the job");
-        });
+          })
+          .then((response) => {
+            console.log(response.data);
+            console.log("Profile updated successfully");
+          })
+          .catch((error) => {
+            console.log(error.response.data || error.message);
+          });
+        axios
+          .put(
+            url,
+            {
+              annual_salary_max: sal(user.maxsal),
+              annual_salary_min: sal(user.minsal),
+              company_email: user.compMail,
+              company_name: user.company,
+              company_twitter: user.twtr,
+              how_to_apply: user.how2apply,
+              invoice_address: user.invAdrs,
+              invoice_email: user.invMail,
+              invoice_notes: user.invNote,
+              pay_later: user.payLtr,
+              job_description: user.desc,
+              location_restriction: user.locns,
+              primary_tag: user.primtg,
+              benefits: user.benefits,
+              position: user.position,
+              tags: user.tags,
+              apply_url: user.applUrl,
+              apply_email_address: user.email4jobappl,
+              feedback: user.fdbck,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response.data);
+            alert("Job updated successfully");
+          })
+          .catch((error) => {
+            console.error("There was an error updating the job!", error);
+            alert("Failed to update the job");
+          });
+      } catch (error) {
+        console.error("There was an error updating the job!", error);
+        alert("Failed to update the job");
+      }
+    } else {
+      const url_job = `${baseUrl}/jobs/create/`;
+      const profile = `${baseUrl}/accounts/profile/`;
+      try {
+        axios
+          .put(
+            profile,
+            {
+              company_photo: user.logo,
+            },
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response.data);
+            alert("Profile updated successfully");
+          })
+          .catch((error) => {
+            console.log(error.response.data || error.message);
+          });
+        axios
+          .post(
+            url_job,
+            {
+              annual_salary_max: sal(user.maxsal),
+              annual_salary_min: sal(user.minsal),
+              company_email: user.compMail,
+              company_name: user.company,
+              company_twitter: user.twtr,
+              how_to_apply: user.how2apply,
+              invoice_address: user.invAdrs,
+              invoice_email: user.invMail,
+              invoice_notes: user.invNote,
+              pay_later: user.payLtr,
+              job_description: user.desc,
+              location_restriction: user.locns,
+              primary_tag: user.primtg,
+              benefits: user.benefits,
+              position: user.position,
+              tags: user.tags,
+              apply_url: user.applUrl,
+              apply_email_address: user.email4jobappl,
+              feedback: user.fdbck,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response.data);
+            alert("Job registered successfully");
+          })
+          .catch((error) => {
+            console.error("There was an error registering the job!", error);
+            alert("Failed to register the job");
+          });
+      } catch (error) {
+        console.error("There was an error registering the job!", error);
+        alert("Failed to register the job");
+      }
     }
   };
 
@@ -261,9 +319,11 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
       axiosInstance
         .get(`${baseUrl}/posted-jobs/`)
         .then((response) => {
-          console.log("Response:", response.data);
-          
-          const job = response.data.find((job) => job.id.toString() === jobID.toString());
+          console.log("Response:", response.data.results);
+
+          const job = response.data.results.find(
+            (job) => job.id.toString() === jobID.toString()
+          );
           setuser({
             company: job.company_name,
             position: job.position,
@@ -299,7 +359,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
   return (
     <div className="flex bg-[#10161e]">
       <Sidebar userName={username} />
-      <div className="md:pl-[15%] sm:pl-[19%]">
+      <div className="ml-[230px] pl-10">
         {!previewMode && (
           <form
             onSubmit={handleSubmit}
@@ -310,7 +370,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
             </h2>
             <div className="grid grid-cols-2 gap-6">
               <label
-                className="col-span-1 block font-medium text-gray-300 text-lg"
+                className="col-span-1 block font-medium text-white text-lg"
                 htmlFor="jobTitle"
               >
                 Company Name*
@@ -324,7 +384,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                   placeholder={`Company name`}
                   onChange={handleChange}
                   req={true}
-                  cls="input_company"
+                  cls="input_company text-white"
                 />
                 {errchck(user.company, "", true, 1) == "solid" && (
                   <p
@@ -361,7 +421,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                   placeholder={`Position`}
                   onChange={handleChange}
                   req={true}
-                  cls="input_company"
+                  cls="input_company text-white"
                 />
                 {errchck(user.position, "", true, 2) == "solid" && (
                   <p
@@ -391,7 +451,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                     keyy="emptype"
                     onChange={handleChange}
                     req={true}
-                    cls="input_company col-span-1 w-full px-3 py-2 border border-white rounded-md"
+                    cls="input_company text-white col-span-1 w-full px-3 py-2 border border-white rounded-md"
                     body={emptype}
                   />
                   {errchck(user.emptype, "Select Employment type", true, 3) ==
@@ -423,7 +483,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                   <Select
                     keyy="primtg"
                     onChange={handleChange}
-                    cls="input_company col-span-1 w-full px-3 py-2 border border-white rounded-md"
+                    cls="input_company text-white col-span-1 w-full px-3 py-2 border border-white rounded-md"
                     body={primTag}
                   />
                 </div>
@@ -447,7 +507,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                 >
                   <Tags
                     keyy="tags"
-                    cls="input_company col-span-1 w-full px-3 py-2 border border-white rounded-md"
+                    cls="input_company text-white col-span-1 w-full px-3 py-2 border border-white rounded-md"
                     settgs={handleChange}
                     dynamic={true}
                     options={tagOpns}
@@ -482,7 +542,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                 >
                   <Tags
                     keyy="locns"
-                    cls="input_company col-span-1 w-full px-3 py-2 border border-white rounded-md"
+                    cls="input_company text-white col-span-1 w-full px-3 py-2 border border-white rounded-md"
                     settgs={handleChange}
                     dynamic={true}
                     options={locnOpns}
@@ -514,7 +574,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                   val={user.twtr}
                   placeholder={`username`}
                   onChange={handleChange}
-                  cls="input_company col-span-1 w-full px-3 py-2 border border-white rounded-md"
+                  cls="input_company text-white col-span-1 w-full px-3 py-2 border border-white rounded-md"
                 />
               </div>
             </div>
@@ -541,7 +601,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                   placeholder={`Enter email`}
                   onChange={handleChange}
                   req={true}
-                  cls="input_company"
+                  cls="input_company text-white"
                 />
                 {errchck(user.compMail, "", true, 5) == "solid" && (
                   <p
@@ -579,7 +639,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                   val={user.invMail}
                   placeholder={`Enter email`}
                   onChange={handleChange}
-                  cls="input_company"
+                  cls="input_company text-white"
                 />
               </div>
             </div>
@@ -606,7 +666,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                   placeholder={`e.g. your company's full name and full invoice address, including building, street, city and country; also things like your VAT number, this is shown on the invoice.`}
                   onChange={handleChange}
                   req={true}
-                  cls="input_company col-span-1 w-full px-3 py-2 border border-white rounded-md"
+                  cls="input_company text-white col-span-1 w-full px-3 py-2 border border-white rounded-md"
                 />
                 {errchck(user.invAdrs, "", true, 6) == "solid" && (
                   <p
@@ -627,7 +687,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                 className="col-span-1 block font-medium text-gray-300 text-lg"
                 htmlFor="jobTitle"
               >
-                Invoice Notes / PO Number
+                <p className="text-white">Invoice Notes / PO Number</p>
                 <p className="text-xs">
                   Not required. Add notes here that you'd like to see on the
                   invoice/receipt such as a Purchase Order number or any other
@@ -645,7 +705,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                   val={user.invNote}
                   placeholder={`e.g. PO number 1234`}
                   onChange={handleChange}
-                  cls="input_company"
+                  cls="input_company text-white"
                 />
               </div>
             </div>
@@ -699,7 +759,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                     placeholder={`Pay later email address`}
                     onChange={handleChange}
                     req={true}
-                    cls="input_company"
+                    cls="input_company text-white"
                   />
                   {errchck(user.pltrEml, "", true, 7) == "solid" && (
                     <p
@@ -739,7 +799,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                         paddingTop: "3%",
                       }}
                     >
-                      <b>Highlight with your company's 🌈 brand color:</b>
+                      <b className="text-white">Highlight with your company's 🌈 brand color:</b>
                       <ColorPickerButton change={handleChange} keyy="bgcolor" />
                     </div>
                   </div>
@@ -811,7 +871,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                         keyy="minsal"
                         onChange={handleChange}
                         req={true}
-                        cls="input_company w-full px-3 py-2 border border-white rounded-md"
+                        cls="input_company text-white w-full px-3 py-2 border border-white rounded-md"
                         body={minSal}
                         type="small"
                       />
@@ -829,7 +889,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                         keyy="maxsal"
                         onChange={handleChange}
                         req={true}
-                        cls="input_company w-full px-3 py-2 border border-white rounded-md"
+                        cls="input_company text-white w-full px-3 py-2 border border-white rounded-md"
                         body={maxSal}
                         type="small"
                       />
@@ -936,7 +996,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                     placeholder={`Apply email address`}
                     onChange={handleChange}
                     req={true}
-                    cls="input_company col-span-1 w-full px-3 py-2 border border-white rounded-md"
+                    cls="input_company text-white col-span-1 w-full px-3 py-2 border border-white rounded-md"
                   />
                 </div>
               </div>
@@ -962,7 +1022,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                     val={user.applUrl}
                     placeholder={`https://`}
                     onChange={handleChange}
-                    cls="input_company"
+                    cls="input_company text-white"
                   />
                 </div>
               </div>
@@ -992,7 +1052,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                   keyy="fdbck"
                   val={user.fdbck}
                   onChange={handleChange}
-                  cls="input_company w-full px-3 py-2 border border-white rounded-md"
+                  cls="input_company text-white w-full px-3 py-2 border border-white rounded-md"
                 />
               </div>
             </div>
@@ -1026,16 +1086,27 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
             <div className="flex justify-center py-6">
               <JobCard
                 imgflg
-                bdg
-                bgcolor={user.bgcolor}
                 imgsrc={user.logo}
-                cls="w-12wh bg-[#101011]"
+                bdg
                 position={user.position}
                 company_name={user.company}
                 location_restriction={user.locns}
                 tags={user.tags}
                 created_at="5/17/2024 23:11:25"
-                job={user}
+                job={{
+                  company: user.company,
+                  position: user.position,
+                  emptype: "Full-time",
+                  primtg: user.primtg,
+                  tags: user.tags,
+                  locns: user.locns,
+                  logo: user.logo,
+                  minsal: sal(user.minsal),
+                  maxsal: sal(user.maxsal),
+                  desc: user.desc,
+                  benefits: user.benefits,
+                  how2apply: user.how2apply,
+                }}
                 viewDetails={setSelectedJob}
               />
             </div>

@@ -9,6 +9,7 @@ import locationOptions from "../app/post/data/location.json";
 import tagOptions from "../app/post/data/tags.json";
 import JobDetailsModal from "./Components/JobModal";
 
+
 const jobPositionOptions = [
   { label: 'Software Engineer' },
   { label: 'Data Analyst' },
@@ -22,7 +23,7 @@ const Home: React.FC = () => {
   const [selectedLocationTags, setSelectedLocationTags] = useState<string[]>([]);
   const [selectedJobTags, setSelectedJobTags] = useState<string[]>([]);
   const [selectedTagTags, setSelectedTagTags] = useState<string[]>([]);
-  const [salaryRange, setSalaryRange] = useState([0, 100000]);
+  const [minsal, setminsal] = useState([0]);const [maxsal, setmaxsal] = useState([200000]);
 
   const handleLocationTagSelection = (tags: string[]) => {
     setSelectedLocationTags(tags);
@@ -37,17 +38,13 @@ const Home: React.FC = () => {
     console.log('Selected Tags:', tags);
   };
 
-  const handleSalaryRangeChange = (range: number[]) => {
+  const handleSalaryRangeChange = (range: number[],setSalaryRange:Function) => {
     setSalaryRange(range);
     console.log('Selected Salary Range:', range);
   };
 
-  const [selectedJob, setSelectedJob] = useState(null);
-
-  const handleCloseModal = () => {
-    setSelectedJob(null);
-  };
-
+  
+  console.log('Selected Salary Range:',minsal);
   return (
     <main>
       <Navbar />
@@ -101,23 +98,30 @@ const Home: React.FC = () => {
           </div>
           <div className="">
             <SalaryRangeSlider
-              onRangeChange={setSalaryRange}
-              salaryRange={salaryRange}
+              onRangeChange={setminsal}
+              salaryRange={minsal} label='Min Salary'
+            />
+          </div>
+
+          <div className="">
+            <SalaryRangeSlider
+              onRangeChange={setmaxsal}
+              salaryRange={maxsal} label='Max Salary'
             />
           </div>
         </div>
-        {selectedJob && 
-        <JobDetailsModal job={selectedJob} onClose={handleCloseModal} />
-      }
+       
+      
         <JobList
           selectedLocationTags={selectedLocationTags}
           selectedJobTags={selectedJobTags}
           selectedTagTags={selectedTagTags}
-          view={setSelectedJob}
+          minsal={minsal} maxsal={maxsal}
+        
         />
       </div>
     </main>
   );
 };
 
-export default Home;
+export default Home

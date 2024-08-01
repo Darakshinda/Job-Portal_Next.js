@@ -5,13 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "../../Navbar";
 import JobList from "../../Components/JobList";
-import SalaryRangeSlider from "../../Components/FilterBox";
 import { Tags2 } from "@/stories/Tags2";
 import locationOptions from "../../post/data/location.json";
 import tagOptions from "../../post/data/tags.json";
 import Sidebar from "@/app/Components/HireDashSidebar";
 import JobDetailsModal from "@/app/Components/JobModal";
 import axios from "axios";
+import SalaryRangeSlider from "../../Components/FilterBox";
 
 const jobPositionOptions = [
   { label: "Software Engineer" },
@@ -73,7 +73,7 @@ const postedJobs = () => {
       })
       axiosInstance.get('/accounts/profile')
         .then((response) => {
-          setUserName(response.data.first_name);
+          setUserName(response.data.first_name.split(" ")[0]);
         })
         .catch((error) => {
           console.log(error);
@@ -142,7 +142,6 @@ const postedJobs = () => {
             selectedJobTags={selectedJobTags}
             selectedTagTags={selectedTagTags}
             postedJobs={true}
-            appliedJobs={false}
             view={setSelectedJob}
           />
         </div>

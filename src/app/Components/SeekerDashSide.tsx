@@ -43,7 +43,9 @@ const Sidebar: React.FC<SidebarProps> = ({userName}) => {
           
             <ClickOutsideDiv onOutsideClick={() => setShowTrialOptions(!showTrialOptions)}>
               <div className="mt-2 bg-gray-800">
-            <button className="block w-full text-left p-2 hover:bg-gray-700">Profile</button>
+                <Link href={`/profile`}>
+                <button className="block w-full text-left p-2 hover:bg-gray-700">Profile</button></Link>
+            
             <button onClick={handleLogOut} className="block w-full text-left p-2 hover:bg-gray-700">Logout</button>
           </div>
           </ClickOutsideDiv>

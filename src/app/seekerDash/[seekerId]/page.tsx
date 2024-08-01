@@ -23,7 +23,7 @@ export default function Page({ params }: { params: { hireId: string } }) {
   const [selectedLocationTags, setSelectedLocationTags] = useState<string[]>([]);
   const [selectedJobTags, setSelectedJobTags] = useState<string[]>([]);
   const [selectedTagTags, setSelectedTagTags] = useState<string[]>([]);
-  const [salaryRange, setSalaryRange] = useState([0, 100000]);
+  const [minsal, setminsal] = useState([0]);const [maxsal, setmaxsal] = useState([200000]);
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [userName, setUserName] = useState<string>("");
   
@@ -34,6 +34,8 @@ export default function Page({ params }: { params: { hireId: string } }) {
     setSelectedLocationTags(tags);
   };
 
+  
+
   const handleJobTagSelection = (tags: string[]) => {
     setSelectedJobTags(tags);
   };
@@ -43,10 +45,13 @@ export default function Page({ params }: { params: { hireId: string } }) {
     console.log("Selected Tags:", tags);
   };
 
-  const handleSalaryRangeChange = (range: number[]) => {
+  const handleSalaryRangeChange = (range: number[],setSalaryRange:Function) => {
     setSalaryRange(range);
-    console.log("Selected Salary Range:", range);
+    console.log('Selected Salary Range:', range);
   };
+
+  
+  
 
   const handleCloseModal = () => {
     setSelectedJob(null);
@@ -86,27 +91,52 @@ export default function Page({ params }: { params: { hireId: string } }) {
   return (
     <div>
       <Sidebar userName={userName} />
-      <div className="flex flex-col gap-4 justify-center items-center pl-[200px]">
+      <div className="bg-gray-900 flex flex-col gap-4 justify-center items-center pl-[200px]">
         <div>
-          <h1 className="text-4xl mt-3 text-grey-300 font-semibold">Find your Dream Job</h1>
+          <h1 className="text-4xl mt-3 text-white font-semibold">Find your Dream Job</h1>
         </div>
         <div className="flex justify-around gap-4">
           <div>
-            <h3 className="text-lg font-semibold mb-2"></h3>
-            <Tags2 cls="input_company" settgs={setSelectedLocationTags} dynamic={true} options={locationOptions} phdr='Search by Location'/>
+            <h3 className=" text-white text-lg font-semibold mb-2"></h3>
+            <Tags2
+              options={locationOptions}
+              cls="input_company{background-color: #f2f1ed;width: 95%;margin-top:10px;margin-left: 14px;border-radius: 7px;border-width: 1px;border-color: #b1b3b6;padding: 3px 10px;}"
+              phdr="Search by Location"
+              dynamic={true}
+              onSelect={handleLocationTagSelection}
+            />
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-2"></h3>
-            <Tags2 cls="input_company" settgs={setSelectedJobTags} dynamic={true} options={jobPositionOptions} phdr='Search by Job Position'/>
+            <Tags2
+              options={jobPositionOptions}
+              cls="input_company{background-color: #f2f1ed;width: 95%;margin-top:10px;margin-left: 14px;border-radius: 7px;border-width: 1px;border-color: #b1b3b6;padding: 3px 10px;}"
+              phdr="Search by Job Position"
+              dynamic={true}
+              onSelect={handleJobTagSelection}
+            />
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-2"></h3>
-            <Tags2 cls="input_company" settgs={setSelectedTagTags} dynamic={true} options={tagOptions} phdr='Search by Tags'/>
+            <Tags2
+              options={tagOptions}
+              cls="input_company{background-color: #f2f1ed;width: 95%;margin-top:10px;margin-left: 14px;border-radius: 7px;border-width: 1px;border-color: #b1b3b6;padding: 3px 10px;}"
+              phdr="Search by Tags"
+              dynamic={true}
+              onSelect={handleTagTagSelection}
+            />
           </div>
           <div className="">
             <SalaryRangeSlider
-              onRangeChange={handleSalaryRangeChange}
-              salaryRange={salaryRange}
+              onRangeChange={setminsal}
+              salaryRange={minsal} label='Min Salary'
+            />
+          </div>
+
+          <div className="">
+            <SalaryRangeSlider
+              onRangeChange={setmaxsal}
+              salaryRange={maxsal} label='Max Salary'
             />
           </div>
         </div>
@@ -121,6 +151,7 @@ export default function Page({ params }: { params: { hireId: string } }) {
             selectedTagTags={selectedTagTags}
             postedJobs={false}
             appliedJobs={false}
+            minsal={minsal} maxsal={maxsal}
             view={setSelectedJob}
           />
         </div>

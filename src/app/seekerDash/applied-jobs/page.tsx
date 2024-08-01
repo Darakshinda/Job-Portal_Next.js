@@ -26,7 +26,7 @@ const postedJobs = () => {
   );
   const [selectedJobTags, setSelectedJobTags] = useState<string[]>([]);
   const [selectedTagTags, setSelectedTagTags] = useState<string[]>([]);
-  const [salaryRange, setSalaryRange] = useState([0, 100000]);
+  const [minsal, setminsal] = useState([0]);const [maxsal, setmaxsal] = useState([200000]);
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [userName, setUserName] = useState<string>("");
 
@@ -46,9 +46,9 @@ const postedJobs = () => {
     console.log("Selected Tags:", tags);
   };
 
-  const handleSalaryRangeChange = (range: number[]) => {
+  const handleSalaryRangeChange = (range: number[],setSalaryRange:Function) => {
     setSalaryRange(range);
-    console.log("Selected Salary Range:", range);
+    console.log('Selected Salary Range:', range);
   };
 
   const handleCloseModal = () => {
@@ -89,9 +89,9 @@ const postedJobs = () => {
   return (
     <div >
       <Sidebar userName={userName} />
-      <div className="flex flex-col gap-4 justify-center items-center pl-[200px]">
+      <div className=" bg-gray-900 flex flex-col gap-4 justify-center items-center pl-[200px]">
         <div>
-          <h1 className="text-4xl mt-3 text-grey-300 font-semibold">Applied Jobs</h1>
+          <h1 className=" text-white text-4xl mt-3 text-grey-300 font-semibold">Applied Jobs</h1>
         </div>
         <div className="flex justify-around gap-4">
           <div>
@@ -109,8 +109,15 @@ const postedJobs = () => {
           </div>
           <div className="">
             <SalaryRangeSlider
-              onRangeChange={handleSalaryRangeChange}
-              salaryRange={salaryRange}
+              onRangeChange={setminsal}
+              salaryRange={minsal} label='Min Salary'
+            />
+          </div>
+
+          <div className="">
+            <SalaryRangeSlider
+              onRangeChange={setmaxsal}
+              salaryRange={maxsal} label='Max Salary'
             />
           </div>
         </div>
@@ -125,6 +132,7 @@ const postedJobs = () => {
             selectedTagTags={selectedTagTags}
             postedJobs={false}
             appliedJobs={true}
+            minsal={minsal} maxsal={maxsal}
             view={setSelectedJob}
           />
         </div>

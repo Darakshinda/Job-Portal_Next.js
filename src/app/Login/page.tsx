@@ -93,8 +93,8 @@ const Login = () => {
             .then((response) => {
               if (response.data.account_type === 'job_seeker') {
                 router.push(`/seekerDash/${response.data.first_name}`);
-              } else {
-                router.push(`/hirerDash/${response.data.first_name}`);
+              } else if (response.data.account_type === 'job_hirer'){
+                router.push(`/hireDash/${response.data.first_name.split(' ')[0]}`);
               }
             })
             .catch((error) => {
@@ -146,18 +146,18 @@ const Login = () => {
       </div>
 
       {/* Right side with login form */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 p-8">
-        <h1 className="text-3xl font-bold mb-12 text-center">Login</h1>
+      <div className="flex-1 flex flex-col items-center justify-center bg-gray-900 p-8">
+        <h1 className="text-3xl text-white font-bold mb-12 text-center">Login</h1>
         <form className="w-full max-w-md" onSubmit={handleSubmit}>
           <div className="mb-8">
-            <label className="block text-gray-700 mb-2" htmlFor="username">
+            <label className="block text-white mb-2" htmlFor="username">
               Username <span className="text-red-500">*</span>
             </label>
             <TextInput
               keyy="username"
-              cls={`w-full p-3 border rounded-lg focus:outline-none ${
+              cls={`w-full text-white p-3 bg-black border rounded-lg focus:outline-none ${
                 usernameError ? "border-red-500" : "border-gray-300"
-              } focus:border-blue-500`}
+              } focus:border-blued`}
               placeholder="Enter your username"
               val={username}
               onChange={(key: string, value: string) => setUsername(value)}
@@ -167,14 +167,14 @@ const Login = () => {
             )}
           </div>
           <div className="mb-6">
-            <label className="block text-gray-700 mb-2" htmlFor="password">
+            <label className="block text-white mb-2" htmlFor="password">
               Password <span className="text-red-500">*</span>
             </label>
             <TextInput
               keyy="password"
-              cls={`w-full p-3 border rounded-lg focus:outline-none ${
+              cls={`w-full text-white p-3 bg-black border rounded-lg focus:outline-none ${
                 passwordError ? "border-red-500" : "border-gray-300"
-              } focus:border-blue-500`}
+              } focus:border-blued`}
               placeholder="Enter your password"
               val={password}
               onChange={(key: string, value: string) => setPassword(value)}
@@ -192,28 +192,28 @@ const Login = () => {
           </div>
           <div className="justify-center text-center">
             <button
-              className="w-1/4 bg-black text-white p-3 rounded-lg hover:bg-black-600 transition duration-300"
+              className="w-1/4 bg-black text-white p-3 border border-white rounded-lg hover:bg-black-600 transition duration-300"
               type="submit"
             >
               Login
             </button>
           </div>
         </form>
-        <h2 className="mt-8 text-black-600">Don't have an account?</h2>
+        <h2 className="mt-8 text-white">Don't have an account?</h2>
         <div className="flex mt-4 space-x-10">
           <Link href="/Signup-seeker">
-            <button className="flex-1 bg-white border border-black rounded-lg text-black p-4 hover:border-pink-500 hover:bg-white transition duration-300 whitespace-nowrap">
+            <button className="flex-1 bg-black border border-white rounded-lg text-black p-4 hover:border-pink-500 transition duration-300 whitespace-nowrap">
               <div>
-                <h2 className="text-lg font-bold">Explore Jobs</h2>
-                <h5 className="text-sm text-gray-600">Signup as a Talent</h5>
+                <h2 className="text-lg text-white font-bold">Explore Jobs</h2>
+                <h5 className="text-sm text-white">Signup as a Talent</h5>
               </div>
             </button>
           </Link>
           <Link href="/Signup-recruiter">
-            <button className="flex-1 bg-white border border-black rounded-lg text-black p-4 hover:border-pink-500 hover:bg-white transition duration-300 whitespace-nowrap">
+            <button className="flex-1 bg-black border border-white rounded-lg text-black p-4 hover:border-pink-500  transition duration-300 whitespace-nowrap">
               <div>
-                <h2 className="text-lg font-bold">Hire Talent</h2>
-                <h5 className="text-sm text-gray-600">Signup as Recruiter</h5>
+                <h2 className="text-lg text-white font-bold">Hire Talent</h2>
+                <h5 className="text-sm text-white">Signup as Recruiter</h5>
               </div>
             </button>
           </Link>
