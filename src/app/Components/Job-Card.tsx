@@ -1,19 +1,35 @@
-// JobCard.tsx
 "use client";
-import React, { useState } from 'react';
-import axios from 'axios';
-import JobDetailsModal from './JobModal';
+import React from "react";
+import { getTimeDifference } from "../utils/timeutils";
+import { useState } from "react";
+import JobDetailsModal from "./JobModal";
+import ApplyPopup from "./ApplyPopup";
+import Link from "next/link";
+import axios from "axios";
+import ApplicantCard from "./ApplicantCard";
 
 interface Props {
-  job: Job | AppliedJob;
   cls?: string;
   bdg?: boolean;
   top?: boolean;
   imgflg?: boolean;
   divcls?: string;
   fgcls?: string;
+  imgsrc?: string;
   bgcolor?: string;
-  appliedJobs?: boolean; // Add prop to indicate if it's applied jobs
+  position?: string;
+  company_name?: string;
+  location_restriction?: string;
+  tags?: string;
+  created_at?: string;
+  job?: object;
+  postedJobs?: boolean;
+  appliedJobs?: boolean;
+  viewDetails?: Function;
+}
+interface tprop {
+  tag?: string;
+  index?: number;
 }
 
 interface Job {
@@ -28,31 +44,13 @@ interface Job {
   annual_salary_min: string;
   job_description: string;
   how_to_apply: string;
+  applications: Array<any>;
 }
 
-interface AppliedJob {
-  job: number;
-  cover_letter: string;
-  resume: string;
-  applicant_name: string;
-  applicant_email: string;
-  applicant_phone: string;
-  applied_at: string;
-  job_details: {
-    company_name: string;
-    location_restriction: string;
-    tags: string;
-    annual_salary_max: string;
-    position: string;
-  };
-}
-
-interface TagProps {
-  tag: string;
-  index: number;
-}
-
-const TagDisplay = ({ tag, index }: TagProps) => {
+/**
+ * Primary UI component for user interaction
+ */
+const tdisp = ({ tag = "", index = 0 }: tprop) => {
   if (index < 4)
     return (
       <div
@@ -60,108 +58,229 @@ const TagDisplay = ({ tag, index }: TagProps) => {
         className="bg-[#333333] px-2 py-1 rounded ml-2"
         style={{ borderColor: "black" }}
       >
-        <p className="text-white">{tag.trim()}</p>
+        <p className=" text-white">{tag.trim()}</p>
       </div>
     );
-  if (index === 4)
+  if (index == 4)
     return (
       <div key={-1} className="p-1 ml-2">
         <p>...</p>
       </div>
     );
 };
-
-const PrimaryTagDisplay = ({ tag, index }: TagProps) => {
+const tdisp1 = ({ tag = "", index = 0 }: tprop) => {
   if (index < 4)
     return (
       <div
-        className="bg-[#1A73E8] rounded-md px-2 py-2 text-center ml-[1%] text-white"
+        className="bg-[#1A73E8]  rounded-md px-2 py-2 text-center ml-[1%] text-white"
         style={{ display: "inline" }}
       >
         {tag.trim()}
       </div>
     );
-  if (index === 4)
+  if (index == 4)
     return (
-      <div key={-1} style={{ display: "inline" }} className="p-1 ml-2">
+      <div style={{ display: "inline" }} key={-1} className="p-1 ml-2">
         ...
       </div>
     );
 };
 
-export const JobCard = ({ job, cls = "", bdg = false, imgflg = false, divcls = "flex justify-between w-full mb-2", top = true, fgcls = "", bgcolor = "#111111", appliedJobs = false }: Props) => {
-  const isAppliedJob = (job as AppliedJob).job_details !== undefined;
-  const jobDetails = isAppliedJob ? (job as AppliedJob).job_details : (job as Job);
-  const l = parseInt(jobDetails.annual_salary_min || "0") / 1000;
-  const u = parseInt(jobDetails.annual_salary_max) / 1000;
+export const JobCard = ({
+  cls = "",
+  bdg = false,
+  imgflg = false,
+  divcls = "flex justify-between w-full mb-2",
+  top = true,
+  fgcls = "",
+  bgcolor = "#111111",
+  imgsrc = "https://media.dev.to/cdn-cgi/image/width=1600,height=900,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fwhh1lpihw7h587pb2iuc.png",
+  position,
+  company_name = "Sample Company",
+  location_restriction = "Faridabad",
+  tags = "HTML,Css,JS",
+  created_at = "6/18/2024 1:00:21",
+  job,
+  postedJobs,
+  appliedJobs,
+  viewDetails,
+}: Props) => {
+  let l = parseInt(job.minsal) / 1000,
+    u = parseInt(job.maxsal) / 1000;
+  console.log(job.emptype);
 
-  const [selectedJobDetails, setSelectedJobDetails] = useState<Job | null>(null);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [showApplicants, setShowApplicants] = useState<boolean>(false);
+  const [selectedjob, setSelectedjob] = useState(null);
+  const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
 
-  const handleApplyClick = async (job: Job) => {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000/api';
-    const token = localStorage.getItem('access_token');
+  const handleShowApplicants = () => {
+    setShowApplicants((prev) => !prev);
+  };
 
-    if (!token) {
-      console.error('No access token found');
-      return;
-    }
+  const handleApplyClick = (job: Job) => {
+    setSelectedjob(job);
+    setShowPopup(true);
+  };
 
-    try {
-      const response = await axios.post(
-        `${baseUrl}/jobs/apply/`, 
-        { job: job.id }, 
-        {
+  const handleClosePopup = () => {
+    setShowPopup(false);
+    setSelectedjob(null);
+  };
+
+  const handleDelete = (id: number) => {
+    const result = confirm("Are you sure you want to delete this job?");
+    if (result) {
+      axios
+        .delete(`${baseurl}/jobs/${id}/delete/`, {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        }
-      );
-      console.log('Application submitted successfully:', response.data);
-    } catch (error) {
-      console.error('Error submitting application:', error);
-      if (error.response) {
-        console.error('Response data:', error.response.data);
-        console.error('Response status:', error.response.status);
-      }
+        })
+        .then(() => {
+          alert("Job Deleted Successfully");
+          window.location.reload();
+        })
+        .catch((error) => {
+          console.log(error.response.data || error.message);
+        });
+    } else {
+      return;
     }
   };
 
+  if (company_name == "") company_name = "Company";
+  if (position == "") position = "Position";
+  if (imgsrc == "")
+    imgsrc =
+      "https://tse4.mm.bing.net/th?id=OIP.jsRxsoSHWZurGmwk32OMcQAAAA&pid=Api&P=0&h=220";
   return (
-    <div className={`border text-white border-[#333333] p-5 rounded-lg transition duration-300 hover:border-[5px] hover:border-purple-500 w-[90%] mx-auto ${cls}`} style={{ backgroundColor: `${bgcolor}`, width: "97%" }}>
-      {selectedJobDetails && <JobDetailsModal job={selectedJobDetails} onClose={() => setSelectedJobDetails(null)} />}
-      
-      <div className={`flex items-center w-full mb-2`} style={{ marginLeft: "0px" }}>
-        <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-          <div className="w-10 rounded-full border border-black">
-            <img alt="Tailwind CSS Navbar component" src={jobDetails.logo || "https://tse4.mm.bing.net/th?id=OIP.jsRxsoSHWZurGmwk32OMcQAAAA&pid=Api&P=0&h=220"} />
+    <div
+      className={`border-[5px] text-white border-[#333333] p-5 rounded-lg transition duration-300 hover:border-[5px] hover:border-purple-500 w-[90%] mx-auto ${cls}`}
+      style={{ backgroundColor: `${bgcolor}`, width: "97%" }}
+    >
+      {selectedjob && (
+        <JobDetailsModal job={selectedjob} onClose={setSelectedjob} />
+      )}
+      {showPopup && <ApplyPopup job={selectedjob} onClose={handleClosePopup} />}
+
+      <div
+        className={`flex items-center w-full mb-2`}
+        style={{ marginLeft: "0px" }}
+      >
+        {imgflg && (
+          <div
+            tabIndex={0}
+            role="button"
+            className="btn btn-ghost btn-circle avatar"
+          >
+            <div className="w-10 rounded-full border border-black bg-white">
+              <img alt="Profile Picture" src={imgsrc} />
+            </div>
           </div>
-        </div>
+        )}
         <div className={`flex items-center w-full mb-2`}>
-          <h2 className="text-xl font-semibold text-white ml-[7px]">{jobDetails.position}</h2>
+          <h2 className="text-xl font-semibold text-white ml-[7px]">
+            {job.position}
+          </h2>
           <div className="flex gap-4 mt-2 ml-[12px]">
             <span className="bg-[#E01E5A] text-white px-2 py-1 rounded">{`$${l}-${u}K PA`}</span>
-            <span className="bg-[#7B3B00] text-white px-2 py-1 rounded">{jobDetails.primary_tag}</span>
+
+            <span className="bg-[rgb(123,59,0)] text-white px-2 py-1 rounded">
+              {job.emptype}
+            </span>
           </div>
         </div>
       </div>
-      <div className='ml-[35px]' style={{ width: "800px" }}>
-        {jobDetails.location_restriction && jobDetails.location_restriction.split(",").map((tag, index) => (<PrimaryTagDisplay key={index} tag={tag} index={index} />))}
+      <div className=" ml-[35px]" style={{ width: "800px" }}>
+        {location_restriction &&
+          location_restriction
+            .split(",")
+            .map((tag, index) => tdisp1({ tag, index }))}
       </div>
       <div className="flex items-center w-full mb-2 mt-[5%]">
-        {jobDetails.tags && jobDetails.tags.split(",").map((tag, index) => (<TagDisplay key={index} tag={tag} index={index} />))}
+        {tags && tags.split(",").map((tag, index) => tdisp({ tag, index }))}
       </div>
-      <div className="ml-[1%] flex items-center mt-[19px]">
-        {!appliedJobs && (
-          <button className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300" onClick={() => handleApplyClick(job as Job)}>
-            Apply
-          </button>
-        )}
-        <div className='ml-[75%]'>
-          <button className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300" onClick={() => setSelectedJobDetails(job as Job)}>
-            View Details
-          </button>
+
+      <div className="ml-[1%] flex justify-between mt-[19px]">
+        <div className="">
+          {!postedJobs && (
+            <button
+              onClick={() => handleApplyClick(job)}
+              className="bg-purple-500 text-white px-4 py-4 rounded hover:bg-purple-700 transition duration-300 whitespace-nowrap"
+            >
+              Apply
+            </button>
+          )}
+          {postedJobs && (
+            <button
+              onClick={handleShowApplicants}
+              className="bg-purple-500 text-white px-4 py-4 rounded hover:bg-purple-700 transition duration-300 whitespace-nowrap"
+            >
+              {showApplicants ? "Hide Applicants" : "Show Applicants"}
+            </button>
+          )}
+        </div>
+        <div className="flex justify-center">
+          {postedJobs && (
+            <div className="ml-3">
+              <button
+                className="bg-red-500 mr-1 text-white px-4 py-4 rounded hover:bg-red-700 transition duration-300 whitespace-nowrap"
+                onClick={() => handleDelete(job.id)}
+              >
+                Delete
+              </button>
+            </div>
+          )}
+          {postedJobs && (
+            <div className="ml-3">
+              <button className="bg-purple-500 mr-1 text-white px-4 py-4 rounded hover:bg-purple-700 transition duration-300 whitespace-nowrap">
+                <Link
+                  href={{
+                    pathname: "/post",
+                    query: { jobID: job.id },
+                  }}
+                >
+                  Edit Details
+                </Link>
+              </button>
+            </div>
+          )}
+          {postedJobs && (
+            <div className="ml-3">
+              <button
+                className="bg-purple-500 mr-1 text-white px-4 py-4 rounded hover:bg-purple-700 transition duration-300 whitespace-nowrap"
+                onClick={() => viewDetails(job)}
+              >
+                View Details
+              </button>
+            </div>
+          )}
+          {!postedJobs && (
+            <div>
+              <button
+                className="bg-purple-500 mr-1 text-white px-4 py-4 rounded hover:bg-purple-700 transition duration-300 whitespace-nowrap"
+                onClick={() => viewDetails(job)}
+              >
+                View Details
+              </button>
+            </div>
+          )}
         </div>
       </div>
+      {showApplicants && (
+        <div className="mt-4 border-t pt-4">
+          {job.applications &&
+            job.applications.map((application) => (
+              <ApplicantCard key={application.id} applicant={application} />
+            ))}
+          {job.applications.length === 0 && (
+            <p className="text-white">No applicants yet</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };
+export default JobCard;
+

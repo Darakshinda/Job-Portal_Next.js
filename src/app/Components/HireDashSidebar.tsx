@@ -30,10 +30,10 @@ const Sidebar: React.FC<SidebarProps> = ({userName}) => {
       <nav className="flex-grow">
         <ul>
           <li className="p-4 hover:bg-gray-700">
-            <Link href={`/hirerDash/${userName}`}>Home</Link>
+            <Link href={`/hireDash/${userName}`}>Home</Link>
           </li>
           <li className="p-4 hover:bg-gray-700">
-            <Link href={`/hirerDash/posted-jobs`}>Posted Jobs</Link>
+            <Link href={`/hireDash/posted-jobs`}>Posted Jobs</Link>
           </li>
           <li className="p-4 hover:bg-gray-700">
             <Link href={`/post`}>Post a Job</Link>

@@ -451,7 +451,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                     keyy="emptype"
                     onChange={handleChange}
                     req={true}
-                    cls="input_company text-white col-span-1 w-full px-3 py-2 border border-white rounded-md"
+                    cls="input_company  col-span-1 w-full px-3 py-2 border border-white rounded-md"
                     body={emptype}
                   />
                   {errchck(user.emptype, "Select Employment type", true, 3) ==
@@ -726,6 +726,7 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                     <Checkbox
                       keyy="payLtr"
                       label="I'd like to pay later"
+                      labelClassName="text-white" 
                       checked={user.payLtr}
                       onChange={handleChange}
                     />
@@ -799,8 +800,8 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
                         paddingTop: "3%",
                       }}
                     >
-                      <b className="text-white">Highlight with your company's 🌈 brand color:</b>
-                      <ColorPickerButton change={handleChange} keyy="bgcolor" />
+                      {/* <b className="text-white">Highlight with your company's 🌈 brand color:</b>
+                      <ColorPickerButton change={handleChange} keyy="bgcolor" /> */}
                     </div>
                   </div>
                 </div>
@@ -927,37 +928,34 @@ const JobForm: React.FC<JobFormProps> = ({}) => {
             </div>
 
             <div className="grid grid-cols-2 gap-6">
-              <label className="col-span-1 block font-medium text-gray-300 text-lg">
-                Benefits
-              </label>
-              <div className="col-span-1 mt-2 space-y-2">
-                <div className="flex items-center">
-                  <div
-                    style={{
-                      marginLeft: "1.4%",
-                      border: `3px ${err(user.benefits, "", true, 11)} red`,
-                    }}
-                  >
-                    <SelectedOptions
-                      options={benefitOpns}
-                      keyy="benefits"
-                      onChange={handleChange}
-                    />
-                    {errchck(user.benefits, "", true, 9) == "solid" && (
-                      <p
-                        style={{
-                          color: "red",
-                          fontSize: "11px",
-                          marginLeft: "1.4%",
-                        }}
-                      >
-                        This is required
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
+  <label className="col-span-1 block font-medium text-gray-300 text-lg">
+    Benefits
+  </label>
+  <div className="col-span-1 mt-2 space-y-2">
+    <div className="flex items-center">
+      <div
+        className="border-2 border-white bg-gray-900 p-4 rounded-lg"
+        style={{ border: '1px solid white', 
+          marginLeft: "1.4%" }} // Keep margin-left as needed
+      >
+        <SelectedOptions
+          options={benefitOpns}
+          keyy="benefits"
+          onChange={handleChange}
+        />
+        {errchck(user.benefits, "", true, 9) === "solid" && (
+          <p
+            className="text-red-500 text-xs mt-2"
+            style={{ marginLeft: "1.4%" }}
+          >
+            This is required
+          </p>
+        )}
+      </div>
+    </div>
+  </div>
+</div>
+
 
             <div className="grid grid-cols-2 gap-6">
               <label className="col-span-1 block font-medium text-gray-300 text-lg">

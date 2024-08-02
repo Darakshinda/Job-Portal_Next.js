@@ -6,11 +6,12 @@ interface CheckboxProps {
   onChange: (checked: boolean) => void;
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({ label="Pay Later", checked, onChange }) => {
+const Checkbox: React.FC<CheckboxProps> = ({ label, checked, onChange }) => {
   const [isChecked, setIsChecked] = React.useState(checked);
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(prev => !prev);
-    onChange(!checked);
+    onChange(!isChecked); // Use isChecked instead of checked to toggle the state correctly
   };
 
   return (
@@ -21,7 +22,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ label="Pay Later", checked, onChang
         onChange={handleChange}
         style={styles.checkbox}
       />
-      {label}
+      <span style={styles.labelText}>{label}</span>
     </label>
   );
 };
@@ -34,7 +35,9 @@ const styles = {
   },
   checkbox: {
     marginRight: '8px',
-    color: 'white',
+  },
+  labelText: {
+    color: 'white', // Ensure text color is white
   },
 };
 

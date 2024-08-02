@@ -1,4 +1,3 @@
-// SelectedOptions.tsx
 import React, { useState } from 'react';
 
 interface Option {
@@ -7,10 +6,12 @@ interface Option {
 }
 
 interface SelectedOptionsProps {
-  options: Option[];keyy?:string;onChange:Function;
+  options: Option[];
+  keyy?: string;
+  onChange: (key: string | undefined, value: string) => void;
 }
 
-const SelectedOptions: React.FC<SelectedOptionsProps> = ({ options ,keyy,onChange}) => {
+const SelectedOptions: React.FC<SelectedOptionsProps> = ({ options, keyy, onChange }) => {
   const [selectedOptions, setSelectedOptions] = useState<Option[]>(options);
 
   const handleOptionClick = (label: string) => {
@@ -27,28 +28,35 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({ options ,keyy,onChang
       .map((option) => option.label)
       .join(', ');
   };
-  const fun=(keyy:string)=>{onChange(keyy,getSelectedOptionsString());return "";}
+
+  const fun = (keyy: string | undefined) => {
+    onChange(keyy, getSelectedOptionsString());
+    return "";
+  };
 
   return (
     <div>
       <div>
         {selectedOptions.map((option) => (
           <button
+            type="button"
             key={option.label}
             style={{
               margin: '5px',
               padding: '10px',
-              backgroundColor: option.selected ? 'red' : 'black',
-              border: '1px solid black',
+              backgroundColor: option.selected ? '#E01E5A' : '#f0f0f0', // Background color
+              color: option.selected ? 'white' : 'black', // Text color
+              border: '1px solid #ccc',
               borderRadius: '5px',
               cursor: 'pointer',
             }}
-            onClick={() => {handleOptionClick(option.label);}}
+            onClick={() => handleOptionClick(option.label)}
           >
             {option.label}
           </button>
         ))}
-      </div><a>{fun(keyy)}</a>
+      </div>
+      <a>{fun(keyy)}</a>
     </div>
   );
 };

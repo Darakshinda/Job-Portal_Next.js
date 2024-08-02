@@ -1,7 +1,7 @@
 "use client"
 
 import ProfileCard from "@/app/Components/ProfileCard";
-import Sidebar from "../../Components/HireDashSidebar";
+import HirerSidebar from "../../Components/HireDashSidebar";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -21,7 +21,7 @@ export default function Page({ params }: { params: { hireId: string } }) {
     }, []);
 
     return (
-      <div><Sidebar userName={username}/>
+      <div><HirerSidebar userName={username}/>
       
         <main className="grid w-full h-full pl-[240px]">
             <div className="min-h-screen bg-gray-900 text-white">

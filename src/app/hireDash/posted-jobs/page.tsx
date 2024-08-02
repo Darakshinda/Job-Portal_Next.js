@@ -8,7 +8,7 @@ import JobList from "../../Components/JobList";
 import { Tags2 } from "@/stories/Tags2";
 import locationOptions from "../../post/data/location.json";
 import tagOptions from "../../post/data/tags.json";
-import Sidebar from "@/app/Components/HireDashSidebar";
+import HirerSidebar from "@/app/Components/HireDashSidebar";
 import JobDetailsModal from "@/app/Components/JobModal";
 import axios from "axios";
 import SalaryRangeSlider from "../../Components/FilterBox";
@@ -20,7 +20,7 @@ const jobPositionOptions = [
   { label: "UX/UI Designer" },
 ];
 
-const postedJobs = () => {
+const PostedJobs = () => {
   const [selectedLocationTags, setSelectedLocationTags] = useState<string[]>(
     []
   );
@@ -55,12 +55,12 @@ const postedJobs = () => {
     setSelectedJob(null);
   };
 
-  const checkLogIn = () => {
+  const checkLogIn = useCallback(() => {
     const access_token = localStorage.getItem("access_token");
     if (!access_token) {
       router.push("/login");
     }
-  };
+  }, [router]);
 
   const getUserName = useCallback(() => {
     const access_token = localStorage.getItem("access_token");
@@ -84,46 +84,34 @@ const postedJobs = () => {
   useEffect(() => {
     checkLogIn();
     getUserName();
-  }, []);
+  }, [checkLogIn, getUserName]);
 
   return (
     <div className="bg-[#10161e]">
-      <Sidebar userName={userName} />
+      <HirerSidebar userName={userName} />
       <div className="flex flex-col gap-4 justify-center items-center pl-[200px]">
         <div>
-          <h1 className="text-4xl mt-3 text-grey-300 font-semibold">Posted Jobs</h1>
+          <h1 className="text-4xl mt-3 text-white font-semibold">Posted Jobs</h1>
         </div>
         <div className="flex justify-around gap-4">
           <div>
             <h3 className="text-lg font-semibold mb-2"></h3>
 
-            <Tags2
-              options={locationOptions}
-              cls="input_company{background-color: #f2f1ed;width: 95%;margin-top:10px;margin-left: 14px;border-radius: 7px;border-width: 1px;border-color: #b1b3b6;padding: 3px 10px;}"
-              placeholder="Search by Location"
-              dynamic={true}
-              onSelect={handleLocationTagSelection}
-            />
+            <Tags2 cls="input_company" settgs={setSelectedLocationTags} dynamic={true} options={locationOptions} phdr='Search by Location'/>
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-2"></h3>
             <Tags2
               options={jobPositionOptions}
               cls="input_company{background-color: #f2f1ed;width: 95%;margin-top:10px;margin-left: 14px;border-radius: 7px;border-width: 1px;border-color: #b1b3b6;padding: 3px 10px;}"
-              placeholder="Search by Job Position"
+              phdr="Search by Job Position"
               dynamic={true}
               onSelect={handleJobTagSelection}
             />
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-2"></h3>
-            <Tags2
-              options={tagOptions}
-              cls="input_company{background-color: #f2f1ed;width: 95%;margin-top:10px;margin-left: 14px;border-radius: 7px;border-width: 1px;border-color: #b1b3b6;padding: 3px 10px;}"
-              placeholder="Search by Tags"
-              dynamic={true}
-              onSelect={handleTagTagSelection}
-            />
+            <Tags2 cls="input_company" settgs={setSelectedTagTags} dynamic={true} options={tagOptions} phdr='Search by Tags'/>
           </div>
           <div className="">
             <SalaryRangeSlider
@@ -142,6 +130,7 @@ const postedJobs = () => {
             selectedJobTags={selectedJobTags}
             selectedTagTags={selectedTagTags}
             postedJobs={true}
+            appliedJobs={false}
             view={setSelectedJob}
           />
         </div>
@@ -150,4 +139,4 @@ const postedJobs = () => {
   );
 };
 
-export default postedJobs;
+export default PostedJobs;

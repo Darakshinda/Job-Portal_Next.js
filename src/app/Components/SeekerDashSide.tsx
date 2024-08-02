@@ -17,7 +17,7 @@ const Sidebar: React.FC<SidebarProps> = ({userName}) => {
   const handleLogOut = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
-    Router.push('/');
+    Router.push('/login');
   }
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({userName}) => {
           
             <ClickOutsideDiv onOutsideClick={() => setShowTrialOptions(!showTrialOptions)}>
               <div className="mt-2 bg-gray-800">
-                <Link href={`/profile`}>
+                <Link href={`/profile/edit`}>
                 <button className="block w-full text-left p-2 hover:bg-gray-700">Profile</button></Link>
             
             <button onClick={handleLogOut} className="block w-full text-left p-2 hover:bg-gray-700">Logout</button>

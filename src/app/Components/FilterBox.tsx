@@ -21,8 +21,8 @@ const SalaryFilterBox: React.FC<SalaryFilterBoxProps> = ({
   return (
     <div className="filter-box">
       <div className="filter-title" onClick={toggleSlider}>
-        <div className="inline-block rounded-full border border-gray-300 mt-2 px-4 py-2 cursor-pointer bg-gray-900">
-          <h3 className=" text-white text-lg mb-0">{label}</h3>
+        <div className="inline-block rounded-full border border-gray-300 mt-2 px-4 py-2 cursor-pointer bg-white">
+          <h3 className=" text-black text-lg mb-0">{label}</h3>
         </div>
       </div>
       {showSlider && (

@@ -179,6 +179,7 @@ const Login = () => {
               val={password}
               onChange={(key: string, value: string) => setPassword(value)}
               type="password"
+              iconColor="white"
             />
             {passwordError && (
               <p className="text-red-500 text-sm mt-1">{passwordError}</p>
@@ -188,7 +189,7 @@ const Login = () => {
             <p className="text-red-500 text-sm mb-4">{authError}</p>
           )}
           <div className="mb-6 flex justify-end">
-            <Link href={'/reset-password'} className="text-black cursor-pointer">Forgot Password?</Link>
+            <Link href={'/reset-password'} className="text-white cursor-pointer">Forgot Password?</Link>
           </div>
           <div className="justify-center text-center">
             <button

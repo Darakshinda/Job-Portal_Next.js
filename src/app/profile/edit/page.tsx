@@ -5,6 +5,7 @@ import SearchableSelect from "@/app/Components/SearchableSelect";
 import primRole from "./data/primryRole.json";
 import expOpns from "./data/expOpns.json";
 import skillsOpns from "./data/skills.json";
+import axios from 'axios';
 import pronouns from "./data/pronouns.json";
 import genderOpns from "./data/gender.json";
 import ethinicity from "./data/ethinicity.json";
@@ -12,23 +13,21 @@ import { useEffect, useState } from "react";
 import SelectTags from "@/app/Components/SelectTags";
 import Select, { MultiValue, SingleValue } from "react-select";
 import { TextInput } from "@/stories/TextInput";
-import Sidebar from "@/app/Components/HireDashSidebar";
-import './Stylin.css'
+import Sidebar from "@/app/Components/SeekerDashSide";
+import HirerSidebar from "@/app/Components/HireDashSidebar";
+import "./Stylin.css";
 import ToggleSwitch from "@/app/Components/ToggleSwitch";
 import MultiSelect from "@/app/Components/MultiSelect";
 import CompanySelect from "@/app/Components/CompanySelect";
 import EducationSelect from "@/app/Components/EducationSelect";
 import ExperienceCard from "@/app/Components/ExperienceCard";
-import axios from "axios";
 
 import { format } from "date-fns";
 import DateSelect from "@/app/Components/DatePickerComponent";
 import EducationCard from "@/app/Components/EducationCard";
 import degreeOpns from "./data/degree.json";
 
-const Home = ({params}: {params: {isHirer : boolean}}) => {
-  const [hirer, setHirer] = useState(params.isHirer);
-  const [seeker, setSeeker] = useState(!params.isHirer);
+const Home: React.FC = () => {
   const [aboutFetch, setaboutFetch] = useState({
     name: "",
     company_name: "",
@@ -86,6 +85,7 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
     ethnicity: [],
   });
   const [identity, setidentity] = useState(identityFetch);
+  const [isHirer, setIsHirer] = useState(false);
 
   const deepEqual = (obj1: object, obj2: object) => {
     if (obj1 === obj2) return true;
@@ -254,6 +254,7 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
 
   const [Exps, setExps] = useState([]);
   const [Edus, setEdus] = useState([]);
+
   const [username, setusername] = useState("");
 
   console.log(about);
@@ -261,44 +262,48 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
   if (exp.currentlyWorking) handle("end", null, exp, setexp);
   console.log(exp);
   const divcls = "border-t border-t-white pt-[37px]",
-    buttonbg = "#3b82f6",
+    buttonbg = "rgb(30, 7, 94)",
     buttondiv = "flex space-x-4",
     labelcls = "block text-sm font-medium text-[16px] font-bold";
 
-  const getUserName = () => {
-    const accessToken = localStorage.getItem("access_token");
-    const url = process.env.NEXT_PUBLIC_BASE_URL + "/accounts/profile/";
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        setusername(response.data.first_name.split(" ")[0]);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  useEffect(() => {
-    getUserName();
-  });
+    const getDetails = () => {
+      const accessToken = localStorage.getItem("access_token");
+      const url = process.env.NEXT_PUBLIC_BASE_URL + "/accounts/profile/";
+      axios
+        .get(url, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((response) => {
+          setusername(response.data.first_name.split(" ")[0]);
+          if(response.data.account_type === "job_hirer"){
+            setIsHirer(true);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+  
+    useEffect(() => {
+      getDetails();
+    });
 
   return (
     <div>
-      <Sidebar userName={username} />
+      {isHirer && <HirerSidebar userName={username} />}
+      {!isHirer && <Sidebar userName={username} />}
 
-      <main className=" bg-gray-900 grid w-full h-full pl-[240px]">
-        <div className="min-h-screen bg-gray-900 text-black">
-          <div className=" max-w-[80%] mx-auto py-10 px-4 sm:px-6 lg:px-8">
-            <div className="bg-gray-900 space-y-8 border shadow-lg bg-[#fffff0] rounded-md mt-[5px] mb-[5px] p-[5%]">
+      <main className="grid w-full h-full pl-[240px]">
+        <div className="min-h-screen bg-gray-900 text-white">
+          <div className="max-w-[80%] mx-auto py-10 px-4 sm:px-6 lg:px-8">
+            <div className="space-y-8 border border-white rounded-md mt-[5px] mb-[5px] p-[5%]">
               <div className={`flex flex-row`}>
                 <div className="w-[35%]">
-                  <h2 className="text-white text-lg font-medium ">About</h2>
-                  <p className="text-white text-sm">
-                    Tell us about yourself so seekers know who you are
+                  <h2 className="text-lg font-medium ">About</h2>
+                  <p className="text-sm ">
+                    Tell us about yourself so startups know who you are.
                   </p>
                 </div>
 
@@ -306,21 +311,20 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                   <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
                     <div className="sm:col-span-2">
                       <label htmlFor="website" className={labelcls}>
-                        <p className="text-white bg-color-black"> Your name*</p>
+                        Your name*
                       </label>
                       <input
-                        className="mt-1 h-[35px] w-full rounded-md border bg-black text-white border-gray-400 p-4"
+                        className="mt-1 h-[35px] w-full rounded-md border border-gray-400 p-4"
                         value={about.name}
                         onChange={(e) =>
                           handle("name", e.target.value, about, setabout)
                         }
                       />
 
-                      {hirer && (
+                      {isHirer && (
                         <div>
                           <label htmlFor="website" className={labelcls}>
-                          <p className="text-white"> Company Name*</p>
-                            
+                            <p className="text-white"> Company Name*</p>
                           </label>
                           <input
                             className="mt-1 h-[35px] w-full rounded-md border bg-black text-white border-gray-400 p-4"
@@ -350,12 +354,12 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                           }}
                         />
                         <span className="ml-[4px]">
-                          <p className="text-white">Upload your Profile pic</p>
+                          Upload your Profile pic
                         </span>
                       </div>
                       {about.logo != "" && (
                         <button
-                          className="text-black mt-[8px] font-bold py-2 px-8 rounded"
+                          className="text-white mt-[8px] font-bold py-2 px-8 rounded"
                           onClick={(e) => handle("logo", "", about, setabout)}
                           style={{ backgroundColor: "rgb(30, 7, 94)" }}
                         >
@@ -364,7 +368,7 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                       )}
                     </div>
 
-                    {hirer && (
+                    {isHirer && (
                       <div>
                         <label htmlFor="website" className={labelcls}>
                           <p className="text-white">Designation*</p>
@@ -384,10 +388,10 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                       </div>
                     )}
 
-                    {seeker && (
+                    {!isHirer && (
                       <div className="sm:col-span-2">
                         <label htmlFor="website" className={labelcls}>
-                          <p className="text-white">Where are you based?*</p>
+                          Where are you based?*
                         </label>
                         <LocationSearch
                           val={about.locn}
@@ -398,11 +402,11 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                       </div>
                     )}
 
-                    {seeker && (
+                    {!isHirer && (
                       <div className="flex flex-row w-[220%]">
                         <div className="sm:col-span-2 w-[70%]">
                           <label htmlFor="website" className={labelcls}>
-                           <p className="text-white"> Select your primary role*</p>
+                            Select your primary role*
                           </label>
                           <SearchableSelect
                             options={primRole}
@@ -415,7 +419,7 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                         </div>
                         <div className="sm:col-span-2 w-[25%] ml-[5%]">
                           <label htmlFor="website" className={labelcls}>
-                           <p className="text-white"> Years*</p>
+                            Years*
                           </label>
                           <SearchableSelect
                             options={expOpns}
@@ -429,10 +433,10 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                       </div>
                     )}
 
-                    {seeker && (
+                    {!isHirer && (
                       <div className="sm:col-span-2">
                         <label htmlFor="website" className={labelcls}>
-                          <p className="text-white">Open to the following roles</p>
+                          Open to the following roles
                         </label>
                         <SelectTags
                           options={primRole}
@@ -445,7 +449,7 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                       </div>
                     )}
 
-                    {hirer && (
+{isHirer && (
                       <div>
                         <label htmlFor="website" className={labelcls}>
                           <p className="text-white">Type of Company (Product based or Service Based)*</p>
@@ -461,11 +465,30 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                               setabout
                             )
                           }
-                        />
+                        /> {isHirer && (
+                          <div>
+                            <label htmlFor="website" className={labelcls}>
+                              <p className="text-white">Company Stage*</p>
+                            </label>
+                            <input
+                              className="mt-1 h-[35px] w-full rounded-md border bg-gray-100 text-white border-gray-400 p-4"
+                              value={about.company_stage}
+                              onChange={(e) =>
+                                handle(
+                                  "company_stage",
+                                  e.target.value,
+                                  about,
+                                  setabout
+                                )
+                              }
+                            />
+                          </div>
+                        )}
+                        
                       </div>
                     )}
 
-                    {hirer && (
+{isHirer && (
                       <div>
                         <label htmlFor="website" className={labelcls}>
                           <p className="text-white">Company Stage*</p>
@@ -485,13 +508,17 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                       </div>
                     )}
 
+
+
+
+
                     <div className="sm:col-span-2">
-                      <label htmlFor="website" className={labelcls}>
-                        <p className="text-white">{seeker ? "Bio" : "Company Description"}</p>
+                        <label htmlFor="website" className={labelcls}>
+                        <p className="text-white">{!isHirer ? "Bio" : "Company Description"}</p>
                       </label>
                       <textarea
-                        className="mt-1 block w-full rounded-md border bg-gray-700 text-white border-gray-400 p-4 min-h-[205px]"
-                        placeholder={seeker ? "Stanford CS, Full stack generalist; launched a successful Android app, worked at Google" : "AI-first startup based on LLMs"}
+                        className="mt-1 block w-full rounded-md border-gray-300 border border-gray-400 p-4 min-h-[205px]"
+                        placeholder="Stanford CS, Full stack generalist; launched a successful Android app, worked at Google"
                         value={about.bio}
                         onChange={(e) =>
                           handle("bio", e.target.value, about, setabout)
@@ -523,8 +550,8 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
 
               <div className={`flex flex-row ${divcls}`}>
                 <div className="w-[35%]">
-                  <h2 className="text-lg font-medium text-white">Social Profiles</h2>
-                  <p className="text-sm text-white">Where can people find you online?</p>
+                  <h2 className="text-lg font-medium ">Social Profiles</h2>
+                  <p className="text-sm ">Where can people find you online?</p>
                 </div>
 
                 <div className="w-[61%] ml-[4%]">
@@ -535,13 +562,13 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                           <img
                             src="https://img.freepik.com/free-vector/www-internet-globe-grid_78370-2008.jpg?size=338&ext=jpg&ga=GA1.1.1826414947.1720569600&semt=ais_hybrid"
                             alt="Description of Image"
-                            className="w-6 aspect-square object-cover rounded-lg shadow-md"
+                            className="w-[49px] h-[55px] object-cover rounded-lg shadow-md"
                           />
-                          <p className="text-white">Website</p>
+                          <p className="">Website</p>
                         </div>
                       </label>
                       <input
-                        className="mt-1 h-[35px] bg-black text-white w-full rounded-md border border-gray-400 p-4"
+                        className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
                         placeholder="https://"
                         onChange={(e) =>
                           handle(
@@ -561,13 +588,13 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                           <img
                             src="https://banner2.cleanpng.com/20180518/yk/kisspng-computer-icons-linkedin-5aff0283a31f04.0344839015266617636682.jpg"
                             alt="Description of Image"
-                            className="w-6 aspect-square object-cover rounded-lg shadow-md"
+                            className="w-[49px] h-[55px] object-cover rounded-lg shadow-md"
                           />
-                          <p className="text-white">LinkedIn</p>
+                          <p className="">LinkedIn</p>
                         </div>
                       </label>
                       <input
-                        className="mt-1 h-[35px] w-full rounded-md bg-black text-white border border-gray-400 p-4"
+                        className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
                         placeholder="https://linkedin.com/in/username"
                         onChange={(e) =>
                           handle(
@@ -587,13 +614,13 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                           <img
                             src="https://static-00.iconduck.com/assets.00/github-icon-2048x2048-823jqxdr.png"
                             alt="Description of Image"
-                            className="w-6 aspect-square object-cover rounded-lg shadow-md"
+                            className="w-[49px] h-[55px] object-cover rounded-lg shadow-md"
                           />
-                          <p className="text-white">GitHub</p>
+                          <p className="">GitHub</p>
                         </div>
                       </label>
                       <input
-                        className="mt-1 h-[35px] w-full rounded-md bg-black text-white border border-gray-400 p-4"
+                        className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
                         placeholder="https://github.com/username"
                         onChange={(e) =>
                           handle(
@@ -613,13 +640,13 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                           <img
                             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSRVa8lLOwmvEjX6C_zHd7IzDOUShvDBpjLw&s"
                             alt="Description of Image"
-                            className="w-6 aspect-square object-cover rounded-lg shadow-md"
+                            className="w-[49px] h-[55px] object-cover rounded-lg shadow-md"
                           />
-                          <p className="text-white">Twitter</p>
+                          <p className="">Twitter</p>
                         </div>
                       </label>
                       <input
-                        className="mt-1 h-[35px] w-full rounded-md bg-black text-white border border-gray-400 p-4"
+                        className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
                         placeholder="https://twitter.com/username"
                         onChange={(e) =>
                           handle(
@@ -654,358 +681,352 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                   </div>
                 </div>
               </div>
+              {!isHirer && (
+              <div className={`flex flex-row ${divcls}`}>
+                <div className="w-[35%]">
+                  <h2 className="text-lg font-medium ">Your work experience</h2>
+                  <p className="text-sm ">
+                    What other positions have you held?
+                  </p>
+                </div>
 
-              {seeker && (
-                <div className={`flex flex-row ${divcls}`}>
-                  <div className="w-[35%] bg-gray-900">
-                    <h2 className="text-lg font-medium text-white">
-                      Your work experience
-                    </h2>
-                    <p className="text-sm text-white">
-                      What other positions have you held?
-                    </p>
-                  </div>
-
-                  <div className="w-[61%] ml-[4%]">
-                    {!editedflg &&
-                      Exps.map((experience, index) =>
-                        renderExp(experience, index)
-                      )}
-                    {editedflg &&
-                      Exps.map((experience, index) =>
-                        renderEditedExp(experience, index)
-                      )}
-
-                    {!addExp && (
-                      <button
-                        className="text-[#2563eb] mt-[9px]"
-                        onClick={(e) => setaddExp(true)}
-                      >
-                        + Add work experience
-                      </button>
+                <div className="w-[61%] ml-[4%]">
+                  {!editedflg &&
+                    Exps.map((experience, index) =>
+                      renderExp(experience, index)
                     )}
-                    {addExp && (
-                      <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[#fffff0] p-[8px] border border-grey-100 rounded text-black">
-                        <div className="sm:col-span-2">
-                          <label htmlFor="website" className={labelcls}>
-                            Company*
-                          </label>
-                          <CompanySelect
-                            handle={(val: string) => {
-                              handle("company", val, exp, setexp);
-                            }}
-                            val={exp.company || ""}
-                          />
-                        </div>
+                  {editedflg &&
+                    Exps.map((experience, index) =>
+                      renderEditedExp(experience, index)
+                    )}
 
-                        <div className="sm:col-span-2">
-                          <label htmlFor="website" className={labelcls}>
-                            Title*
-                          </label>
-                          <input
-                            className="mt-1 h-[35px] w-full rounded-md border border-gray-400 p-4"
-                            value={exp.title}
-                            onChange={(e) =>
-                              handle("title", e.target.value, exp, setexp)
-                            }
-                          />
-                        </div>
+                  {!addExp && (
+                    <button
+                      className="text-[#2563eb] mt-[9px]"
+                      onClick={(e) => setaddExp(true)}
+                    >
+                      + Add work experience
+                    </button>
+                  )}
+                  {addExp && (
+                    <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[black] p-[8px] border  border-white rounded">
+                      <div className="sm:col-span-2">
+                        <label htmlFor="website" className={labelcls}>
+                          Company*
+                        </label>
+                        <CompanySelect
+                          handle={(val: string) => {
+                            handle("company", val, exp, setexp);
+                          }}
+                          val={exp.company || ""}
+                        />
+                      </div>
 
-                        <div className="sm:col-span-2">
-                          <label htmlFor="website" className={labelcls}>
-                            Start date*
-                          </label>
-                          <DateSelect
-                            value={exp.start}
-                            handleChange={(val: string) => {
-                              handle("start", val, exp, setexp);
-                            }}
-                          />
-                        </div>
+                      <div className="sm:col-span-2">
+                        <label htmlFor="website" className={labelcls}>
+                          Title*
+                        </label>
+                        <input
+                          className="mt-1 h-[35px] w-full rounded-md border border-gray-400 p-4"
+                          value={exp.title}
+                          onChange={(e) =>
+                            handle("title", e.target.value, exp, setexp)
+                          }
+                        />
+                      </div>
 
-                        <div className="sm:col-span-2">
-                          {!exp.currentlyWorking && (
-                            <div>
-                              <label htmlFor="website" className={labelcls}>
-                                End date*
-                              </label>
-                              <DateSelect
-                                value={exp.end}
-                                handleChange={(val: string) => {
-                                  handle("end", val, exp, setexp);
-                                }}
-                              />
-                            </div>
-                          )}
-                          <div className="mt-[14px] flex flex-row align-center items-center">
-                            <ToggleSwitch
-                              isChecked={exp.currentlyWorking}
-                              onToggle={(val: boolean) => {
-                                handle("currentlyWorking", val, exp, setexp);
+                      <div className="sm:col-span-2">
+                        <label htmlFor="website" className={labelcls}>
+                          Start date*
+                        </label>
+                        <DateSelect
+                          value={exp.start}
+                          handleChange={(val: string) => {
+                            handle("start", val, exp, setexp);
+                          }}
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        {!exp.currentlyWorking && (
+                          <div>
+                            <label htmlFor="website" className={labelcls}>
+                              End date*
+                            </label>
+                            <DateSelect
+                              value={exp.end}
+                              handleChange={(val: string) => {
+                                handle("end", val, exp, setexp);
                               }}
                             />
-                            <span className="ml-[4px]">
-                              <p className="text-white">I currently work here</p>
-                            </span>
                           </div>
-                        </div>
-
-                        <div className="sm:col-span-2">
-                          <label htmlFor="website" className={labelcls}>
-                            <p className="text-white">Description</p>
-                          </label>
-                          <textarea
-                            className="mt-1 block w-full rounded-md border-gray-300 border border-gray-400 p-4 min-h-[205px]"
-                            placeholder="Description"
-                            value={exp.desc}
-                            onChange={(e) =>
-                              handle("desc", e.target.value, exp, setexp)
-                            }
+                        )}
+                        <div className="mt-[14px] flex flex-row align-center items-center">
+                          <ToggleSwitch
+                            isChecked={exp.currentlyWorking}
+                            onToggle={(val: boolean) => {
+                              handle("currentlyWorking", val, exp, setexp);
+                            }}
                           />
-                        </div>
-
-                        <div className={buttondiv}>
-                          <button
-                            className="text-white font-bold py-2 px-8 rounded"
-                            style={{ backgroundColor: buttonbg }}
-                            onClick={(e) => {
-                              setexp(expDef);
-                              setaddExp(false);
-                            }}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            className="bg-purple-500 text-white font-bold px-8 rounded"
-                            style={{ backgroundColor: buttonbg }}
-                            onClick={(e) => {
-                              Exps.push(exp);
-                              setexp(expDef);
-                              setaddExp(false);
-                            }}
-                          >
-                            Save
-                          </button>
+                          <span className="ml-[4px]">
+                            I currently work here
+                          </span>
                         </div>
                       </div>
-                    )}
-                  </div>
-                </div>
-              )}
 
-              {seeker && (
-                <div className={`flex flex-row ${divcls}`}>
-                  <div className="w-[35%]">
-                    <h2 className="text-lg font-medium text-white">Education</h2>
-                    <p className="text-sm text-white">
-                      Which Institutions have you studied at?
-                    </p>
-                  </div>
-
-                  <div className="w-[61%] ml-[4%]">
-                    {!editedflg &&
-                      Edus.map((experience, index) =>
-                        renderEdu(experience, index)
-                      )}
-                    {editedflg &&
-                      Edus.map((experience, index) =>
-                        renderEditedEdu(experience, index)
-                      )}
-
-                    {!addEdu && (
-                      <button
-                        className="text-[#2563eb] mt-[9px]"
-                        onClick={(e) => setaddEdu(true)}
-                      >
-                        + Add Education
-                      </button>
-                    )}
-                    {addEdu && (
-                      <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[#fffff0] p-[8px] border border-grey-100 rounded text-black">
-                        <div className="sm:col-span-2">
-                          <label htmlFor="website" className={labelcls}>
-                            Education*
-                          </label>
-                          <EducationSelect
-                            handle={(val: string) => {
-                              handle("education", val, edu, setedu);
-                            }}
-                            val={edu.education || ""}
-                          />
-                        </div>
-
-                        <div className="sm:col-span-2">
-                          <label htmlFor="website" className={labelcls}>
-                            Graduation*
-                          </label>
-                          <DateSelect
-                            value={edu.graduation}
-                            handleChange={(val: string) => {
-                              handle("graduation", val, edu, setedu);
-                            }}
-                          />
-                        </div>
-
-                        <div className="sm:col-span-2">
-                          <label htmlFor="website" className={labelcls}>
-                            Degree & Major
-                          </label>
-                          <SearchableSelect
-                            options={degreeOpns}
-                            handle={(val: string) => {
-                              handle("degree", val, edu, setedu);
-                            }}
-                            val={edu.degree}
-                          />
-                        </div>
-
-                        <div className="sm:col-span-2">
-                          <label htmlFor="website" className={labelcls}>
-                            GPA
-                          </label>
-                          <div className="flex flex-row ">
-                            <div className="sm:col-span-2 w-[47.5%]">
-                              <input
-                                className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
-                                placeholder="GPA"
-                                value={edu.gpa}
-                                onChange={(e) =>
-                                  handle("gpa", e.target.value, edu, setedu)
-                                }
-                              />
-                            </div>
-                            <div className="sm:col-span-2 w-[47.5%] ml-[5%]">
-                              <input
-                                className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
-                                placeholder="Max"
-                                value={edu.maxgpa}
-                                onChange={(e) =>
-                                  handle("maxgpa", e.target.value, edu, setedu)
-                                }
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className={buttondiv}>
-                          <button
-                            className="text-white font-bold py-2 px-8 rounded"
-                            style={{ backgroundColor: buttonbg }}
-                            onClick={(e) => {
-                              setedu(eduDef);
-                              setaddEdu(false);
-                            }}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            className="bg-purple-500 text-white font-bold px-8 rounded"
-                            style={{ backgroundColor: buttonbg }}
-                            onClick={(e) => {
-                              Edus.push(edu);
-                              setedu(eduDef);
-                              setaddEdu(false);
-                            }}
-                          >
-                            Save
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {seeker && (
-                <div className={`flex flex-row ${divcls}`}>
-                  <div className="w-[35%]">
-                    <h2 className="text-lg font-medium text-white">Your Skills</h2>
-                    <p className="text-sm text-white">
-                      This will help startups hone in on your strengths.
-                    </p>
-                  </div>
-
-                  <div className="w-[61%] ml-[4%]">
-                    <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
                       <div className="sm:col-span-2">
-                        <SelectTags
-                          options={skillsOpns}
-                          phdr="Select Roles"
-                          handle={setskills}
-                          val={skills}
-                        />
-                      </div>
-
-                      {!arraysEqual(skills, skillsFetch) && (
-                        <div className={buttondiv}>
-                          <button
-                            className="bg-purple-500 text-white font-bold py-2 px-8 rounded"
-                            onClick={(e) => setskills(skillsFetch)}
-                            style={{ backgroundColor: buttonbg }}
-                          >
-                            Reset
-                          </button>
-                          <button
-                            className="bg-purple-500 text-white font-bold px-8 rounded"
-                            onClick={(e) => setskillsFetch(skills)}
-                            style={{ backgroundColor: buttonbg }}
-                          >
-                            Save
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {seeker && (
-                <div className={`flex flex-row ${divcls}`}>
-                  <div className="w-[35%]">
-                    <h2 className="text-lg font-medium text-white">Achievements</h2>
-                    <p className="text-sm text-white">
-                      Sharing more details about yourself will help you stand
-                      out more.
-                    </p>
-                  </div>
-
-                  <div className="w-[61%] ml-[4%]">
-                    <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
-                      <div className="sm:col-span-2">
+                        <label htmlFor="website" className={labelcls}>
+                          Description
+                        </label>
                         <textarea
-                          className="mt-1 text-white block w-full rounded-md bg-gray-100 text-black border border-gray-400 p-4 min-h-[205px]"
-                          placeholder="It's OK to brag - e.g. I launched 3 successful Facebook apps which in total reached 2M+ users and generated $100k+ in revenue. I built everything from the front-end to the back-end and everything in between."
-                          onChange={(e) => setachieve(e.target.value)}
-                          value={achievements}
+                          className="mt-1 block w-full rounded-md border-gray-300 border border-gray-400 p-4 min-h-[205px]"
+                          placeholder="Description"
+                          value={exp.desc}
+                          onChange={(e) =>
+                            handle("desc", e.target.value, exp, setexp)
+                          }
                         />
                       </div>
 
-                      {achievements != achievementsFetch && (
-                        <div className={buttondiv}>
-                          <button
-                            className="bg-purple-500 text-white font-bold py-2 px-8 rounded"
-                            onClick={(e) => setachieve(achievementsFetch)}
-                            style={{ backgroundColor: buttonbg }}
-                          >
-                            Reset
-                          </button>
-                          <button
-                            className="bg-purple-500 text-white font-bold px-8 rounded"
-                            onClick={(e) => setachieveFetch(achievements)}
-                            style={{ backgroundColor: buttonbg }}
-                          >
-                            Save
-                          </button>
-                        </div>
-                      )}
+                      <div className={buttondiv}>
+                        <button
+                          className="text-white font-bold py-2 px-8 rounded"
+                          style={{ backgroundColor: buttonbg }}
+                          onClick={(e) => {
+                            setexp(expDef);
+                            setaddExp(false);
+                          }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          className="bg-purple-500 text-white font-bold px-8 rounded"
+                          style={{ backgroundColor: buttonbg }}
+                          onClick={(e) => {
+                            Exps.push(exp);
+                            setexp(expDef);
+                            setaddExp(false);
+                          }}
+                        >
+                          Save
+                        </button>
+                      </div>
                     </div>
+                  )}
+                </div>
+              </div>
+              )}
+              {!isHirer && (
+              <div className={`flex flex-row ${divcls}`}>
+                <div className="w-[35%]">
+                  <h2 className="text-lg font-medium ">Education</h2>
+                  <p className="text-sm ">
+                    Which Institutions have you studied at?
+                  </p>
+                </div>
+
+                <div className="w-[61%] ml-[4%]">
+                  {!editedflg &&
+                    Edus.map((experience, index) =>
+                      renderEdu(experience, index)
+                    )}
+                  {editedflg &&
+                    Edus.map((experience, index) =>
+                      renderEditedEdu(experience, index)
+                    )}
+
+                  {!addEdu && (
+                    <button
+                      className="text-[#2563eb] mt-[9px]"
+                      onClick={(e) => setaddEdu(true)}
+                    >
+                      + Add Education
+                    </button>
+                  )}
+                  {addEdu && (
+                    <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[black] p-[8px] border  border-white rounded">
+                      <div className="sm:col-span-2">
+                        <label htmlFor="website" className={labelcls}>
+                          Education*
+                        </label>
+                        <EducationSelect
+                          handle={(val: string) => {
+                            handle("education", val, edu, setedu);
+                          }}
+                          val={edu.education || ""}
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label htmlFor="website" className={labelcls}>
+                          Graduation*
+                        </label>
+                        <DateSelect
+                          value={edu.graduation}
+                          handleChange={(val: string) => {
+                            handle("graduation", val, edu, setedu);
+                          }}
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label htmlFor="website" className={labelcls}>
+                          Degree & Major
+                        </label>
+                        <SearchableSelect
+                          options={degreeOpns}
+                          handle={(val: string) => {
+                            handle("degree", val, edu, setedu);
+                          }}
+                          val={edu.degree}
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label htmlFor="website" className={labelcls}>
+                          GPA
+                        </label>
+                        <div className="flex flex-row ">
+                          <div className="sm:col-span-2 w-[47.5%]">
+                            <input
+                              className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
+                              placeholder="GPA"
+                              value={edu.gpa}
+                              onChange={(e) =>
+                                handle("gpa", e.target.value, edu, setedu)
+                              }
+                            />
+                          </div>
+                          <div className="sm:col-span-2 w-[47.5%] ml-[5%]">
+                            <input
+                              className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
+                              placeholder="Max"
+                              value={edu.maxgpa}
+                              onChange={(e) =>
+                                handle("maxgpa", e.target.value, edu, setedu)
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className={buttondiv}>
+                        <button
+                          className="text-white font-bold py-2 px-8 rounded"
+                          style={{ backgroundColor: buttonbg }}
+                          onClick={(e) => {
+                            setedu(eduDef);
+                            setaddEdu(false);
+                          }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          className="bg-purple-500 text-white font-bold px-8 rounded"
+                          style={{ backgroundColor: buttonbg }}
+                          onClick={(e) => {
+                            Edus.push(edu);
+                            setedu(eduDef);
+                            setaddEdu(false);
+                          }}
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              )}
+              {!isHirer && (
+              <div className={`flex flex-row ${divcls}`}>
+                <div className="w-[35%]">
+                  <h2 className="text-lg font-medium ">Your Skills</h2>
+                  <p className="text-sm ">
+                    This will help startups hone in on your strengths.
+                  </p>
+                </div>
+
+                <div className="w-[61%] ml-[4%]">
+                  <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
+                    <div className="sm:col-span-2">
+                      <SelectTags
+                        options={skillsOpns}
+                        phdr="Select Roles"
+                        handle={setskills}
+                        val={skills}
+                      />
+                    </div>
+
+                    {!arraysEqual(skills, skillsFetch) && (
+                      <div className={buttondiv}>
+                        <button
+                          className="bg-purple-500 text-white font-bold py-2 px-8 rounded"
+                          onClick={(e) => setskills(skillsFetch)}
+                          style={{ backgroundColor: buttonbg }}
+                        >
+                          Reset
+                        </button>
+                        <button
+                          className="bg-purple-500 text-white font-bold px-8 rounded"
+                          onClick={(e) => setskillsFetch(skills)}
+                          style={{ backgroundColor: buttonbg }}
+                        >
+                          Save
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
+              </div>
+              )}
+              {!isHirer && (
+              <div className={`flex flex-row ${divcls}`}>
+                <div className="w-[35%]">
+                  <h2 className="text-lg font-medium ">Achievements</h2>
+                  <p className="text-sm ">
+                    Sharing more details about yourself will help you stand out
+                    more.
+                  </p>
+                </div>
+
+                <div className="w-[61%] ml-[4%]">
+                  <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
+                    <div className="sm:col-span-2">
+                      <textarea
+                        className="mt-1 block w-full rounded-md border-gray-300 border border-gray-400 p-4 min-h-[205px]"
+                        placeholder="It's OK to brag - e.g. I launched 3 successful Facebook apps which in total reached 2M+ users and generated $100k+ in revenue. I built everything from the front-end to the back-end and everything in between."
+                        onChange={(e) => setachieve(e.target.value)}
+                        value={achievements}
+                      />
+                    </div>
+
+                    {achievements != achievementsFetch && (
+                      <div className={buttondiv}>
+                        <button
+                          className="bg-purple-500 text-white font-bold py-2 px-8 rounded"
+                          onClick={(e) => setachieve(achievementsFetch)}
+                          style={{ backgroundColor: buttonbg }}
+                        >
+                          Reset
+                        </button>
+                        <button
+                          className="bg-purple-500 text-white font-bold px-8 rounded"
+                          onClick={(e) => setachieveFetch(achievements)}
+                          style={{ backgroundColor: buttonbg }}
+                        >
+                          Save
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
               )}
 
               <div className={`flex flex-row ${divcls}`}>
                 <div className="w-[35%]">
                   <h2 className="text-lg font-medium ">Identity</h2>
-                  <p className="text-sm text-white ">
+                  <p className="text-sm ">
                     At CodeUnity, we’re committed to helping companies hire in a
                     more inclusive way. Part of that includes asking candidates
                     to share demographic information so we can help recruiters
@@ -1021,7 +1042,7 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                   <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
                     <div className="sm:col-span-2">
                       <label htmlFor="website" className={labelcls}>
-                        <p className="text-white">Pronouns</p>
+                        <p className="">Pronouns</p>
                       </label>
                       <SearchableSelect
                         options={pronouns}
@@ -1033,10 +1054,10 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                       {identity.pronouns == "Self-describe" && (
                         <div className="sm:col-span-2 mt-4">
                           <label htmlFor="website" className={labelcls}>
-                            <p className="text-white">Pronouns – Self-describe</p>
+                            <p className="">Pronouns – Self-describe</p>
                           </label>
                           <input
-                            className="mt-1 h-[35px] text-white w-full rounded-md border-gray-300 border border-gray-400 p-4"
+                            className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
                             placeholder="eg. She/They"
                             onChange={(e) =>
                               handle(
@@ -1058,14 +1079,14 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                           }}
                         />
                         <span className="ml-[4px]">
-                          <p className="text-white">Display pronouns on my profile</p>
+                          Display pronouns on my profile
                         </span>
                       </div>
                     </div>
 
                     <div className="sm:col-span-2">
                       <label htmlFor="website" className={labelcls}>
-                        <p className="text-white">Gender Identity</p>
+                        <p className="">Gender Identity</p>
                       </label>
                       <SearchableSelect
                         options={genderOpns}
@@ -1077,10 +1098,10 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
                       {identity.gender == "Self-describe" && (
                         <div className="sm:col-span-2 mt-4">
                           <label htmlFor="website" className={labelcls}>
-                            <p className="text-white">Gender Identity – Self-describe</p>
+                            <p className="">Gender Identity – Self-describe</p>
                           </label>
                           <input
-                            className="mt-1 h-[35px] w-full text-white rounded-md border-gray-300 border border-gray-400 p-4"
+                            className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
                             placeholder="Please write in your description"
                             onChange={(e) =>
                               handle(
@@ -1098,7 +1119,7 @@ const Home = ({params}: {params: {isHirer : boolean}}) => {
 
                     <div className="sm:col-span-2">
                       <label htmlFor="website" className={labelcls}>
-                        <p className="text-white">Race/Ethnicity</p>
+                        <p className="">Race/Ethnicity</p>
                         <p
                           className="text-[11px]"
                           style={{ color: "rgb(175, 175, 175)" }}
