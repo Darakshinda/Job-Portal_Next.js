@@ -1,24 +1,20 @@
 import React from "react";
 
-interface option {
-  label?: string;
-}
-
 interface Props {
   keyy?: string;
   cls?: string;
   onChange?: Function;
   req?: boolean;
-  body?: option[];
+  items?: string[];
   id?: string;
   type?: string;
   val?: string;
 }
-interface Propd {
-  cls?: string;
-  bgcolor?: string;
-  btncolor?: string;
-}
+// interface Propd {
+//   cls?: string;
+//   bgcolor?: string;
+//   btncolor?: string;
+// }
 
 /**
  * Primary UI component for user interaction
@@ -28,7 +24,7 @@ export const Select = ({
   cls = `select select-bordered w-full max-w-xs text-white`,
   req = false,
   onChange,
-  body = [],
+  items = [],
   id,
   type = "",
 }: Props) => {
@@ -41,7 +37,7 @@ export const Select = ({
         id={id}
         style={{ display: "inline", width: "37%" }}
       >
-        {body.map((option) => (
+        {items.map((option) => (
           <option className="bg-[#101011] text-white">{option.label}</option>
         ))}
       </select>
@@ -54,40 +50,40 @@ export const Select = ({
       onChange={(event) => onChange(keyy, event.target.value)}
       id={id}
     >
-      {body.map((option) => (
+      {items.map((option) => (
         <option className="bg-[#101011] text-white">{option.label}</option>
       ))}
     </select>
   );
 };
 
-export const Dropdown = ({
-  bgcolor = "base",
-  btncolor = "base",
-  cls = `dropdown`,
-}: Propd) => {
-  return (
-    <div className={cls}>
-      <div
-        tabIndex={0}
-        role="button"
-        className="btn m-1"
-        style={{ backgroundColor: `${btncolor}` }}
-      >
-        Click
-      </div>
-      <ul
-        tabIndex={0}
-        className={`dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52`}
-        style={{ backgroundColor: `${bgcolor}` }}
-      >
-        <li>
-          <button onClick={() => console.log("clicked 1")}>Item 1</button>
-        </li>
-        <li>
-          <button onClick={() => console.log("clicked 2")}>Item 2</button>
-        </li>
-      </ul>
-    </div>
-  );
-};
+// export const Dropdown = ({
+//   bgcolor = "base",
+//   btncolor = "base",
+//   cls = `dropdown`,
+// }: Propd) => {
+//   return (
+//     <div className={cls}>
+//       <div
+//         tabIndex={0}
+//         role="button"
+//         className="btn m-1"
+//         style={{ backgroundColor: `${btncolor}` }}
+//       >
+//         Click
+//       </div>
+//       <ul
+//         tabIndex={0}
+//         className={`dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52`}
+//         style={{ backgroundColor: `${bgcolor}` }}
+//       >
+//         <li>
+//           <button onClick={() => console.log("clicked 1")}>Item 1</button>
+//         </li>
+//         <li>
+//           <button onClick={() => console.log("clicked 2")}>Item 2</button>
+//         </li>
+//       </ul>
+//     </div>
+//   );
+// };

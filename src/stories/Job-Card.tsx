@@ -1,5 +1,5 @@
 import React from 'react';
-import { getTimeDifference } from "../app/utils/timeutils";
+import { getTimeDifference } from "../utils/timeutils";
 
 interface Props {
   cls?: string;

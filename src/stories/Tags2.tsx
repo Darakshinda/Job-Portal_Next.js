@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import Tag from '@/app/Components/Tag';
-import ClickOutsideDiv from '../app/Components/ClickoutsideDiv';
-import "../app/Components/ClickoutsideDiv.css";
-
+import React, { useState, useEffect } from "react";
+import Tag from "@/Components/Tag";
+import ClickOutsideDiv from "../Components/ClickoutsideDiv";
 
 interface Option {
   label: string;
@@ -29,19 +27,19 @@ let mySet: Set<string> = new Set();
 export const Tags2: React.FC<Props> = ({
   closeable = false,
   linktg = false,
-  color = 'white',
+  color = "white",
   dynamic = false,
-  size = 'sm',
-  cls = 'select',
+  size = "sm",
+  cls = "select",
   settgs = () => {},
   value,
   onChange,
-  placeholder = 'Type a tag or keyword to search and add it',
+  placeholder = "Type a tag or keyword to search and add it",
   options,
   req = false,
   onSelect,
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [sel, setSel] = useState(0);
   const [tags, setTags] = useState<string[]>([]);
 
@@ -53,8 +51,8 @@ export const Tags2: React.FC<Props> = ({
   const filt = (option: Option) => {
     return (
       (option.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        option.label === 'REGION' ||
-        option.label === 'COUNTRIES') &&
+        option.label === "REGION" ||
+        option.label === "COUNTRIES") &&
       !mySet.has(option.label)
     );
   };
@@ -63,7 +61,7 @@ export const Tags2: React.FC<Props> = ({
 
   const handleOutsideClick = () => {
     setSel(0);
-    setSearchTerm('');
+    setSearchTerm("");
   };
 
   const removeTag = (tag: string) => {
@@ -73,13 +71,13 @@ export const Tags2: React.FC<Props> = ({
   };
 
   const unicodeRemoval = (tag: string) => {
-    return tag.replace(/[^\p{L}\p{M}\s]/gu, '');
-  }
+    return tag.replace(/[^\p{L}\p{M}\s]/gu, "");
+  };
 
   const addTag = (tag: string) => {
     mySet.add(tag);
     setTags((prevTags) => [...prevTags, tag]);
-    setSearchTerm('');
+    setSearchTerm("");
   };
 
   const renderInput = () => {
@@ -99,7 +97,7 @@ export const Tags2: React.FC<Props> = ({
   };
 
   const renderOption = (option: Option) => {
-    if (option.label === 'REGION' || option.label === 'COUNTRIES') {
+    if (option.label === "REGION" || option.label === "COUNTRIES") {
       return (
         <div key={option.label}>
           <br />
@@ -129,7 +127,11 @@ export const Tags2: React.FC<Props> = ({
     return (
       <div className="flex flex-wrap mt-2">
         {tags.map((item, index) => (
-          <Tag tag={{ label: item }} key={index} onRemove={() => removeTag(item)}>
+          <Tag
+            tag={{ label: item }}
+            key={index}
+            onRemove={() => removeTag(item)}
+          >
             {item}
           </Tag>
         ))}
@@ -139,21 +141,19 @@ export const Tags2: React.FC<Props> = ({
 
   return (
     <ClickOutsideDiv onOutsideClick={handleOutsideClick}>
-      <div className={`searchable-select ${cls} border border-gray-300 rounded-full max-w-md overflow-hidden`}>
-        <div className="flex items-center">
-          {renderInput()}
-        </div>
+      <div
+        className={`searchable-select ${cls} border border-gray-300 rounded-full max-w-md overflow-hidden`}
+      >
+        <div className="flex items-center">{renderInput()}</div>
         {sel === 1 && (
-          <div className="absolute bg-white border text-black border-gray-300 rounded-lg mt-2 shadow-lg z-50 w-full max-w-md scrollable-div scrollbar-hide"  >
+          <div className="absolute bg-white border text-black border-gray-300 rounded-lg mt-2 shadow-lg z-50 w-full max-w-md h-[200px] overflow-y-scroll scrollbar-hide">
             <ul className="menu p-2 max-w-full">
               {filteredOptions.map((option) => renderOption(option))}
             </ul>
           </div>
         )}
       </div>
-      <div className="mt-2 text-white max-w-md">
-        {renderSelectedTags()}
-      </div>
+      <div className="mt-2 text-white max-w-md">{renderSelectedTags()}</div>
     </ClickOutsideDiv>
   );
 };

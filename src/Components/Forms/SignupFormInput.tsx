@@ -1,0 +1,81 @@
+"use client";
+
+import { useState } from "react";
+import { FieldError, UseFormRegister } from "react-hook-form";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+
+interface FormInputProps {
+  key?: string;
+  cls?: string;
+  placeholder?: string;
+  req?: boolean;
+  disabled?: boolean;
+  id: string;
+  label?: string;
+  type: string;
+  register: UseFormRegister<any>;
+  errors?: FieldError;
+  name: string;
+}
+
+const SignupFormInput = ({
+  id,
+  name,
+  type,
+  label,
+  register,
+  placeholder,
+  req,
+  disabled,
+  cls,
+  errors,
+}: FormInputProps) => {
+  const [showPassword, setShowPassword] = useState<boolean>();
+
+  return (
+    <div className="relative flex flex-col w-full isolate">
+      <label className="text-gray-500 font-semibold" htmlFor={name}>
+        {label}{" "}
+        <span
+          className={`text-red-500 ${req && label ? "inline-block" : "hidden"}`}
+        >
+          *
+        </span>
+      </label>
+      <input
+        {...register(name)}
+        id={id}
+        name={name}
+        type={
+          type === "password" ? (!showPassword ? "password" : "text") : type
+        }
+        required={req}
+        className={`relative mt-1 p-2 bg-gray-200 text-primary-700 rounded-lg border border-gray-300 outline-none focus:border-primary-500 ${cls}`}
+        placeholder={placeholder}
+        disabled={disabled}
+      />
+      {type === "password" && (
+        <button
+          type="button"
+          onClick={() => {
+            setShowPassword((prev) => !prev);
+          }}
+          className={`absolute top-9 right-1.5 p-1 flex items-center text-sm h-fit outline-none focus-visible:ring-2 ring-gray-400 rounded-lg`} // Apply icon color class
+        >
+          {showPassword ? (
+            <FaRegEye size={20} className="text-gray-500" />
+          ) : (
+            <FaRegEyeSlash size={20} className="text-gray-500" />
+          )}
+        </button>
+      )}
+      <span
+        className={`text-red-500 text-xs font-semibold  ${errors ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
+      >
+        {errors?.message}
+      </span>
+    </div>
+  );
+};
+
+export default SignupFormInput;

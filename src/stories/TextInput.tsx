@@ -1,6 +1,8 @@
 "use client";
-
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { UseFormRegister, FieldError } from "react-hook-form";
+import { FaRegEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa";
 
 interface InputProps {
   keyy?: string;
@@ -12,6 +14,8 @@ interface InputProps {
   onChange?: Function;
   type?: string;
   iconColor?: string; // Add iconColor prop
+  register?: UseFormRegister<any>;
+  errors?: FieldError;
 }
 
 interface TextAreaProps {
@@ -24,15 +28,17 @@ interface TextAreaProps {
 }
 
 export const TextInput = ({
+  register,
+  errors,
   keyy = "",
-  cls = 'input w-full max-w-xs',
-  placeholder = '',
+  cls = "input w-full max-w-xs",
+  placeholder = "",
   val,
   req = false,
   disabled = false,
   onChange,
-  type = 'text',
-  iconColor = 'black', // Default to black color for the icon
+  type = "text",
+  iconColor = "black", // Default to black color for the icon
 }: InputProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -40,54 +46,30 @@ export const TextInput = ({
     setShowPassword(!showPassword);
   };
 
-  const iconClasses = iconColor === 'white' ? 'text-white' : 'text-black'; // Set icon color class
+  const iconClasses = iconColor === "white" ? "text-white" : "text-black"; // Set icon color class
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <input
-        type={type === 'password' && !showPassword ? 'password' : 'text'}
+        {...register && register(keyy, { required: req })}
+        type={type === "password" && !showPassword ? "password" : "text"}
         required={req}
         className={`w-full ${cls} py-2 px-3 border border-gray-300 rounded-lg shadow-sm text-white bg-[#101011]`}
         placeholder={placeholder}
-        value={val}
+        // value={val}
         disabled={disabled}
         onChange={(event) => onChange && onChange(keyy, event.target.value)}
       />
-      {type === 'password' && (
+      {type === "password" && (
         <button
           type="button"
           onClick={handleToggleVisibility}
-          className={`absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 ${iconClasses}`} // Apply icon color class
+          className={`absolute top-3 bottom-0 right-2 p-1 flex items-center text-sm h-fit ${iconClasses} outline-none focus-visible:ring-2 ring-gray-400 rounded-xl`} // Apply icon color class
         >
           {showPassword ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className={`h-5 w-5 ${iconClasses}`}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor" // Keep stroke as currentColor to use CSS class
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M15 12a3 3 0 01-6 0 3 3 0 016 0z" />
-              <path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8z" />
-              <path d="M14 9l6 6m-6 0l6-6" />
-            </svg>
+            <FaRegEye size={20} className="text-gray-500" />
           ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className={`h-5 w-5 ${iconClasses}`}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor" // Keep stroke as currentColor to use CSS class
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M15 12a3 3 0 01-6 0 3 3 0 016 0z" />
-              <path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8z" />
-            </svg>
+            <FaRegEyeSlash size={20} className="text-gray-500" />
           )}
         </button>
       )}
@@ -97,8 +79,8 @@ export const TextInput = ({
 
 export const TextArea = ({
   keyy = "",
-  cls = 'textarea w-full max-w-xs',
-  placeholder = '',
+  cls = "textarea w-full max-w-xs",
+  placeholder = "",
   val,
   req = false,
   onChange,
