@@ -8,6 +8,7 @@ import { Tags2 } from '@/stories/Tags2';
 import locationOptions from "../app/post/data/location.json";
 import tagOptions from "../app/post/data/tags.json";
 import JobDetailsModal from "./Components/JobModal";
+import Link from 'next/link';
 
 
 const jobPositionOptions = [

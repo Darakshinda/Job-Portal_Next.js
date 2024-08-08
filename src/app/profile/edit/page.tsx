@@ -5,7 +5,7 @@ import SearchableSelect from "@/app/Components/SearchableSelect";
 import primRole from "./data/primryRole.json";
 import expOpns from "./data/expOpns.json";
 import skillsOpns from "./data/skills.json";
-import axios from 'axios';
+import axios from "axios";
 import pronouns from "./data/pronouns.json";
 import genderOpns from "./data/gender.json";
 import ethinicity from "./data/ethinicity.json";
@@ -29,16 +29,17 @@ import degreeOpns from "./data/degree.json";
 
 const Home: React.FC = () => {
   const [aboutFetch, setaboutFetch] = useState({
-    name: "",
+    first_name: "",
+    last_name: "",
     company_name: "",
     designation: "",
     product_service: "",
     company_stage: "",
-    locn: "faridabad",
-    primrole: "",
-    yrs: "",
-    openroles: [],
-    logo: "",
+    location: "",
+    primary_role: "",
+    years_of_experience: "",
+    open_to_roles: [],
+    profile_picture: "",
     bio: "",
   });
   const [about, setabout] = useState(aboutFetch);
@@ -47,26 +48,26 @@ const Home: React.FC = () => {
     website: "",
     linkedin: "",
     github: "",
-    twtr: "",
+    x: "",
   });
   const [socialmedia, setsocialmedia] = useState(socialmediaFetch);
 
   const [expDef, setexpDef] = useState({
-    company: "",
+    company_name: "",
     title: "",
-    start: null,
-    end: null,
-    currentlyWorking: false,
-    desc: "",
+    start_date: null,
+    end_date: null,
+    currently_working: false,
+    description: "",
   });
   const [exp, setexp] = useState(expDef);
 
   const [eduDef, seteduDef] = useState({
     education: "",
-    graduation: null,
+    year_of_graduation: null,
     degree: "",
     gpa: "",
-    maxgpa: "",
+    max_gpa: "",
   });
   const [edu, setedu] = useState(eduDef);
 
@@ -82,7 +83,7 @@ const Home: React.FC = () => {
     pronounsdisp: false,
     gender: "",
     genderSelfDescribe: "",
-    ethnicity: [],
+    race_ethnicity: [],
   });
   const [identity, setidentity] = useState(identityFetch);
   const [isHirer, setIsHirer] = useState(false);
@@ -129,11 +130,11 @@ const Home: React.FC = () => {
   const handle = (
     key: string,
     value: string,
-    obj: object,
-    setObj: Function
+    obj: any,
+    setObj: React.Dispatch<React.SetStateAction<any>>
   ) => {
     if (obj[key] === value) return;
-    setObj({ ...obj, [key]: value });
+    setObj((prevState) => ({ ...prevState, [key]: value }));
   };
 
   const EdusAtIndex = (index: number) => {
@@ -167,12 +168,12 @@ const Home: React.FC = () => {
   const renderExp = (experience: object, ind: number) => {
     return (
       <ExperienceCard
-        company={experience.company}
+        company={experience.company_name}
         title={experience.title}
-        start={experience.start}
-        end={experience.end}
-        currentlyWorking={experience.currentlyWorking}
-        description={experience.desc}
+        start={experience.start_date}
+        end={experience.end_date}
+        currentlyWorking={experience.currently_working}
+        description={experience.description}
         ind={ind}
         Exps={Exps}
         update={updateItem}
@@ -185,11 +186,11 @@ const Home: React.FC = () => {
   const renderEdu = (experience: object, ind: number) => {
     return (
       <EducationCard
-        education={experience.education}
-        graduation={experience.graduation}
+        education={experience.college_name}
+        graduation={experience.year_of_graduation}
         degree={experience.degree}
         gpa={experience.gpa}
-        maxgpa={experience.maxgpa}
+        maxgpa={experience.max_gpa}
         ind={ind}
         Edus={Edus}
         update={updateEdusItem}
@@ -205,11 +206,11 @@ const Home: React.FC = () => {
 
     return (
       <EducationCard
-        education={experience.education}
-        graduation={experience.graduation}
+        education={experience.college_name}
+        graduation={experience.year_of_graduation}
         degree={experience.degree}
         gpa={experience.gpa}
-        maxgpa={experience.maxgpa}
+        maxgpa={experience.max_gpa}
         ind={ind}
         Edus={Edus}
         update={updateEdusItem}
@@ -225,12 +226,12 @@ const Home: React.FC = () => {
 
     return (
       <ExperienceCard
-        company={experience.company}
+        company={experience.company_name}
         title={experience.title}
-        start={experience.start}
-        end={experience.end}
-        currentlyWorking={experience.currentlyWorking}
-        description={experience.desc}
+        start={experience.start_date}
+        end={experience.end_date}
+        currentlyWorking={experience.currently_working}
+        description={experience.description}
         ind={ind}
         Edus={Edus}
         update={updateItem}
@@ -240,13 +241,14 @@ const Home: React.FC = () => {
     );
   };
 
-  if (
-    identity.PronounsSelfdescribe != "" &&
-    identity.pronouns != "Self-describe"
-  )
-    handle("PronounsSelfdescribe", "", identity, setidentity);
-  if (identity.genderSelfDescribe != "" && identity.gender != "Self-describe")
-    handle("genderSelfDescribe", "", identity, setidentity);
+  useEffect(() => {
+    if (identity && identity.pronouns !== "Self-describe" && identity.PronounsSelfdescribe !== "") {
+      handle("PronounsSelfdescribe", "", identity, setidentity);
+    }
+    if (identity && identity.gender !== "Self-describe" && identity.genderSelfDescribe !== "") {
+      handle("genderSelfDescribe", "", identity, setidentity);
+    }
+  }, [identity]);
 
   const [addExp, setaddExp] = useState(false);
   const [addEdu, setaddEdu] = useState(false);
@@ -259,36 +261,99 @@ const Home: React.FC = () => {
 
   console.log(about);
   console.log(identity);
-  if (exp.currentlyWorking) handle("end", null, exp, setexp);
+  if (exp.currently_working) handle("end", null, exp, setexp);
   console.log(exp);
   const divcls = "border-t border-t-white pt-[37px]",
     buttonbg = "rgb(30, 7, 94)",
     buttondiv = "flex space-x-4",
     labelcls = "block text-sm font-medium text-[16px] font-bold";
 
-    const getDetails = () => {
-      const accessToken = localStorage.getItem("access_token");
-      const url = process.env.NEXT_PUBLIC_BASE_URL + "/accounts/profile/";
-      axios
-        .get(url, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
-        .then((response) => {
-          setusername(response.data.first_name.split(" ")[0]);
-          if(response.data.account_type === "job_hirer"){
-            setIsHirer(true);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+  const handleSave = () => {
+    const accessToken = localStorage.getItem("access_token");
+    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/accounts/profile/`;
+
+    // Map skills to technical_skills for the backend
+    const dataToSave = {
+      ...about,
+      experience: Exps,
+      education: Edus,
+      technical_skills: skills,
+      socialmedia: {
+        website: socialmedia.website || "",
+        linkedin: socialmedia.linkedin || "",
+        github: socialmedia.github || "",
+        x: socialmedia.x || "",
+      },
+      identity: {
+        pronouns: identity.pronouns,
+        pronounsSelfdescribe: identity.PronounsSelfdescribe,
+        pronounsdisp: identity.pronounsdisp,
+        gender: identity.gender,
+        genderSelfDescribe: identity.genderSelfDescribe,
+        race_ethnicity: identity.race_ethnicity,
+    },
+      achievements: achievements, // Updated field name for backend
     };
-  
-    useEffect(() => {
-      getDetails();
-    });
+
+    axios
+      .put(url, dataToSave, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        setabout(response.data);
+        setaboutFetch(response.data);
+        setsocialmedia(response.data.socialmedia);
+        setsocialmediaFetch(response.data.socialmedia);
+        setskills(response.data.technical_skills || []); // Ensure the skills are also updated from the response
+        setskillsFetch(response.data.technical_skills || []); // For reset functionality
+        setachieve(response.data.achievements || ""); // Update achievements
+        setachieveFetch(response.data.achievements || ""); // For reset functionality
+        setidentity(response.data.identity); // Update identity
+        setidentityFetch(response.data.identity); // For reset functionality
+      })
+      .catch((error) => {
+        console.error("Error saving data:", error);
+      });
+  };
+
+  const getDetails = () => {
+    const accessToken = localStorage.getItem("access_token");
+    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/accounts/profile/`;
+
+    axios
+      .get(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        setabout(response.data);
+        setaboutFetch(response.data); // Store initial fetch to allow reset functionality
+        setsocialmedia(response.data.socialmedia); // Set social media data
+        setsocialmediaFetch(response.data.socialmedia);
+        setExps(response.data.experience || []); // Set experience data
+        setEdus(response.data.education || []); // Set education data
+        setskills(response.data.technical_skills || []); // Set skills data
+        setskillsFetch(response.data.technical_skills || []); // Store initial skills data for reset functionality
+        setachieve(response.data.achievements || ""); // Set achievements data
+        setachieveFetch(response.data.achievements || "");
+        setidentity(response.data.identity); // Update identity
+        setidentityFetch(response.data.identity); // For reset functionality
+        setusername(response.data.first_name.split(" ")[0]);
+        if (response.data.account_type === "job_hirer") {
+          setIsHirer(true);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
+
+  useEffect(() => {
+    getDetails();
+  }, []);
 
   return (
     <div>
@@ -310,16 +375,45 @@ const Home: React.FC = () => {
                 <div className="w-[61%] ml-[4%]">
                   <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
                     <div className="sm:col-span-2">
-                      <label htmlFor="website" className={labelcls}>
-                        Your name*
-                      </label>
-                      <input
-                        className="mt-1 h-[35px] w-full rounded-md border border-gray-400 p-4"
-                        value={about.name}
-                        onChange={(e) =>
-                          handle("name", e.target.value, about, setabout)
-                        }
-                      />
+                      <div className="flex space-x-4">
+                        <div className="flex-1">
+                          <label htmlFor="firstName" className={labelcls}>
+                            First Name*
+                          </label>
+                          <input
+                            id="firstName"
+                            className="mt-1 h-[35px] w-full bg-black rounded-md border border-gray-400 p-4"
+                            value={about.first_name}
+                            onChange={(e) =>
+                              handle(
+                                "first_name",
+                                e.target.value,
+                                about,
+                                setabout
+                              )
+                            }
+                          />
+                        </div>
+
+                        <div className="flex-1">
+                          <label htmlFor="lastName" className={labelcls}>
+                            Last Name*
+                          </label>
+                          <input
+                            id="lastName"
+                            className="mt-1 h-[35px] w-full bg-black rounded-md border border-gray-400 p-4"
+                            value={about.last_name}
+                            onChange={(e) =>
+                              handle(
+                                "last_name",
+                                e.target.value,
+                                about,
+                                setabout
+                              )
+                            }
+                          />
+                        </div>
+                      </div>
 
                       {isHirer && (
                         <div>
@@ -348,7 +442,7 @@ const Home: React.FC = () => {
                           buttonBg="rgb(30, 7, 94)"
                           keyy="logo"
                           resetflg
-                          val={about.logo}
+                          val={about.profile_picture}
                           onChange={(key: string, value: string) => {
                             handle(key, value, about, setabout);
                           }}
@@ -357,7 +451,7 @@ const Home: React.FC = () => {
                           Upload your Profile pic
                         </span>
                       </div>
-                      {about.logo != "" && (
+                      {about.profile_picture != "" && (
                         <button
                           className="text-white mt-[8px] font-bold py-2 px-8 rounded"
                           onClick={(e) => handle("logo", "", about, setabout)}
@@ -394,7 +488,7 @@ const Home: React.FC = () => {
                           Where are you based?*
                         </label>
                         <LocationSearch
-                          val={about.locn}
+                          val={about.location}
                           handle={(val: string) => {
                             handle("locn", val, about, setabout);
                           }}
@@ -414,7 +508,7 @@ const Home: React.FC = () => {
                             handle={(val: string) => {
                               handle("primrole", val, about, setabout);
                             }}
-                            val={about.primrole}
+                            val={about.primary_role}
                           />
                         </div>
                         <div className="sm:col-span-2 w-[25%] ml-[5%]">
@@ -427,7 +521,7 @@ const Home: React.FC = () => {
                             handle={(val: string) => {
                               handle("yrs", val, about, setabout);
                             }}
-                            val={about.yrs}
+                            val={about.years_of_experience}
                           />
                         </div>
                       </div>
@@ -444,12 +538,12 @@ const Home: React.FC = () => {
                           handle={(val: any) => {
                             handle("openroles", val, about, setabout);
                           }}
-                          val={about.openroles}
+                          val={about.open_to_roles}
                         />
                       </div>
                     )}
 
-{isHirer && (
+                    {/* {isHirer && (
                       <div>
                         <label htmlFor="website" className={labelcls}>
                           <p className="text-white">Type of Company (Product based or Service Based)*</p>
@@ -471,7 +565,7 @@ const Home: React.FC = () => {
                               <p className="text-white">Company Stage*</p>
                             </label>
                             <input
-                              className="mt-1 h-[35px] w-full rounded-md border bg-gray-100 text-white border-gray-400 p-4"
+                              className="mt-1 h-[35px] w-full rounded-md border bg-black text-white border-gray-400 p-4"
                               value={about.company_stage}
                               onChange={(e) =>
                                 handle(
@@ -486,35 +580,13 @@ const Home: React.FC = () => {
                         )}
                         
                       </div>
-                    )}
-
-{isHirer && (
-                      <div>
-                        <label htmlFor="website" className={labelcls}>
-                          <p className="text-white">Company Stage*</p>
-                        </label>
-                        <input
-                          className="mt-1 h-[35px] w-full rounded-md border bg-gray-100 text-white border-gray-400 p-4"
-                          value={about.company_stage}
-                          onChange={(e) =>
-                            handle(
-                              "company_stage",
-                              e.target.value,
-                              about,
-                              setabout
-                            )
-                          }
-                        />
-                      </div>
-                    )}
-
-
-
-
+                    )} */}
 
                     <div className="sm:col-span-2">
-                        <label htmlFor="website" className={labelcls}>
-                        <p className="text-white">{!isHirer ? "Bio" : "Company Description"}</p>
+                      <label htmlFor="website" className={labelcls}>
+                        <p className="text-white">
+                          {!isHirer ? "Bio" : "Company Description"}
+                        </p>
                       </label>
                       <textarea
                         className="mt-1 block w-full rounded-md border-gray-300 border border-gray-400 p-4 min-h-[205px]"
@@ -538,7 +610,10 @@ const Home: React.FC = () => {
                         <button
                           className="bg-purple-500 text-white font-bold px-8 rounded"
                           style={{ backgroundColor: buttonbg }}
-                          onClick={(e) => setaboutFetch(about)}
+                          onClick={(e) => {
+                            setaboutFetch(about);
+                            handleSave(); // Call the function to save the changes to the backend
+                          }}
                         >
                           Save
                         </button>
@@ -556,31 +631,17 @@ const Home: React.FC = () => {
 
                 <div className="w-[61%] ml-[4%]">
                   <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
-                    <div className="sm:col-span-2">
-                      <label htmlFor="website" className={labelcls}>
-                        <div className="flex items-center space-x-4">
-                          <img
-                            src="https://img.freepik.com/free-vector/www-internet-globe-grid_78370-2008.jpg?size=338&ext=jpg&ga=GA1.1.1826414947.1720569600&semt=ais_hybrid"
-                            alt="Description of Image"
-                            className="w-[49px] h-[55px] object-cover rounded-lg shadow-md"
-                          />
-                          <p className="">Website</p>
-                        </div>
-                      </label>
-                      <input
-                        className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
-                        placeholder="https://"
-                        onChange={(e) =>
-                          handle(
-                            "website",
-                            e.target.value,
-                            socialmedia,
-                            setsocialmedia
-                          )
-                        }
-                        value={socialmedia.website}
-                      />
-                    </div>
+                  <div className="sm:col-span-2">
+            <label htmlFor="website" className={labelcls}>
+              <div className="flex items-center space-x-4">
+              <img src="https://img.freepik.com/free-vector/www-internet-globe-grid_78370-2008.jpg?size=338&ext=jpg&ga=GA1.1.1826414947.1720569600&semt=ais_hybrid" alt="Description of Image" className="w-[49px] h-[55px] object-cover rounded-lg shadow-md"/>
+              <p className="">Website</p>
+            </div>
+            </label>
+            <input
+              className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4" placeholder="https://"
+              onChange={(e)=>handle("website",e.target.value,socialmedia,setsocialmedia)} value={socialmedia.website}
+            /></div>
 
                     <div className="sm:col-span-2">
                       <label htmlFor="website" className={labelcls}>
@@ -609,30 +670,15 @@ const Home: React.FC = () => {
                     </div>
 
                     <div className="sm:col-span-2">
-                      <label htmlFor="website" className={labelcls}>
-                        <div className="flex items-center space-x-4">
-                          <img
-                            src="https://static-00.iconduck.com/assets.00/github-icon-2048x2048-823jqxdr.png"
-                            alt="Description of Image"
-                            className="w-[49px] h-[55px] object-cover rounded-lg shadow-md"
-                          />
-                          <p className="">GitHub</p>
-                        </div>
-                      </label>
-                      <input
-                        className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
-                        placeholder="https://github.com/username"
-                        onChange={(e) =>
-                          handle(
-                            "github",
-                            e.target.value,
-                            socialmedia,
-                            setsocialmedia
-                          )
-                        }
-                        value={socialmedia.github}
-                      />
-                    </div>
+            <label htmlFor="website" className={labelcls}>
+              <div className="flex items-center space-x-4">
+              <img src="https://static-00.iconduck.com/assets.00/github-icon-2048x2048-823jqxdr.png" alt="Description of Image" className="w-[49px] h-[55px] object-cover rounded-lg shadow-md"/>
+              <p className="">GitHub</p>
+            </div>
+            </label>
+            <input
+              className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4" placeholder="https://github.com/username"
+              onChange={(e)=>handle('github',e.target.value,socialmedia,setsocialmedia)} value={socialmedia.github}/></div>
 
                     <div className="sm:col-span-2">
                       <label htmlFor="website" className={labelcls}>
@@ -650,13 +696,13 @@ const Home: React.FC = () => {
                         placeholder="https://twitter.com/username"
                         onChange={(e) =>
                           handle(
-                            "twtr",
+                            "x",
                             e.target.value,
                             socialmedia,
                             setsocialmedia
                           )
                         }
-                        value={socialmedia.twtr}
+                        value={socialmedia.x}
                       />
                     </div>
 
@@ -671,7 +717,10 @@ const Home: React.FC = () => {
                         </button>
                         <button
                           className="bg-purple-500 text-white font-bold px-8 rounded"
-                          onClick={(e) => setsocialmediaFetch(socialmedia)}
+                          onClick={(e) => {
+                            setsocialmediaFetch(socialmedia);
+                            handleSave();
+                          }}
                           style={{ backgroundColor: buttonbg }}
                         >
                           Save
@@ -682,345 +731,355 @@ const Home: React.FC = () => {
                 </div>
               </div>
               {!isHirer && (
-              <div className={`flex flex-row ${divcls}`}>
-                <div className="w-[35%]">
-                  <h2 className="text-lg font-medium ">Your work experience</h2>
-                  <p className="text-sm ">
-                    What other positions have you held?
-                  </p>
-                </div>
+                <div className={`flex flex-row ${divcls}`}>
+                  <div className="w-[35%]">
+                    <h2 className="text-lg font-medium ">
+                      Your work experience
+                    </h2>
+                    <p className="text-sm ">
+                      What other positions have you held?
+                    </p>
+                  </div>
 
-                <div className="w-[61%] ml-[4%]">
-                  {!editedflg &&
-                    Exps.map((experience, index) =>
-                      renderExp(experience, index)
+                  <div className="w-[61%] ml-[4%]">
+                    {!editedflg &&
+                      Exps.map((experience, index) =>
+                        renderExp(experience, index)
+                      )}
+                    {editedflg &&
+                      Exps.map((experience, index) =>
+                        renderEditedExp(experience, index)
+                      )}
+
+                    {!addExp && (
+                      <button
+                        className="text-[#2563eb] mt-[9px]"
+                        onClick={(e) => setaddExp(true)}
+                      >
+                        + Add work experience
+                      </button>
                     )}
-                  {editedflg &&
-                    Exps.map((experience, index) =>
-                      renderEditedExp(experience, index)
-                    )}
+                    {addExp && (
+                      <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[black] p-[8px] border  border-white rounded">
+                        <div className="sm:col-span-2">
+                          <label htmlFor="website" className={labelcls}>
+                            Company*
+                          </label>
+                          <CompanySelect
+                            handle={(val: string) => {
+                              handle("company", val, exp, setexp);
+                            }}
+                            val={exp.company_name || ""}
+                          />
+                        </div>
 
-                  {!addExp && (
-                    <button
-                      className="text-[#2563eb] mt-[9px]"
-                      onClick={(e) => setaddExp(true)}
-                    >
-                      + Add work experience
-                    </button>
-                  )}
-                  {addExp && (
-                    <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[black] p-[8px] border  border-white rounded">
-                      <div className="sm:col-span-2">
-                        <label htmlFor="website" className={labelcls}>
-                          Company*
-                        </label>
-                        <CompanySelect
-                          handle={(val: string) => {
-                            handle("company", val, exp, setexp);
-                          }}
-                          val={exp.company || ""}
-                        />
-                      </div>
+                        <div className="sm:col-span-2">
+                          <label htmlFor="website" className={labelcls}>
+                            Title*
+                          </label>
+                          <input
+                            className="mt-1 h-[35px] w-full rounded-md border border-gray-400 p-4"
+                            value={exp.title}
+                            onChange={(e) =>
+                              handle("title", e.target.value, exp, setexp)
+                            }
+                          />
+                        </div>
 
-                      <div className="sm:col-span-2">
-                        <label htmlFor="website" className={labelcls}>
-                          Title*
-                        </label>
-                        <input
-                          className="mt-1 h-[35px] w-full rounded-md border border-gray-400 p-4"
-                          value={exp.title}
-                          onChange={(e) =>
-                            handle("title", e.target.value, exp, setexp)
-                          }
-                        />
-                      </div>
-
-                      <div className="sm:col-span-2">
-                        <label htmlFor="website" className={labelcls}>
-                          Start date*
-                        </label>
-                        <DateSelect
-                          value={exp.start}
-                          handleChange={(val: string) => {
-                            handle("start", val, exp, setexp);
-                          }}
-                        />
-                      </div>
-
-                      <div className="sm:col-span-2">
-                        {!exp.currentlyWorking && (
-                          <div>
-                            <label htmlFor="website" className={labelcls}>
-                              End date*
-                            </label>
-                            <DateSelect
-                              value={exp.end}
-                              handleChange={(val: string) => {
-                                handle("end", val, exp, setexp);
-                              }}
-                            />
-                          </div>
-                        )}
-                        <div className="mt-[14px] flex flex-row align-center items-center">
-                          <ToggleSwitch
-                            isChecked={exp.currentlyWorking}
-                            onToggle={(val: boolean) => {
-                              handle("currentlyWorking", val, exp, setexp);
+                        <div className="sm:col-span-2">
+                          <label htmlFor="website" className={labelcls}>
+                            Start date*
+                          </label>
+                          <DateSelect
+                            value={exp.start_date}
+                            handleChange={(val: string) => {
+                              handle("start", val, exp, setexp);
                             }}
                           />
-                          <span className="ml-[4px]">
-                            I currently work here
-                          </span>
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          {!exp.currently_working && (
+                            <div>
+                              <label htmlFor="website" className={labelcls}>
+                                End date*
+                              </label>
+                              <DateSelect
+                                value={exp.end_date}
+                                handleChange={(val: string) => {
+                                  handle("end", val, exp, setexp);
+                                }}
+                              />
+                            </div>
+                          )}
+                          <div className="mt-[14px] flex flex-row align-center items-center">
+                            <ToggleSwitch
+                              isChecked={exp.currently_working}
+                              onToggle={(val: boolean) => {
+                                handle("currentlyWorking", val, exp, setexp);
+                              }}
+                            />
+                            <span className="ml-[4px]">
+                              I currently work here
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label htmlFor="website" className={labelcls}>
+                            Description
+                          </label>
+                          <textarea
+                            className="mt-1 block w-full rounded-md border-gray-300 border border-gray-400 p-4 min-h-[205px]"
+                            placeholder="Description"
+                            value={exp.description}
+                            onChange={(e) =>
+                              handle("desc", e.target.value, exp, setexp)
+                            }
+                          />
+                        </div>
+
+                        <div className={buttondiv}>
+                          <button
+                            className="text-white font-bold py-2 px-8 rounded"
+                            style={{ backgroundColor: buttonbg }}
+                            onClick={(e) => {
+                              setexp(expDef);
+                              setaddExp(false);
+                            }}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="bg-purple-500 text-white font-bold px-8 rounded"
+                            style={{ backgroundColor: buttonbg }}
+                            onClick={() => {
+                              // Add new experience to the Exps array
+                              setExps([...Exps, exp]);
+                              setexp(expDef); // Reset form state
+                              setaddExp(false); // Close the form
+                            }}
+                          >
+                            Save
+                          </button>
                         </div>
                       </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              {!isHirer && (
+                <div className={`flex flex-row ${divcls}`}>
+                  <div className="w-[35%]">
+                    <h2 className="text-lg font-medium ">Education</h2>
+                    <p className="text-sm ">
+                      Which Institutions have you studied at?
+                    </p>
+                  </div>
 
+                  <div className="w-[61%] ml-[4%]">
+                    {!editedflg &&
+                      Edus.map((experience, index) =>
+                        renderEdu(experience, index)
+                      )}
+                    {editedflg &&
+                      Edus.map((experience, index) =>
+                        renderEditedEdu(experience, index)
+                      )}
+
+                    {!addEdu && (
+                      <button
+                        className="text-[#2563eb] mt-[9px]"
+                        onClick={(e) => setaddEdu(true)}
+                      >
+                        + Add Education
+                      </button>
+                    )}
+                    {addEdu && (
+                      <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[black] p-[8px] border  border-white rounded">
+                        <div className="sm:col-span-2">
+                          <label htmlFor="website" className={labelcls}>
+                            Education*
+                          </label>
+                          <EducationSelect
+                            handle={(val: string) => {
+                              handle("education", val, edu, setedu);
+                            }}
+                            val={edu.college_name || ""}
+                          />
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label htmlFor="website" className={labelcls}>
+                            Graduation*
+                          </label>
+                          <DateSelect
+                            value={edu.year_of_graduation}
+                            handleChange={(val: string) => {
+                              handle("graduation", val, edu, setedu);
+                            }}
+                          />
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label htmlFor="website" className={labelcls}>
+                            Degree & Major
+                          </label>
+                          <SearchableSelect
+                            options={degreeOpns}
+                            handle={(val: string) => {
+                              handle("degree", val, edu, setedu);
+                            }}
+                            val={edu.degree}
+                          />
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label htmlFor="website" className={labelcls}>
+                            GPA
+                          </label>
+                          <div className="flex flex-row ">
+                            <div className="sm:col-span-2 w-[47.5%]">
+                              <input
+                                className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
+                                placeholder="GPA"
+                                value={edu.gpa}
+                                onChange={(e) =>
+                                  handle("gpa", e.target.value, edu, setedu)
+                                }
+                              />
+                            </div>
+                            <div className="sm:col-span-2 w-[47.5%] ml-[5%]">
+                              <input
+                                className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
+                                placeholder="Max"
+                                value={edu.max_gpa}
+                                onChange={(e) =>
+                                  handle("maxgpa", e.target.value, edu, setedu)
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className={buttondiv}>
+                          <button
+                            className="text-white font-bold py-2 px-8 rounded"
+                            style={{ backgroundColor: buttonbg }}
+                            onClick={(e) => {
+                              setedu(eduDef);
+                              setaddEdu(false);
+                            }}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="bg-purple-500 text-white font-bold px-8 rounded"
+                            style={{ backgroundColor: buttonbg }}
+                            onClick={() => {
+                              // Add new education entry to the Edus array
+                              setEdus([...Edus, edu]);
+                              setedu(eduDef); // Reset form state
+                              setaddEdu(false); // Close the form
+                            }}
+                          >
+                            Save
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              {!isHirer && (
+                <div className={`flex flex-row ${divcls}`}>
+                  <div className="w-[35%]">
+                    <h2 className="text-lg font-medium ">Your Skills</h2>
+                    <p className="text-sm ">
+                      This will help startups hone in on your strengths.
+                    </p>
+                  </div>
+
+                  <div className="w-[61%] ml-[4%]">
+                    <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
                       <div className="sm:col-span-2">
-                        <label htmlFor="website" className={labelcls}>
-                          Description
-                        </label>
+                        <SelectTags
+                          options={skillsOpns}
+                          phdr="Select Roles"
+                          handle={setskills}
+                          val={skills}
+                        />
+                      </div>
+
+                      {!arraysEqual(skills, skillsFetch) && (
+                        <div className={buttondiv}>
+                          <button
+                            className="bg-purple-500 text-white font-bold py-2 px-8 rounded"
+                            onClick={(e) => setskills(skillsFetch)}
+                            style={{ backgroundColor: buttonbg }}
+                          >
+                            Reset
+                          </button>
+                          <button
+                            className="bg-purple-500 text-white font-bold px-8 rounded"
+                            onClick={(e) => {
+                              setskillsFetch(skills);
+                              handleSave();
+                            }}
+                            style={{ backgroundColor: buttonbg }}
+                          >
+                            Save
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+              {!isHirer && (
+                <div className={`flex flex-row ${divcls}`}>
+                  <div className="w-[35%]">
+                    <h2 className="text-lg font-medium ">Achievements</h2>
+                    <p className="text-sm ">
+                      Sharing more details about yourself will help you stand
+                      out more.
+                    </p>
+                  </div>
+
+                  <div className="w-[61%] ml-[4%]">
+                    <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
+                      <div className="sm:col-span-2">
                         <textarea
                           className="mt-1 block w-full rounded-md border-gray-300 border border-gray-400 p-4 min-h-[205px]"
-                          placeholder="Description"
-                          value={exp.desc}
-                          onChange={(e) =>
-                            handle("desc", e.target.value, exp, setexp)
-                          }
+                          placeholder="It's OK to brag - e.g. I launched 3 successful Facebook apps which in total reached 2M+ users and generated $100k+ in revenue. I built everything from the front-end to the back-end and everything in between."
+                          onChange={(e) => setachieve(e.target.value)}
+                          value={achievements}
                         />
                       </div>
 
-                      <div className={buttondiv}>
-                        <button
-                          className="text-white font-bold py-2 px-8 rounded"
-                          style={{ backgroundColor: buttonbg }}
-                          onClick={(e) => {
-                            setexp(expDef);
-                            setaddExp(false);
-                          }}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          className="bg-purple-500 text-white font-bold px-8 rounded"
-                          style={{ backgroundColor: buttonbg }}
-                          onClick={(e) => {
-                            Exps.push(exp);
-                            setexp(expDef);
-                            setaddExp(false);
-                          }}
-                        >
-                          Save
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-              )}
-              {!isHirer && (
-              <div className={`flex flex-row ${divcls}`}>
-                <div className="w-[35%]">
-                  <h2 className="text-lg font-medium ">Education</h2>
-                  <p className="text-sm ">
-                    Which Institutions have you studied at?
-                  </p>
-                </div>
-
-                <div className="w-[61%] ml-[4%]">
-                  {!editedflg &&
-                    Edus.map((experience, index) =>
-                      renderEdu(experience, index)
-                    )}
-                  {editedflg &&
-                    Edus.map((experience, index) =>
-                      renderEditedEdu(experience, index)
-                    )}
-
-                  {!addEdu && (
-                    <button
-                      className="text-[#2563eb] mt-[9px]"
-                      onClick={(e) => setaddEdu(true)}
-                    >
-                      + Add Education
-                    </button>
-                  )}
-                  {addEdu && (
-                    <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[black] p-[8px] border  border-white rounded">
-                      <div className="sm:col-span-2">
-                        <label htmlFor="website" className={labelcls}>
-                          Education*
-                        </label>
-                        <EducationSelect
-                          handle={(val: string) => {
-                            handle("education", val, edu, setedu);
-                          }}
-                          val={edu.education || ""}
-                        />
-                      </div>
-
-                      <div className="sm:col-span-2">
-                        <label htmlFor="website" className={labelcls}>
-                          Graduation*
-                        </label>
-                        <DateSelect
-                          value={edu.graduation}
-                          handleChange={(val: string) => {
-                            handle("graduation", val, edu, setedu);
-                          }}
-                        />
-                      </div>
-
-                      <div className="sm:col-span-2">
-                        <label htmlFor="website" className={labelcls}>
-                          Degree & Major
-                        </label>
-                        <SearchableSelect
-                          options={degreeOpns}
-                          handle={(val: string) => {
-                            handle("degree", val, edu, setedu);
-                          }}
-                          val={edu.degree}
-                        />
-                      </div>
-
-                      <div className="sm:col-span-2">
-                        <label htmlFor="website" className={labelcls}>
-                          GPA
-                        </label>
-                        <div className="flex flex-row ">
-                          <div className="sm:col-span-2 w-[47.5%]">
-                            <input
-                              className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
-                              placeholder="GPA"
-                              value={edu.gpa}
-                              onChange={(e) =>
-                                handle("gpa", e.target.value, edu, setedu)
-                              }
-                            />
-                          </div>
-                          <div className="sm:col-span-2 w-[47.5%] ml-[5%]">
-                            <input
-                              className="mt-1 h-[35px] w-full rounded-md border-gray-300 border border-gray-400 p-4"
-                              placeholder="Max"
-                              value={edu.maxgpa}
-                              onChange={(e) =>
-                                handle("maxgpa", e.target.value, edu, setedu)
-                              }
-                            />
-                          </div>
+                      {achievements != achievementsFetch && (
+                        <div className={buttondiv}>
+                          <button
+                            className="bg-purple-500 text-white font-bold py-2 px-8 rounded"
+                            onClick={(e) => setachieve(achievementsFetch)}
+                            style={{ backgroundColor: buttonbg }}
+                          >
+                            Reset
+                          </button>
+                          <button
+                            className="bg-purple-500 text-white font-bold px-8 rounded"
+                            onClick={(e) => {
+                              setachieveFetch(achievements);
+                              handleSave();
+                            }}
+                            style={{ backgroundColor: buttonbg }}
+                          >
+                            Save
+                          </button>
                         </div>
-                      </div>
-                      <div className={buttondiv}>
-                        <button
-                          className="text-white font-bold py-2 px-8 rounded"
-                          style={{ backgroundColor: buttonbg }}
-                          onClick={(e) => {
-                            setedu(eduDef);
-                            setaddEdu(false);
-                          }}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          className="bg-purple-500 text-white font-bold px-8 rounded"
-                          style={{ backgroundColor: buttonbg }}
-                          onClick={(e) => {
-                            Edus.push(edu);
-                            setedu(eduDef);
-                            setaddEdu(false);
-                          }}
-                        >
-                          Save
-                        </button>
-                      </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </div>
-              )}
-              {!isHirer && (
-              <div className={`flex flex-row ${divcls}`}>
-                <div className="w-[35%]">
-                  <h2 className="text-lg font-medium ">Your Skills</h2>
-                  <p className="text-sm ">
-                    This will help startups hone in on your strengths.
-                  </p>
-                </div>
-
-                <div className="w-[61%] ml-[4%]">
-                  <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
-                    <div className="sm:col-span-2">
-                      <SelectTags
-                        options={skillsOpns}
-                        phdr="Select Roles"
-                        handle={setskills}
-                        val={skills}
-                      />
-                    </div>
-
-                    {!arraysEqual(skills, skillsFetch) && (
-                      <div className={buttondiv}>
-                        <button
-                          className="bg-purple-500 text-white font-bold py-2 px-8 rounded"
-                          onClick={(e) => setskills(skillsFetch)}
-                          style={{ backgroundColor: buttonbg }}
-                        >
-                          Reset
-                        </button>
-                        <button
-                          className="bg-purple-500 text-white font-bold px-8 rounded"
-                          onClick={(e) => setskillsFetch(skills)}
-                          style={{ backgroundColor: buttonbg }}
-                        >
-                          Save
-                        </button>
-                      </div>
-                    )}
                   </div>
                 </div>
-              </div>
-              )}
-              {!isHirer && (
-              <div className={`flex flex-row ${divcls}`}>
-                <div className="w-[35%]">
-                  <h2 className="text-lg font-medium ">Achievements</h2>
-                  <p className="text-sm ">
-                    Sharing more details about yourself will help you stand out
-                    more.
-                  </p>
-                </div>
-
-                <div className="w-[61%] ml-[4%]">
-                  <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
-                    <div className="sm:col-span-2">
-                      <textarea
-                        className="mt-1 block w-full rounded-md border-gray-300 border border-gray-400 p-4 min-h-[205px]"
-                        placeholder="It's OK to brag - e.g. I launched 3 successful Facebook apps which in total reached 2M+ users and generated $100k+ in revenue. I built everything from the front-end to the back-end and everything in between."
-                        onChange={(e) => setachieve(e.target.value)}
-                        value={achievements}
-                      />
-                    </div>
-
-                    {achievements != achievementsFetch && (
-                      <div className={buttondiv}>
-                        <button
-                          className="bg-purple-500 text-white font-bold py-2 px-8 rounded"
-                          onClick={(e) => setachieve(achievementsFetch)}
-                          style={{ backgroundColor: buttonbg }}
-                        >
-                          Reset
-                        </button>
-                        <button
-                          className="bg-purple-500 text-white font-bold px-8 rounded"
-                          onClick={(e) => setachieveFetch(achievements)}
-                          style={{ backgroundColor: buttonbg }}
-                        >
-                          Save
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
               )}
 
               <div className={`flex flex-row ${divcls}`}>
@@ -1133,7 +1192,7 @@ const Home: React.FC = () => {
                         onSelectionChange={(val: string) => {
                           handle("ethnicity", val, identity, setidentity);
                         }}
-                        val={identity.ethnicity}
+                        val={identity.race_ethnicity}
                       />
                     </div>
 
@@ -1148,7 +1207,9 @@ const Home: React.FC = () => {
                         </button>
                         <button
                           className="bg-purple-500 text-white font-bold px-8 rounded"
-                          onClick={(e) => setidentityFetch(identity)}
+                          onClick={(e) => {setidentityFetch(identity)
+                            handleSave();
+                          }}
                           style={{ backgroundColor: buttonbg }}
                         >
                           Save
