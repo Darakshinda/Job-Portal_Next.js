@@ -1,82 +1,118 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react';
-import Swal from 'sweetalert2';
-import axios from 'axios';
+import Swal from "sweetalert2";
+import axios from "axios";
+import Link from "next/link";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { forgotPasswordSchema } from "@/_lib/validator";
 
-const ResetPasswordPage: React.FC = () => {
-    const [email, setEmail] = useState('');
-    const [authError, setAuthError] = useState('');
-    const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
+type Schema = z.infer<typeof forgotPasswordSchema>;
 
-    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(e.target.value);
-    };
+const ResetPasswordPage = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Schema>({
+    mode: "onChange",
+    resolver: zodResolver(forgotPasswordSchema),
+  });
+  const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post(`${baseurl}/accounts/reset-password/`, {
-                email,
-            });
-            if(response.data.detail){
-                Swal.fire({
-                    title: "Password Reset Link",
-                    text: response.data.detail,
-                    icon: "success",
-                    toast: true,
-                    timer: 6000,
-                    position: 'top-right',
-                    timerProgressBar: true,
-                    showConfirmButton: false,
-                });
-            } else {
-                Swal.fire({
-                    title: "Password Reset Link",
-                    text: response.data.email,
-                    icon: "error",
-                    toast: true,
-                    timer: 6000,
-                    position: 'top-right',
-                    timerProgressBar: true,
-                    showConfirmButton: false,
-                });
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
+  const onSubmit = async (data: Schema) => {
+    const { email } = data;
+    console.log(email);
+    try {
+      const response = await axios.post(`${baseurl}/accounts/reset-password/`, {
+        email,
+      });
+      if (response.data.detail) {
+        Swal.fire({
+          title: "Password Reset Link",
+          text: response.data.detail,
+          icon: "success",
+          toast: true,
+          timer: 6000,
+          position: "top-right",
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+      } else {
+        Swal.fire({
+          title: "Password Reset Link",
+          text: response.data.email,
+          icon: "error",
+          toast: true,
+          timer: 6000,
+          position: "top-right",
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    return (
-        <section className="text-gray-600 body-font">
-            <div className="container px-5 py-24 mx-auto">
-                <div className="flex flex-col text-center w-full mb-12">
-                    <h1 className="sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900">Reset Password</h1>
-                    <p className="lg:w-2/3 mx-auto leading-relaxed text-base">Please provide your registered email address to reset your password. </p>
+  return (
+    <section className="flex items-center justify-center min-h-dvh p-6">
+      <div className="h-full bg-white rounded-xl shadow-lg border-2 border-indigo-300">
+        <div className="px-4 py-6 sm:px-7 sm:py-10">
+          <div className="text-center sm:mx-10 mx-4">
+            <h1 className="block sm:text-2xl text-xl font-bold text-gray-800 dark:text-white">
+              Forgot password ?
+            </h1>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              Remember your password?
+              <Link
+                href="/login"
+                className="ml-2.5 text-blue-600 decoration-2 hover:underline font-medium"
+              >
+                Login
+              </Link>
+            </p>
+          </div>
+
+          <div className="mt-5">
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="grid gap-y-4">
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-bold ml-1 mb-2"
+                  >
+                    Email address
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="email"
+                      id="email"
+                      {...register("email")}
+                      className="py-3 px-4 block w-full bg-gray-50 border-2 outline-none border-gray-200 rounded-md text-base focus:border-blue-500 focus:ring-blue-500 shadow-sm"
+                      required
+                    />
+                  </div>
+                  <p
+                    className={`${errors.email ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"} transition-transform duration-300 text-xs text-red-500 mt-2 ml-1`}
+                  >
+                    {errors.email?.message}
+                  </p>
                 </div>
-                <div className="flex lg:w-2/3 w-full sm:flex-row flex-col mx-auto px-8 sm:space-x-4 sm:space-y-0 space-y-4 sm:px-0 items-end">
-                    <div className="relative flex-grow w-full">
-                        <label className="leading-7 text-sm text-gray-600">Email</label>
-                        <input onChange={handleEmailChange} type="email" id="email" name="email" className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-red-500 focus:bg-transparent focus:ring-2 focus:ring-indigo-200 text-base outline-none text-black-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"/>
-                    </div>
-                    <button onClick={handleSubmit} className="text-white bg-red-500 border-0 py-2 px-8 focus:outline-none hover:bg-red-600 rounded text-lg">Reset</button>
-                </div>
-            </div>
-            {authError && (
-                <p className="text-red-500 text-sm mb-4">{authError}</p>
-            )}
-        </section>
-    );
+                <button
+                  type="submit"
+                  className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-lg border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm"
+                >
+                  Reset password
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default ResetPasswordPage;
-
-// import React from 'react'
-
-// const page = () => {
-//   return (
-//     <div>Forgot password</div>
-//   )
-// }
-
-// export default page

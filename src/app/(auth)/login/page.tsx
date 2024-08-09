@@ -8,7 +8,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { loginFormSchema } from "@/_lib/validator";
-import FormInput from "@/Components/Forms/LoginFormInput";
+import LoginFormInput from "@/Components/Forms/LoginFormInput";
 import { useRouter } from "next/navigation";
 import { FaUserAstronaut } from "react-icons/fa";
 import { RiLockPasswordLine } from "react-icons/ri";
@@ -84,7 +84,7 @@ const Login = () => {
             if (response.data.account_type === "job_seeker") {
               Router.push("/seeker-dashboard");
             } else {
-              Router.push(`/Dashboard`);
+              Router.push(`/dashboard`);
             }
           })
           .catch((error) => {
@@ -133,7 +133,7 @@ const Login = () => {
           className="w-full max-w-md space-y-6"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <FormInput
+          <LoginFormInput
             id="username"
             label="Username"
             type="text"
@@ -145,7 +145,7 @@ const Login = () => {
             req={true}
           />
 
-          <FormInput
+          <LoginFormInput
             id="password"
             label="Password"
             type="password"

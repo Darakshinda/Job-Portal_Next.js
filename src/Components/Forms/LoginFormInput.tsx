@@ -27,10 +27,10 @@ const FormInput: React.FC<FormInputProps> = ({
   req,
   icon,
 }) => {
-  const [showPassword, setShowPassword] = useState<boolean>();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   return (
-    <div className="relative z-0 w-full group isolate">
+    <div className="relative w-full group">
       <div className="relative">
         <label
           htmlFor={id}
@@ -74,7 +74,7 @@ const FormInput: React.FC<FormInputProps> = ({
         )}
       </div>
       <span
-        className={`text-red-500 text-xs font-semibold  ${errors ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"} transition-all transform duration-300 absolute mt-1 ml-2`}
+        className={`text-red-500 text-xs font-semibold  ${errors ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"} transition-all transform duration-300 absolute mt-1 z-10 px-2 py-1`}
       >
         {errors?.message}
       </span>

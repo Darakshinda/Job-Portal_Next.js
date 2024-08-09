@@ -47,6 +47,26 @@ input[type="checkbox"] {
   @apply bg-gray-100 !important;
 }
 
+input[type="range"] {
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px; /* Adjust the size as needed */
+    height: 16px;
+    border-radius: 50%;
+    background: #3b82f6; /* Change this to your desired knob color */
+    cursor: pointer;
+  }
+
+  &::-moz-range-thumb {
+    width: 16px; /* Adjust the size as needed */
+    height: 16px;
+    border-radius: 50%;
+    background: #3b82f6; /* Change this to your desired knob color */
+    cursor: pointer;
+  }
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;

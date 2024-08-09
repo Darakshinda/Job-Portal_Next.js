@@ -30,10 +30,10 @@
 //       <nav className="flex-grow">
 //         <ul>
 //           <li className="p-4 hover:bg-gray-700">
-//             <Link href={`/Dashboard/${userName}`}>Home</Link>
+//             <Link href={`/dashboard/${userName}`}>Home</Link>
 //           </li>
 //           <li className="p-4 hover:bg-gray-700">
-//             <Link href={`/Dashboard/posted-jobs`}>Posted Jobs</Link>
+//             <Link href={`/postedJobs`}>Posted Jobs</Link>
 //           </li>
 //           <li className="p-4 hover:bg-gray-700">
 //             <Link href={`/post`}>Post a Job</Link>
@@ -112,11 +112,11 @@ const HamburgerMenu = () => {
     profile_picture: "",
   });
   const Links = [
-    { name: "Home", icon: <GoHome size={20} />, href: "/Dashboard" },
+    { name: "Home", icon: <GoHome size={20} />, href: "/dashboard" },
     {
       name: "Posted Jobs",
       icon: <CiViewList size={20} />,
-      href: "/Dashboard/posted-jobs",
+      href: "/postedJobs",
     },
     { name: "Post a job", icon: <VscGitStashApply size={20} />, href: "/post" },
   ];
@@ -181,7 +181,7 @@ const HamburgerMenu = () => {
         className={`relative h-full flex flex-col bg-[#FAFAFA] border-r-2 border-gray-300 pt-2`}
       >
         <Link
-          href="/Dashboard"
+          href="/dashboard"
           className="w-full px-4 text-center outline-none"
         >
           {isOpen ? (

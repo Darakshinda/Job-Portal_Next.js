@@ -70,6 +70,8 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
         const newSelectedTags = [...selectedTags, tag];
         // console.log(newSelectedTags);
         setSelectedTags(newSelectedTags);
+        console.log("Selected Tags:", newSelectedTags);
+
         setFilteredTags(
           techTags.filter(
             (tag) =>
@@ -108,6 +110,12 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
           !newSelectedTags.includes(tag)
       )
     );
+    if (onChange) {
+      onChange(newSelectedTags);
+    }
+    if (onSingleChange) {
+      onSingleChange(name!, "");
+    }
   };
 
   return (
@@ -127,7 +135,7 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
                 ?
               </button>
               {/* <div className="absolute left-20 transform bottom-0 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-gray-900 opacity-0 peer-hover:opacity-100 transition-opacity"></div> */}
-              <div className="absolute left-0 top-full -z-10 max-w-sm bg-gray-900 text-white text-xs font-medium px-2 py-1 rounded opacity-0 peer-hover:opacity-100 peer-hover:z-10 transition-opacity">
+              <div className="absolute left-0 top-full z-10 pointer-events-none max-w-sm bg-gray-900 text-white text-xs font-medium px-2 py-1 rounded opacity-0 peer-hover:opacity-100 peer-hover:z-10 transition-opacity">
                 {description}
               </div>
             </>

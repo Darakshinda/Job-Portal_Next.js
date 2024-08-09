@@ -68,7 +68,7 @@ export default function Page() {
                 </span>
               </p>
               <p className="mt-2 sm:mt-3 text-gray-500 dark:text-neutral-500">
-                of Recriters hire top talent from the software industry
+                of Recruiters hire top talent from the software industry
               </p>
             </div>
           </div>

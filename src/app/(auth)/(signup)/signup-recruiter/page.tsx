@@ -187,8 +187,8 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen bg-gray-800 flex lg:flex-row flex-col gap-y-8 bg-bg3 bg-cover bg-no-repeat bg-center">
-      <div className="flex flex-col items-center justify-center gap-10">
-        <div className="text-center space-y-16 px-10">
+      <div className="flex flex-col items-center justify-center max-lg:mt-12">
+        <div className="text-center lg:space-y-16 md:space-y-12 sm:space-y-8 space-y-6 px-10">
           <Image
             src="/assets/icons/logo.svg"
             alt="logo"

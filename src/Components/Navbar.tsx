@@ -47,7 +47,7 @@ const Navbar = () => {
         {isAuthenticated ? (
           <>
             <Link
-              href={`${accountType === "job_seeker" ? "/seeker-dashboard" : "/Dashboard"}`}
+              href={`${accountType === "job_seeker" ? "/seeker-dashboard" : "/dashboard"}`}
               className="py-2 px-4 rounded-xl transform transition-all ease-in-out duration-300 text-white
               hover:-translate-y-1 focus-visible:-translate-y-1 hover:scale-110 focus-visible:scale-110 bg-primary-500/80 hover:bg-primary-500 outline-none focus-visible:ring-2 ring-primary-300 focus-visible:ring-offset-2 whitespace-nowrap"
             >

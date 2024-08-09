@@ -359,7 +359,7 @@ const JobCard = ({ type, job }: { type?: string; job: Job }) => {
         </>
       )}
 
-      <article className="bg-white rounded-3xl border border-gray-100 shadow-md hover:scale-[1.015] transition-all duration-300 hover:shadow-lg py-4 px-6 relative">
+      <article className="bg-white rounded-3xl border border-gray-100 shadow-md transition-all duration-300 hover:shadow-lg py-4 px-6 relative">
         <div className="flex items-center gap-2 w-full">
           <Image
             src="/assets/images/default-profile.webp"
@@ -430,7 +430,7 @@ const JobCard = ({ type, job }: { type?: string; job: Job }) => {
           </div>
 
           {type !== "preview" && (
-            <Link href={`/Dashboard/posted-jobs/${job.id}`}>
+            <Link href={`/postedJobs/${job.id}`}>
               <button className="rounded-full hover:bg-blue-200 flex items-center gap-2 text-sm px-2 py-1 transition-colors duration-300">
                 <span className="text-blue-400 hover:text-blue-500">
                   View Details
