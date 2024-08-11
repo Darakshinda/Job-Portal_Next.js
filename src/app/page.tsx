@@ -1,19 +1,28 @@
 import React from "react";
 import Navbar from "../Components/Navbar";
 import JobList from "../Components/JobList";
+import Image from "next/image";
 
 export default function Home() {
   return (
     <main className="w-full h-[100dvh] flex flex-col items-center">
       <Navbar />
 
-      <div className="flex-1 flex flex-col gap-20 items-center justify-start bg-primary-50 w-full h-full">
-        <p className="max-w-6xl xl:text-5xl md:text-3xl text-2xl font-Nunito leading-relaxed font-semibold tracking-tighter text-neutral-800 text-center mt-32">
+      <div className="flex-1 flex flex-col items-center justify-start bg-primary-50 w-full h-full">
+        <p className="max-w-6xl xl:text-5xl md:text-3xl text-2xl font-Nunito leading-relaxed font-semibold tracking-tighter text-neutral-800 text-center mt-12">
           &quot;Where Employers and Job Seekers Meet&quot; <br />
           Explore Opportunities Now
         </p>
 
-        <form className="mt-8 w-full max-sm:px-4">
+        <Image
+          src="/assets/icons/home.svg"
+          alt="Hero Image"
+          width={500}
+          height={500}
+          className="object-contain"
+        />
+
+        {/* <form className="mt-8 w-full max-sm:px-4">
           <label
             className="max-w-[600px] bg-white mx-auto flex flex-col sm:flex-row items-center justify-center border py-2 px-2 rounded-2xl gap-2 shadow-2xl focus-within:border-primary-300 outline-none focus-within:ring-1 focus-within:ring-primary-500 focus-within:ring-offset-0"
             htmlFor="search-bar"
@@ -32,7 +41,7 @@ export default function Home() {
               Search
             </button>
           </label>
-        </form>
+        </form> */}
 
         {/* <div className="flex gap-4 justify-center items-center">
           <div>

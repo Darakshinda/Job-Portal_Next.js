@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/Components/Navbar";
@@ -23,6 +23,7 @@ import Skeleton from "./skeleton";
 // ];
 
 interface SearchParams {
+  query: string;
   skillTags: string[];
   location: string;
   jobType: string;
@@ -32,6 +33,7 @@ interface SearchParams {
 
 const PostedJobs = () => {
   const [searchParams, setSearchParams] = useState<SearchParams>({
+    query: "",
     skillTags: [],
     location: "",
     jobType: "",
@@ -39,7 +41,10 @@ const PostedJobs = () => {
     maxSalary: 75,
   });
 
+  const memoizedSearchParams = useMemo(() => searchParams, [searchParams]);
+
   const handleChange = (name: string, value: string | number) => {
+    console.log(name, value);
     setSearchParams((prevState) => ({
       ...prevState,
       [name]: value,
@@ -53,29 +58,20 @@ const PostedJobs = () => {
     }));
   };
 
-  console.log(searchParams);
+  // console.log(searchParams);
 
   return (
-    <div className="bg-[#FAFAFA] flex-1 px-6 flex flex-col max-h-screen">
-      {/* <div className="flex flex-col gap-4 justify-center"> */}
+    <div className="bg-[#FAFAFA] flex-1 px-6 flex flex-col max-h-screen ps-20">
       <div className="w-full text-left">
-        <h1 className="text-4xl my-4 ms-2 text-blue-500 font-semibold">
+        <h1 className="text-4xl my-4 ms-2 text-blue-500 font-semibold ps-14">
           Posted Jobs
         </h1>
       </div>
       {/* {selectedJob && (
         <JobDetailsModal job={selectedJob} onClose={handleCloseModal} />
       )} */}
-      <div className="flex-1 w-full md:grid grid-flow-col grid-cols-[1fr,minmax(0,384px)] scrollbar-hide overflow-y-auto gap-x-6 overscroll-contain">
-        <JobList
-          // selectedLocationTags={selectedLocationTags}
-          // selectedJobTags={selectedJobTags}
-          // selectedTagTags={selectedTagTags}
-          postedJobs={true}
-          // view={setSelectedJob}
-          searchParams={searchParams}
-        />
-        {/* <Skeleton /> */}
+      <div className="flex-1 w-full md:grid grid-flow-col grid-cols-[1fr,minmax(0,384px)] pb-6 justify-end scrollbar-hide overflow-y-auto gap-x-6 overscroll-contain">
+        <JobList postedJobs={true} searchParams={memoizedSearchParams} />
 
         <SearchFilters
           searchParams={searchParams}
@@ -84,7 +80,6 @@ const PostedJobs = () => {
         />
       </div>
     </div>
-    // </div>
   );
 };
 

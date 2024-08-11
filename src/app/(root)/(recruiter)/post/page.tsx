@@ -28,7 +28,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "next/navigation";
 import SignupFormInput from "@/Components/Forms/SignupFormInput";
-import { postJobSchema } from "@/_lib/validator";
+import { postJobSchema } from "@/lib/validator";
 import PostFormInput from "@/Components/Forms/PostFormInput";
 import SearchSelectDropdown from "@/Components/Forms/SearchSelectDropdown";
 
@@ -49,7 +49,7 @@ const JobForm = () => {
     desc: string;
     minSal: number;
     maxSal: number;
-    benefits: string;
+    benefits: string[];
     how2apply: string;
     feedback: string;
   }>({
@@ -60,17 +60,18 @@ const JobForm = () => {
     desc: "",
     minSal: 0,
     maxSal: 0,
-    benefits: "Nothing",
+    benefits: [],
     how2apply: "",
     feedback: "",
   });
   const [parseErrors, setParseErrors] = useState<any>([]);
   const [previewMode, setPreviewMode] = useState(false);
+  const [isFormDirty, setIsFormDirty] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
     watch,
   } = useForm<Schema>({
     mode: "onChange",
@@ -93,7 +94,7 @@ const JobForm = () => {
       setParseErrors({});
     } catch (error: any) {
       const validationErrors: { [key: string]: string } = {};
-      console.log(error.errors);
+      // console.log(error.errors);
       error.errors.forEach((err: any) => {
         validationErrors[err.path[0]] = err.message;
       });
@@ -115,6 +116,7 @@ const JobForm = () => {
         [name]: value,
       }));
     }
+    setIsFormDirty(true);
     validateUseStateInputs();
   };
 
@@ -123,15 +125,43 @@ const JobForm = () => {
       ...prevState,
       tags: skills,
     }));
+    setIsFormDirty(true);
   };
 
-  console.log(formData);
-  console.log("email4jobappl", watch("email4jobappl"));
-  console.log("apply_url", watch("apply_url"));
-
-  const isInvalid = () => {
-    console.log("Total errors: ", parseErrors);
+  const handleBenefitsChange = (benefits: string[]) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      benefits: benefits,
+    }));
+    setIsFormDirty(true);
   };
+
+  // useEffect(() => {
+  //   const handleBeforeUnload = (e: Event) => {
+  //     if (isFormDirty || isDirty) {
+  //       e.preventDefault();
+  //       const message = "Form data will be lost if you leave the page.";
+  //       // e.returnValue = true;
+  //       return message;
+  //     }
+  //   };
+
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //   };
+  // }, [isFormDirty, isDirty]);
+
+  // console.log("is dirty", isFormDirty || isDirty);
+
+  // console.log(formData);
+  // console.log("email4jobappl", watch("email4jobappl"));
+  // console.log("apply_url", watch("apply_url"));
+
+  // const isInvalid = () => {
+  //   console.log("Total errors: ", parseErrors);
+  // };
 
   const onSubmit = async (data: Schema) => {
     const token = localStorage.getItem("access_token"); // Assuming you store your JWT token in localStorage
@@ -197,294 +227,232 @@ const JobForm = () => {
     }
   };
 
-  const warnBeforeReload = () => {
-    window.addEventListener("beforeunload", (e) => {
-      e.preventDefault();
-      const message = "Form data will be lost if you leave the page.";
-      e.returnValue = message;
-      return message;
-    });
-  };
-
-  useEffect(() => {
-    warnBeforeReload();
-  }, []);
-
-  // useEffect(() => {
-  //   getUserName();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (jobID) {
-  //     const token = localStorage.getItem("access_token");
-  //     const axiosInstance = axios.create({
-  //       baseURL: baseUrl,
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //     axiosInstance
-  //       .get(`${baseUrl}/posted-jobs/`)
-  //       .then((response) => {
-  //         console.log("Response:", response.data.results);
-
-  //         const job = response.data.results.find(
-  //           (job) => job.id.toString() === jobID.toString()
-  //         );
-  //         setuser({
-  //           company: job.company_name,
-  //           position: job.position,
-  //           emptype: job.employment_type,
-  //           primtg: job.primary_tag,
-  //           tags: job.tags,
-  //           locns: job.location_restriction,
-  //           logo: job.company_logo,
-  //           minsal: "USD " + job.annual_salary_min.toString() + " per year",
-  //           maxsal: "USD " + job.annual_salary_max.toString() + " per year",
-  //           desc: job.job_description,
-  //           benefits: job.benefits,
-  //           how2apply: job.how_to_apply,
-  //           email4jobappl: job.apply_email_address,
-  //           applUrl: job.apply_url,
-  //           twtr: job.company_twitter,
-  //           compMail: job.company_email,
-  //           invMail: job.invoice_email,
-  //           invAdrs: job.invoice_address,
-  //           invNote: job.invoice_notes,
-  //           payLtr: job.pay_later,
-  //           pltrEml: job.pay_later_email,
-  //           fdbck: job.feedback,
-  //           bgcolor: job.background_color,
-  //         });
-  //       })
-  //       .catch((error) => {
-  //         console.log(error);
-  //       });
-  //   }
-  // }, [jobID, baseUrl]);
-
   return (
-    <div className="flex-1 bg-white h-screen md:mx-2 block">
+    <div className="flex-1 bg-white min-h-screen md:mx-2 block sm:ps-20">
       {/* <div className="p-10 h-full"> */}
       {/* {!previewMode && ( */}
       <form
         id="post-form"
-        onSubmit={handleSubmit(onSubmit, isInvalid)}
-        className="md:space-y-4 space-y-2 px-6 py-6 max-w-5xl mx-auto h-full overflow-y-scroll snap-y snap-mandatory overscroll-contain"
+        onSubmit={handleSubmit(onSubmit)}
+        className="md:space-y-4 space-y-2 px-6 py-6 max-w-5xl mx-auto"
       >
-        <h2 className="text-purple-600 font-bold text-3xl">Primary Details</h2>
-
-        <PostFormInput
-          id="company_name"
-          name="company_name"
-          type="text"
-          label="Company Name"
-          register={register}
-          placeholder="Google"
-          req={true}
-          cls=""
-          errors={errors.company_name}
-        />
-
-        <PostFormInput
-          id="position"
-          name="position"
-          type="text"
-          label="Position"
-          register={register}
-          placeholder="Software Engineer"
-          req={true}
-          cls=""
-          errors={errors.position}
-          description="Enter the position you are hiring for in your company or organization. This will be displayed on the job post. Eg: Software Engineer, Product Manager, etc. "
-        />
-
-        <div className="grid md:grid-cols-2 max-md:grid-rows-2 gap-x-6">
-          <SearchSelectDropdown
-            label="Employment type"
-            name="emptype"
-            labelcls="text-gray-800 text-lg font-semibold relative flex items-center gap-2"
-            placeholder="Select Employment type"
-            cls="relative w-full md:mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus:border-primary-500"
-            tags={EmployementTags}
-            onSingleChange={handleChange}
-            multiple={false}
-          />
-        </div>
-
-        <div className="grid md:grid-cols-2 max-md:grid-rows-2 gap-x-6">
-          <SearchSelectDropdown
-            label="Field of Work"
-            name="primtg"
-            labelcls="text-gray-800 text-lg font-semibold relative flex items-center gap-2"
-            placeholder="Work Field"
-            cls="relative w-full md:mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus:border-primary-500"
-            tags={primaryTag}
-            onSingleChange={handleChange}
-            multiple={false}
-          />
-        </div>
-
-        <div className="grid md:grid-cols-2 max-md:grid-rows-[min(fit_content, fit_content)] gap-x-6 items-start">
-          <SearchSelectDropdown
-            label="Skills Required"
-            labelcls="text-gray-800 text-lg font-semibold relative flex items-center gap-2 md:mt-4 mt-2"
-            cls="relative w-full -mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus:border-primary-500"
-            tags={SkillTags}
-            onChange={handleSkillChange}
-            description="Short tags like industry and tech stack are preferred. Only the first 3 or 4 tags are displayed on the site, but all tags ensure the job appears on relevant tag-specific pages. Additional tags may be auto-generated after posting/editing to supplement."
-          />
-        </div>
-
-        <div className="grid md:grid-cols-2 max-md:grid-rows-[min(fit_content, fit_content)] gap-x-6 items-start">
-          <SearchSelectDropdown
-            label="Restricted to Locations"
-            name="locns"
-            labelcls="text-gray-800 text-lg font-semibold relative flex items-center gap-2 mt-4"
-            placeholder="Work Location"
-            cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus:border-primary-500"
-            tags={LocationTags}
-            onSingleChange={handleChange}
-            description="Only fill if you'd only like to hire people from a specific location or timezone this job is restricted to. If not restricted, please leave it as worldwide."
-            multiple={false}
-          />
-        </div>
-
-        <h2 className="text-purple-600 font-bold pt-10 text-3xl">
-          Job Details
+        <h2 className="text-purple-600 font-bold py-6 text-3xl">
+          Primary Details
         </h2>
 
-        <div className="grid md:grid-cols-2 max-md:grid-rows-[min(fit_content, fit_content)] gap-x-6 gap-y-2 items-start">
-          <label
-            className="text-gray-800 text-lg font-semibold relative flex mt-4 gap-2 items-center"
-            htmlFor="jobDescription"
-          >
-            Job description
-          </label>
-          <div className="col-span-1">
-            <div
-            // style={{
-            //   marginLeft: "1.4%",
-            //   marginRight: "2%",
-            //   border: `3px red`,
-            // }}
-            >
-              <JoditEditorComponent
-                keyy="desc"
-                value={formData.desc}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-        </div>
+        <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-x-6 gap-y-8">
+          <PostFormInput
+            id="company_name"
+            name="company_name"
+            type="text"
+            label="Company Name"
+            register={register}
+            placeholder="Google"
+            req={true}
+            cls=""
+            errors={errors.company_name}
+          />
 
-        <div className="grid md:grid-cols-2 max-md:grid-rows-[min(fit_content, fit_content)] gap-x-6 gap-y-2 items-start">
-          <label
-            className="text-gray-800 text-lg font-semibold relative flex mt-4 gap-2 items-center"
-            htmlFor="salary"
-          >
-            Salary Margin
-            <button
-              type="button"
-              className="w-2 h-2 p-2.5 bg-gray-200 text-gray-400 rounded-full flex items-center justify-center outline-none hover:bg-gray-300 hover:text-gray-500 focus:bg-gray-300 focus:text-gray-500 peer"
-            >
-              ?
-            </button>
-            {/* <div className="absolute left-20 transform bottom-0 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-gray-900 opacity-0 peer-hover:opacity-100 transition-opacity"></div> */}
-            <div className="absolute left-0 top-full -z-10 max-w-sm bg-gray-900 text-white text-xs font-medium px-2 py-1 rounded opacity-0 peer-hover:opacity-100 peer-hover:z-10 transition-opacity">
-              It&apos;s illegal to not share salary range on job posts since
-              2021. Posts without salary will automatically show an estimate of
-              salary based on similar jobs.
-            </div>
-          </label>
+          <PostFormInput
+            id="position"
+            name="position"
+            type="text"
+            label="Position"
+            register={register}
+            placeholder="Software Engineer"
+            req={true}
+            cls=""
+            errors={errors.position}
+            description="Enter the position you are hiring for in your company or organization. This will be displayed on the job post. Eg: Software Engineer, Product Manager, etc. "
+          />
 
-          <div className="flex w-full justify-between items-center gap-4">
+          <div className="flex flex-col justify-center w-full">
             <SearchSelectDropdown
-              labelcls="text-gray-800 text-lg font-semibold relative flex items-center gap-2"
-              cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus:border-primary-500"
-              name="minSal"
-              tags={minSal}
-              onSingleChange={handleChange}
-              multiple={false}
-            />
-            <span className="text-2xl"> - </span>
-            <SearchSelectDropdown
-              labelcls="text-gray-800 text-lg font-semibold relative flex items-center gap-2"
-              cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus:border-primary-500"
-              name="maxSal"
-              tags={maxSal}
+              label="Employment type"
+              name="emptype"
+              labelcls="text-gray-700 text-base font-semibold relative flex items-center gap-2"
+              placeholder="Select Employment type"
+              cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
+              tags={EmployementTags}
               onSingleChange={handleChange}
               multiple={false}
             />
           </div>
+
+          <div className="flex flex-col justify-center w-full self-start">
+            <SearchSelectDropdown
+              label="Field of Work"
+              name="primtg"
+              labelcls="text-gray-700 text-base font-semibold relative flex items-center gap-2"
+              placeholder="Work Field"
+              cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
+              tags={primaryTag}
+              onSingleChange={handleChange}
+              multiple={false}
+            />
+          </div>
+
+          <div className="flex flex-col justify-center w-full self-end">
+            <SearchSelectDropdown
+              label="Skills Required"
+              labelcls="text-gray-700 text-base font-semibold relative flex items-center gap-2"
+              cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
+              tags={SkillTags}
+              onChange={handleSkillChange}
+              description="Short tags like industry and tech stack are preferred. Only the first 3 or 4 tags are displayed on the site, but all tags ensure the job appears on relevant tag-specific pages. Additional tags may be auto-generated after posting/editing to supplement."
+            />
+          </div>
+
+          <div className="flex flex-col justify-center w-full self-start">
+            <SearchSelectDropdown
+              label="Restricted to Locations"
+              name="locns"
+              labelcls="text-gray-700 text-base font-semibold relative flex items-center gap-2"
+              placeholder="Work Location"
+              cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
+              tags={LocationTags}
+              onSingleChange={handleChange}
+              description="Only fill if you'd only like to hire people from a specific location or timezone this job is restricted to. If not restricted, please leave it as worldwide."
+              multiple={false}
+            />
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-2 max-md:grid-rows-[min(fit_content, fit_content)] gap-x-6 gap-y-2 items-start">
-          <label className="text-gray-800 text-lg font-semibold relative flex items-start mt-4 gap-2">
-            Benefits
-          </label>
-          <div className="col-span-1 mt-2 space-y-2">
-            <div className="flex items-center">
+        <h2 className="text-purple-600 font-bold py-6 text-3xl">Job Details</h2>
+        <div className="flex flex-col gap-y-6">
+          <div className="flex flex-col gap-y-2">
+            <label
+              className="text-gray-700 text-base font-semibold relative flex items-center gap-2"
+              htmlFor="jobDescription"
+            >
+              Job description
+              <span className="text-red-500">*</span>
+            </label>
+            <div className="col-span-1">
               <div>
-                <SelectedOptions
-                  options={benefitOpns}
-                  name="benefits"
+                <JoditEditorComponent
+                  keyy="desc"
+                  value={formData.desc}
                   onChange={handleChange}
                 />
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="grid md:grid-cols-2 max-md:grid-rows-[min(fit_content, fit_content)] gap-x-6 gap-y-2 items-start">
-          <label
-            className="text-gray-800 text-lg font-semibold relative flex items-start mt-4 gap-2"
-            htmlFor="jobDescription"
-          >
-            How to apply?
-          </label>
-          <div className="col-span-1">
+          <div className="flex flex-col gap-y-2">
+            <label
+              className="text-gray-700 text-base font-semibold relative flex items-start gap-2"
+              htmlFor="jobDescription"
+            >
+              How to apply ?<span className="text-red-500">*</span>
+            </label>
+            <div className="col-span-1">
+              <div>
+                <JoditEditorComponent
+                  keyy="how2apply"
+                  value={formData.how2apply}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 grid-cols-1 gap-x-6 gap-y-4">
+            <PostFormInput
+              id="email4jobappl"
+              name="email4jobappl"
+              type="email"
+              label="Email for Job Applications"
+              register={register}
+              placeholder="Apply email address"
+              req={true}
+              cls=""
+              errors={errors.email4jobappl}
+              description="Provide the email where you would like to receive job applications"
+            />
+
+            <PostFormInput
+              id="apply_url"
+              name="apply_url"
+              type="text"
+              label="Apply URL"
+              register={register}
+              placeholder="https://"
+              req={true}
+              cls=""
+              errors={errors.apply_url}
+              description="If you'd like to use your own apply form or ATS you can enter the URL here for people to apply."
+            />
+          </div>
+
+          <div className="grid md:grid-cols-2 grid-cols-1 gap-x-6 gap-y-2 items-start">
             <div>
-              <JoditEditorComponent
-                keyy="how2apply"
-                value={formData.how2apply}
-                onChange={handleChange}
-              />
+              <label
+                className="text-gray-700 text-base font-semibold relative flex items-start gap-2"
+                htmlFor="salary"
+              >
+                Salary Margin
+                <button
+                  type="button"
+                  className="w-2 h-2 p-2.5 text-sm bg-gray-200 text-gray-400 rounded-full flex items-center justify-center outline-none hover:bg-gray-300 hover:text-gray-500 focus:bg-gray-300 focus:text-gray-500 peer"
+                >
+                  ?
+                </button>
+                {/* <div className="absolute left-20 transform bottom-0 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-gray-900 opacity-0 peer-hover:opacity-100 transition-opacity"></div> */}
+                <div className="absolute -z-10 left-0 transform top-full translate-y-full mb-2 max-w-sm bg-gray-900 text-white text-xs font-medium px-2 py-1 rounded opacity-0 peer-hover:opacity-100 peer-hover:translate-y-0 peer-hover:z-10 transition-all duration-300 ease-in-out">
+                  It&apos;s illegal to not share salary range on job posts since
+                  2021. Posts without salary will automatically show an estimate
+                  of salary based on similar jobs.
+                </div>
+              </label>
+
+              <div className="flex w-full justify-between items-center gap-2.5">
+                <SearchSelectDropdown
+                  placeholder="Min Salary"
+                  labelcls="text-gray-800 text-lg font-semibold relative flex items-center gap-2"
+                  cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
+                  name="minSal"
+                  tags={minSal}
+                  onSingleChange={handleChange}
+                  multiple={false}
+                />
+                <span className="text-lg italic"> to </span>
+                <SearchSelectDropdown
+                  placeholder="Max Salary"
+                  labelcls="text-gray-800 text-lg font-semibold relative flex items-center gap-2"
+                  cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
+                  name="maxSal"
+                  tags={maxSal}
+                  onSingleChange={handleChange}
+                  multiple={false}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-gray-700 text-base font-semibold relative flex items-start gap-2">
+                Benefits
+              </label>
+              <div className="col-span-1 mt-2 space-y-2">
+                <div className="flex items-center">
+                  <div>
+                    <SelectedOptions
+                      options={benefitOpns}
+                      name="benefits"
+                      onChange={handleBenefitsChange}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <PostFormInput
-          id="email4jobappl"
-          name="email4jobappl"
-          type="email"
-          label="Email for Job Applications"
-          register={register}
-          placeholder="Apply email address"
-          req={true}
-          cls=""
-          errors={errors.email4jobappl}
-          description="Provide the email where you would like to receive job applications"
-        />
+        <h2 className="text-purple-600 font-bold py-6 text-3xl">Feedback</h2>
 
-        <PostFormInput
-          id="apply_url"
-          name="apply_url"
-          type="text"
-          label="Apply URL"
-          register={register}
-          placeholder="https://"
-          req={true}
-          cls=""
-          errors={errors.apply_url}
-          description="If you'd like to use your own apply form or ATS you can enter the URL here for people to apply."
-        />
-
-        <h2 className="text-purple-600 font-bold pt-10 text-3xl">Feedback</h2>
-
-        <div className="grid md:grid-cols-2 max-md:grid-rows-[min(fit_content, fit_content)] gap-x-6 gap-y-2 items-start">
+        <div className="flex flex-col gap-y-2">
           <label
-            className="text-gray-800 text-lg font-semibold relative flex items-center mt-4 gap-2"
+            className="text-gray-700 text-base font-semibold relative flex items-start gap-2"
             htmlFor="jobDescription"
           >
             Feedback about CodeUnity
@@ -512,13 +480,16 @@ const JobForm = () => {
         </div>
 
         <div className="mx-auto w-fit">
-          <div className="flex gap-4 flex-wrap mt-4">
-            <button type="submit" className="px-4 py-2 rounded-lg bg-gray-200">
+          <div className="flex gap-4 flex-wrap mt-6">
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-full bg-gray-200 hover:bg-blue-200 hover:text-blue-500 transition-colors duration-300"
+            >
               Post
             </button>
 
             <button
-              className="px-4 py-2 rounded-lg bg-gray-200"
+              className="px-4 py-2 rounded-full bg-gray-200 hover:bg-blue-200 hover:text-blue-500 transition-colors duration-300"
               type="button"
               onClick={handlePreview}
             >

@@ -6,9 +6,10 @@ const publicRoutes = [
   "/",
   "/login",
   "/signup",
-  "/reset-password",
   "/signup-recruiter",
   "/signup-seeker",
+  "/reset-password",
+  "/reset-password/(.*)",
 ];
 
 export function middleware(request: NextRequest) {
@@ -17,7 +18,11 @@ export function middleware(request: NextRequest) {
   const accountType = request.cookies.get("account_type");
 
   // Check if the pathname is in the list of public routes
-  if (token || publicRoutes.includes(pathname)) {
+  if (
+    token ||
+    publicRoutes.includes(pathname) ||
+    pathname.startsWith("/reset-password/")
+  ) {
     return NextResponse.next();
   }
   // return NextResponse.next();

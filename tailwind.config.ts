@@ -10,29 +10,27 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      colors:{
-        blued: '#3a4b9a',
-        primary:{
-          50:"#DCF2F1",
-          300:"#7FC7D9",
-          500:"#365486",
-          700:"#0F1035",
-        }
+      colors: {
+        blued: "#3a4b9a",
+        primary: {
+          50: "#DCF2F1",
+          300: "#7FC7D9",
+          500: "#365486",
+          700: "#0F1035",
+        },
       },
       fontFamily: {
         Nunito: ["Nunito", "Inter", "sans-serif"],
       },
       backgroundImage: {
-        "login-bg": "url('/assets/images/bglogin.png')",
-        "signup-bg": "url('/assets/images/bgsignup.jpg')",
-        "bg2": "url('/assets/images/bg2.jpg')",
-        "bg3":"url('/assets/images/bg3.jpg')",
+        login: "url('/assets/images/login.webp')",
+        signup: "url('/assets/images/signup.webp')",
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
     },
   },
-  plugins: [require('daisyui')],
+  plugins: [require("daisyui")],
 };
 export default config;

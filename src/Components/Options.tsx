@@ -1,48 +1,108 @@
 import React, { useState, useEffect } from "react";
 
 interface SelectedOptionsProps {
-  options: string[]; // Array of strings (including emojis)
+  selected?: string[];
+  options: string[];
   name: string;
-  onChange: (key: string, value: string) => void;
+  onChange: (benefits: string[]) => void;
 }
 
 const SelectedOptions: React.FC<SelectedOptionsProps> = ({
+  selected = [],
   options,
   name,
   onChange,
 }) => {
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([]); // Initialize as an array of strings
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(selected);
+  const displayTagsLength = 10;
+  const increament = 5;
 
-  // useEffect(() => {
-  //   setSelectedOptions([]); // Reset selected options if options change
-  // }, [options]);
+  const [displayedOptions, setDisplayedOptions] = useState<string[]>(
+    options.slice(0, displayTagsLength)
+  );
 
-  const handleOptionClick = (label: string) => {
-    setSelectedOptions((prevSelected) => {
-      const updatedSelected = prevSelected.includes(label)
-        ? prevSelected.filter((option) => option !== label) // Remove if already selected
-        : [...prevSelected, label]; // Add if not selected
+  let [excessTagsCount, setExcessTagsCount] = useState<number>(
+    options.length - displayTagsLength
+  );
+  const handleExpansion = () => {
+    if (excessTagsCount > increament) {
+      setDisplayedOptions(
+        options.slice(0, displayedOptions.length + increament)
+      );
+      excessTagsCount -= increament;
+      setExcessTagsCount(excessTagsCount);
+    } else if (excessTagsCount < increament && excessTagsCount > 0) {
+      setDisplayedOptions(
+        options.slice(0, displayedOptions.length + excessTagsCount)
+      );
+      excessTagsCount = 0;
+      setExcessTagsCount(excessTagsCount);
+    } else {
+      setDisplayedOptions(options.slice(0, displayTagsLength));
+      excessTagsCount = options.length - displayTagsLength;
+      setExcessTagsCount(excessTagsCount);
+    }
+  };
 
-      onChange(name, updatedSelected.join(", ")); // Call onChange with selected options as string
-      return updatedSelected;
-    });
+  useEffect(() => {
+    if (JSON.stringify(selected) !== JSON.stringify(selectedOptions)) {
+      setSelectedOptions(selected);
+    }
+  }, [selected]);
+
+  const removeEmojis = (text: string) => {
+    return text.replace(
+      /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu,
+      ""
+    );
+  };
+
+  const handleOptionClick = (option: string) => {
+    const normalizedOption = removeEmojis(option);
+    const normalizedSelectedOptions = selectedOptions.map(removeEmojis);
+
+    let newBenefitOptions: string[];
+
+    if (normalizedSelectedOptions.includes(normalizedOption)) {
+      // Remove the option by its original string with emojis
+      newBenefitOptions = selectedOptions.filter(
+        (item) => removeEmojis(item) !== normalizedOption
+      );
+    } else {
+      // Add the option by its original string with emojis
+      newBenefitOptions = [...selectedOptions, option];
+    }
+
+    setSelectedOptions(newBenefitOptions);
+    onChange(newBenefitOptions);
   };
 
   return (
     <div>
       <div className="flex flex-wrap">
-        {options.map((option, index) => (
+        {displayedOptions.map((option, index) => (
           <button
-            type="button"
-            className={`m-1 px-2 py-1.5 ${
-              selectedOptions.includes(option) ? "bg-red-500" : "bg-gray-500"
-            } border rounded-xl text-sm cursor-pointer text-white`}
             key={index}
+            type="button"
             onClick={() => handleOptionClick(option)}
+            className={`m-1 px-2 py-1.5 ${
+              selectedOptions.some(
+                (selected) => removeEmojis(selected) === removeEmojis(option)
+              )
+                ? "bg-red-500"
+                : "bg-gray-500"
+            } border rounded-xl text-sm cursor-pointer text-white`}
           >
-            {option} {/* Display the option label (with emoji) */}
+            {option}
           </button>
         ))}
+        <button
+          type="button"
+          onClick={handleExpansion}
+          className={`text-primary-500 text-xs font-semibold h-fit px-4 py-2 mt-1.5 hover:bg-gray-200 rounded-full transition-colors duration-150`}
+        >
+          {excessTagsCount ? `+${excessTagsCount}` : "Show less"}
+        </button>
       </div>
     </div>
   );

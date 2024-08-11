@@ -7,7 +7,7 @@ import { TextInput } from "@/stories/TextInput";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { loginFormSchema } from "@/_lib/validator";
+import { loginFormSchema } from "@/lib/validator";
 import LoginFormInput from "@/Components/Forms/LoginFormInput";
 import { useRouter } from "next/navigation";
 import { FaUserAstronaut } from "react-icons/fa";
@@ -58,40 +58,39 @@ const Login = () => {
         position: "top-right",
         timerProgressBar: true,
         showConfirmButton: false,
-      }).then(() => {
-        // Redirect to the appropriate dashboard
-        const axiosInstance = axios.create({
-          baseURL: baseurl,
-          headers: {
-            Authorization: `Bearer ${access}`,
-          },
-        });
-
-        axiosInstance
-          .get("/accounts/profile")
-          .then((response) => {
-            localStorage.setItem("account_type", response.data.account_type);
-            Cookies.set("token", access, {
-              expires: expires,
-              sameSite: "strict",
-              httpOnly: false,
-            });
-            Cookies.set("account_type", response.data.account_type, {
-              expires: expires,
-              sameSite: "strict",
-              httpOnly: false,
-            });
-            if (response.data.account_type === "job_seeker") {
-              Router.push("/seeker-dashboard");
-            } else {
-              Router.push(`/dashboard`);
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
       });
-    } catch (error) {
+      // Redirect to the appropriate dashboard
+      const axiosInstance = axios.create({
+        baseURL: baseurl,
+        headers: {
+          Authorization: `Bearer ${access}`,
+        },
+      });
+
+      axiosInstance
+        .get("/accounts/profile")
+        .then((response) => {
+          localStorage.setItem("account_type", response.data.account_type);
+          Cookies.set("token", access, {
+            expires: expires,
+            sameSite: "strict",
+            httpOnly: false,
+          });
+          Cookies.set("account_type", response.data.account_type, {
+            expires: expires,
+            sameSite: "strict",
+            httpOnly: false,
+          });
+          if (response.data.account_type === "job_seeker") {
+            Router.push("/seeker-dashboard");
+          } else {
+            Router.push(`/dashboard`);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } catch (error: any) {
       console.error("Login error:", error);
     }
   };
@@ -99,7 +98,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex bg-white md:flex-row flex-col">
       {/* Left side with background image */}
-      <div className="flex-1 bg-login-bg bg-cover bg-center ">
+      <div className="flex-1 bg-login bg-cover bg-center ">
         <div className="flex items-center justify-center bg-black bg-opacity-30 text-white p-0 h-full">
           <div className="flex flex-col items-center justify-center w-full max-md:my-16">
             <h1 className="xl:text-6xl lg:text-5xl md:text-4xl text-3xl font-bold px-4 text-center">

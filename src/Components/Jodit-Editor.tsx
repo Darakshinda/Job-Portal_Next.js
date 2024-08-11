@@ -7,12 +7,12 @@ interface JoditEditorComponentProps {
   onChange: Function;
 }
 
-const JoditEditorComponent: React.FC<JoditEditorComponentProps> = ({
+const JoditEditorComponent = ({
   keyy,
   value,
   onChange,
-}) => {
-  const editorRef = useRef<typeof JoditEditor | null>(null);
+}: JoditEditorComponentProps) => {
+  const editorRef = useRef(null);
 
   return (
     <JoditEditor

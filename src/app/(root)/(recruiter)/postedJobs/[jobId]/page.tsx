@@ -1,10 +1,19 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { FaMoneyBillAlt } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import { IoTimerOutline } from "react-icons/io5";
 import { FiUsers } from "react-icons/fi";
 import axios from "axios";
-import { cookies } from "next/headers";
+import SkillTags from "@/constants/data/tags.json";
+import ApplicantCard from "@/Components/Forms/ApplicantCard";
+import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
+import Swal from "sweetalert2";
+import DeleteConfirmation from "@/Components/DeleteConfirmation";
+import SearchSelectDropdown from "@/Components/Forms/SearchSelectDropdown";
+import Spinner from "@/Components/Spinner";
+import Link from "next/link";
 
 interface Application {
   job: number;
@@ -20,7 +29,6 @@ interface JobDetails {
   applications: Application[];
   company_name: string;
   position: string;
-  //emptype: string;
   primary_tag: string;
   tags: string;
   location_restriction: string;
@@ -34,43 +42,104 @@ interface JobDetails {
   apply_url: string | null;
 }
 
-const JobDetailsPage = async ({ params }: { params: { jobId: number } }) => {
-  const baseurl =
-    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000/api";
+const JobDetails = ({ params }: { params: { jobId: number } }) => {
   const jobId = params.jobId;
-  const token = cookies().get("token")?.value;
-  console.log("Token: ", token);
-  console.log(baseurl);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [jobDetails, setJobDetails] = useState<JobDetails | null>(null);
+  const [searchParams, setSearchParams] = useState<{ skillTags: string[] }>({
+    skillTags: [],
+  });
+  const [applicants, setApplicants] = useState<Application[]>([]);
+  const [visibleApplicants, setVisibleApplicants] = useState<Application[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const displayApplicantsLength = 4; // with this also change the max-h- in the div below appropriately to show the scrollbar
 
-  let jobDetails: JobDetails = {
-    id: -1,
-    applications: [],
-    company_name: "",
-    position: "",
-    primary_tag: "",
-    tags: "",
-    location_restriction: "",
-    job_description: "",
-    annual_salary_min: "",
-    annual_salary_max: "",
-    how_to_apply: "",
-    benefits: "",
-    created_at: "",
-    apply_email_address: "",
-    apply_url: "",
+  const handleSkillChange = (skills: string[]) => {
+    setSearchParams((prevState) => ({
+      ...prevState,
+      skillTags: skills,
+    }));
   };
 
-  try {
-    const response = await axios.get(`${baseurl}/jobs/${jobId}/`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    jobDetails = response.data;
-    console.log(jobDetails);
-  } catch (error: any) {
-    console.log(error.code);
-  }
+  const baseurl =
+    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000/api";
+
+  useEffect(() => {
+    // Ensure this runs only in the browser
+    const access_token =
+      typeof window !== "undefined"
+        ? localStorage.getItem("access_token")
+        : null;
+
+    if (access_token) {
+      axios
+        .get(`${baseurl}/jobs/${jobId}/`, {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        })
+        .then((response) => {
+          setJobDetails(response.data); // fetchApplicants();
+          // console.log(response.data);
+          setApplicants(response.data.applications); // Assuming applications are part of the job details response
+          setVisibleApplicants(
+            response.data.applications.slice(0, displayApplicantsLength)
+          );
+        })
+        .catch((error) => {
+          console.log(error.code);
+        });
+    }
+  }, [jobId]);
+
+  const loadMoreApplicants = () => {
+    // console.log("Loading more applicants...");
+    if (loading || !hasMore) return;
+
+    setLoading(true);
+
+    setTimeout(() => {
+      const nextApplicants = applicants.slice(
+        visibleApplicants.length,
+        visibleApplicants.length + displayApplicantsLength
+      );
+      setVisibleApplicants((prev) => [...prev, ...nextApplicants]);
+      setLoading(false);
+
+      if (nextApplicants.length < displayApplicantsLength) {
+        setHasMore(false); // No more applicants to load
+      }
+    }, 1000); // Simulate loading delay
+  };
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+
+    if (scrollTop + clientHeight >= scrollHeight - 5) {
+      loadMoreApplicants();
+    }
+  };
+
+  const deleteJob = (id: any) => {
+    const access_token =
+      typeof window !== "undefined"
+        ? localStorage.getItem("access_token")
+        : null;
+    axios
+      .delete(`${baseurl}/jobs/${id}/delete/`, {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        Swal.fire("Deleted Successfully", "", "success");
+      })
+      .catch((error) => {
+        console.log((error as any)?.response?.data || error);
+      });
+  };
 
   const getTimePast = (date: string) => {
     const currentDate = new Date();
@@ -95,13 +164,31 @@ const JobDetailsPage = async ({ params }: { params: { jobId: number } }) => {
       return `${yearsDiff} year${yearsDiff > 1 ? "s" : ""} ago`;
     }
   };
+
+  if (!jobDetails)
+    return (
+      <div className="flex items-center justify-center w-full h-[100dvh]">
+        <Spinner />
+      </div>
+    );
+
   return (
-    <section className="w-full h-full bg-white py-4 px-6 relative">
+    <section className="w-full min-h-screen bg-white py-4 px-6 ps-24">
+      {isModalOpen && (
+        <>
+          <div className="fixed z-[60] w-[100vw] h-[100dvh] inset-0 bg-black opacity-70 backdrop-blur-lg transition-opacity duration-1000"></div>
+
+          <DeleteConfirmation
+            deletefn={() => deleteJob(jobId)}
+            closemodal={() => setIsModalOpen(false)}
+          />
+        </>
+      )}
       <h1 className="text-center text-4xl font-bold text-gray-800">
         {jobDetails.position || "Job Title"}
       </h1>
 
-      <div className="mx-4 my-6 border border-gray-200 rounded-xl px-10 py-6">
+      <div className="mx-4 my-6 border-2 border-gray-300 rounded-xl px-10 py-6 relative">
         <h4 className="text-lg font-semibold text-gray-600 mb-1">
           {jobDetails.primary_tag || "Primary Tag"}
         </h4>
@@ -109,7 +196,7 @@ const JobDetailsPage = async ({ params }: { params: { jobId: number } }) => {
           {jobDetails.company_name || "Company Name"}
         </h5>
 
-        <div className="my-3 flex items-center gap-10">
+        <div className="my-3 flex flex-wrap items-center gap-x-10 gap-y-4">
           <h2 className="block">
             <FaLocationDot size={18} className="inline me-1.5 text-gray-700" />
             <p className="text-gray-500 text-sm inline-block">
@@ -121,9 +208,9 @@ const JobDetailsPage = async ({ params }: { params: { jobId: number } }) => {
           <h2 className="block">
             <FaMoneyBillAlt size={18} className="inline me-1.5 text-gray-700" />
             <p className="text-gray-500 text-sm inline-block">
-              <span className="inline-block font-semibold">Stipend -</span> ₹
-              {jobDetails.annual_salary_min || "Min"} - ₹
-              {jobDetails.annual_salary_max || "Max"}
+              <span className="inline-block font-semibold">Salary -</span> ₹
+              {jobDetails.annual_salary_min || "Min"} -
+              {jobDetails.annual_salary_max || "Max"} per year
             </p>
           </h2>
         </div>
@@ -145,33 +232,76 @@ const JobDetailsPage = async ({ params }: { params: { jobId: number } }) => {
           </span>
         </div>
 
-        <hr className="border-gray-100 border my-6" />
+        <hr className="border-gray-200 border my-6" />
 
-        <div className="absolute"></div>
+        <div className="absolute right-2 top-2 p-2 space-y-3">
+          <Link
+            href={`/postedJobs/${jobId}/edit`}
+            title="Edit Job"
+            className="p-1 block outline-none border-2 border-gray-300 bg-gray-200/70 hover:bg-gray-300/60 rounded-lg"
+          >
+            <MdOutlineEdit size={20} className="text-blue-500" />
+          </Link>
+          <button
+            title="Delete Job"
+            onClick={() => {
+              setIsModalOpen((curr) => !curr);
+              document.body.style.overflow = isModalOpen ? "hidden" : "auto";
+            }}
+            className="p-1 block outline-none border-2 border-gray-300 bg-gray-200/70 hover:bg-gray-300/60 rounded-lg"
+          >
+            <MdOutlineDeleteForever size={20} className="text-red-500" />
+          </button>
+        </div>
 
-        <h2 className="text-base font-semibold text-gray-600">
+        <h2 className="text-base font-semibold text-blue-600 mb-4">
           About the internship /Job
         </h2>
 
+        <article
+          dangerouslySetInnerHTML={{ __html: jobDetails.job_description }}
+        ></article>
+
+        <h2 className="text-base font-semibold text-blue-600 mb-4">
+          How to Apply
+        </h2>
+
+        <article
+          dangerouslySetInnerHTML={{ __html: jobDetails.how_to_apply }}
+        ></article>
+
+        <hr className="border-gray-200 border my-6" />
+
+        <h2 className="mb-2 flex justify-between items-start">
+          <span className="text-base font-semibold text-blue-600">
+            Applicants
+          </span>
+          <div className="flex items-end max-w-sm gap-3">
+            <SearchSelectDropdown
+              req={false}
+              label="Skills"
+              labelcls="text-gray-700 font-semibold relative flex items-center gap-2 mb-2"
+              cls="relative w-full -mt-2 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
+              tags={SkillTags}
+              onChange={handleSkillChange}
+              placeholder="Eg: Software Developer"
+              displayTagsLength={4}
+            />
+          </div>
+        </h2>
+
         <div
-          className=" scrollbar-hide"
-          style={{
-            marginLeft: "2%",
-            overflowX: "auto",
-            overflowY: "auto",
-            width: "80%",
-            maxHeight: "400px",
-            padding: "2px",
-            borderRadius: "4px",
-          }}
+          className="overflow-y-auto max-h-72 scrollbar-hide grid lg:grid-cols-2 grid-cols-1 gap-4 py-6"
+          onScroll={handleScroll}
         >
-          <main
-            dangerouslySetInnerHTML={{ __html: jobDetails.job_description }}
-          ></main>
+          {visibleApplicants.map((applicant, index) => (
+            <ApplicantCard key={index} applicant={applicant} />
+          ))}
+          {loading && <Spinner />}
         </div>
       </div>
     </section>
   );
 };
 
-export default JobDetailsPage;
+export default JobDetails;

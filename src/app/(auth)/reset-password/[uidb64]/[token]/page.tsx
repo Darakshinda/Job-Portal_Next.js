@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import LoginFormInput from "@/Components/Forms/LoginFormInput";
 import { RiLockPasswordLine } from "react-icons/ri";
-import { resetPasswordSchema } from "@/_lib/validator";
+import { resetPasswordSchema } from "@/lib/validator";
 
 type Schema = z.infer<typeof resetPasswordSchema>;
 

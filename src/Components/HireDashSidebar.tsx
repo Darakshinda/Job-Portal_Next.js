@@ -104,7 +104,7 @@ interface Profile {
 }
 
 const HamburgerMenu = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [isPop, setIsPop] = useState(false);
   const [profile, setProfile] = useState<Profile>({
     email: "",
@@ -151,200 +151,209 @@ const HamburgerMenu = () => {
     }
   };
 
-  const toggleSheet = () => {
-    setIsOpen(!isOpen);
-  };
-
-  // useEffect(() => {
-  //   if (isOpen) {
-  //     // Disable scrolling when the sheet is open
-  //     document.body.style.overflow = "hidden";
-  //   } else {
-  //     // Enable scrolling when the sheet is closed
-  //     document.body.style.overflow = "auto";
-  //   }
-  // }, [isOpen]);
-
   useEffect(() => {
     getProfile();
   }, []);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [isOpen]);
+
   return (
-    <aside
-      className={`h-screen transition-all duration-500 ${
-        isOpen
-          ? "sm:min-w-72 sm:max-w-72 min-w-52 max-w-52"
-          : "min-w-[4.5rem] max-w-[4.5rem]"
-      }`}
-    >
-      <nav
-        className={`relative h-full flex flex-col bg-[#FAFAFA] border-r-2 border-gray-300 pt-2`}
+    <>
+      {isOpen && (
+        <div className="fixed z-40 w-[100vw] h-[100dvh] inset-0 bg-black opacity-70 backdrop-blur-lg transition-opacity duration-1000"></div>
+      )}
+      <aside
+        className={`h-screen fixed z-50 transition-all duration-500 ${
+          isOpen
+            ? "sm:min-w-72 sm:max-w-72 min-w-52 max-w-52"
+            : "min-w-[4.5rem] max-w-[4.5rem]"
+        }`}
       >
-        <Link
-          href="/dashboard"
-          className="w-full px-4 text-center outline-none"
+        <nav
+          className={`relative h-full flex flex-col bg-[#FAFAFA] border-r-2 border-gray-300 pt-2`}
         >
-          {isOpen ? (
-            <Image
-              src="/assets/icons/logo.svg"
-              alt="Code Unity logo"
-              width={600}
-              height={90}
-              className="w-24 sm:w-32 sm:h-10 h-8 object-contain mx-4"
+          <Link
+            href="/dashboard"
+            className="w-full px-4 text-center outline-none"
+          >
+            {isOpen ? (
+              <Image
+                src="/assets/icons/logo.svg"
+                alt="Code Unity logo"
+                width={600}
+                height={90}
+                className="w-24 sm:w-32 sm:h-10 h-8 object-contain mx-4"
+              />
+            ) : (
+              <p className="font-bold text-black my-2">&lt;/&gt;</p>
+            )}
+          </Link>
+
+          {/* Separator */}
+          <div className="w-[95%] border border-gray-300 my-1.5 ms-1"></div>
+
+          <button
+            className="p-1 rounded-full bg-gray-100 hover:bg-gray-200 absolute top-10 -right-3 z-10 outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
+            onClick={() => {
+              setIsOpen((curr) => !curr);
+              setIsPop(false);
+            }}
+          >
+            <FaChevronLeft
+              size={20}
+              className={`${isOpen ? "rotate-0" : "rotate-180"} transition-transform duration-300`}
             />
-          ) : (
-            <p className="font-bold text-black my-2">&lt;/&gt;</p>
-          )}
-        </Link>
+          </button>
 
-        {/* Separator */}
-        <div className="w-[95%] border border-gray-300 my-1.5 ms-1"></div>
-
-        <button
-          className="p-1 rounded-full bg-gray-100 hover:bg-gray-200 absolute sm:top-10 top-8 -right-3 z-10 outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
-          onClick={toggleSheet}
-        >
-          <FaChevronLeft
-            size={20}
-            className={`${isOpen ? "rotate-0" : "rotate-180"} transition-transform duration-300`}
-          />
-        </button>
-
-        <ul className="flex-1 flex flex-col px-1 py-2 gap-2">
-          {Links.map((link, index) => (
-            <li key={index}>
-              <Link
-                href={link.href}
-                className={`group relative flex items-center p-2 mx-2 gap-2 font-medium rounded-md text-nowrap cursor-pointer transition-colors outline-none focus-visible:ring-2 focus-visible:ring-gray-500
+          <ul className="flex-1 flex flex-col px-1 py-2 gap-2">
+            {Links.map((link, index) => (
+              <li key={index}>
+                <Link
+                  href={link.href}
+                  className={`group relative flex items-center p-2 mx-2 gap-2 font-medium rounded-md text-nowrap cursor-pointer transition-colors outline-none focus-visible:ring-2 focus-visible:ring-gray-500
             ${
               pathname === link.href
                 ? "bg-gray-200 text-gray-700"
                 : "text-gray-600 hover:bg-gray-200/40"
             }`}
-              >
-                <div className="p-1">{link.icon}</div>
-                <span
-                  className={`overflow-hidden px-1 transition-all duration-500 
-              ${!isOpen && "opacity-0 overflow-hidden translate-x-14"}`}
                 >
-                  {link.name}
-                </span>
-                {!isOpen && (
-                  <span className="absolute left-full rounded-md px-2 py-1 ml-6 bg-gray-200/80 text-gray-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0">
+                  <div className="p-1">{link.icon}</div>
+                  <span
+                    className={`overflow-hidden px-1 transition-all duration-500 
+              ${!isOpen && "opacity-0 overflow-hidden translate-x-14"}`}
+                  >
                     {link.name}
                   </span>
-                )}
-              </Link>
-            </li>
-          ))}
-        </ul>
-
-        <div className="w-full">
-          <button
-            className="sm:hidden block rounded-t-md border-t-2 border-x-2 border-gray-300 p-1 mx-1 bg-gray-100 hover:bg-gray-200 outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
-            onClick={() => setIsPop((curr) => !curr)}
-          >
-            <IoIosArrowUp
-              size={24}
-              className={`${isPop ? "rotate-180" : "rotate-0"} transition-transform duration-300 ease-in-out`}
-            />
-          </button>
-
-          <div
-            className={`sm:hidden block h-fit transition-all duration-500 ${isPop ? "border-t-2 border-gray-300 opacity-100 max-h-40" : "opacity-0 max-h-0"}`}
-          >
-            <ul className="max-[400px]:p-1 p-2 text-sm text-gray-700">
-              <li>
-                <Link
-                  href="/profile"
-                  className="block text-center sm:px-4 px-2 py-2 hover:bg-gray-200 rounded-lg font-semibold"
-                >
-                  Profile
+                  {!isOpen && (
+                    <span className="absolute left-full rounded-md px-2 py-1 ml-6 bg-gray-200/90 text-gray-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0">
+                      {link.name}
+                    </span>
+                  )}
                 </Link>
               </li>
-              <li>
-                <button
-                  onClick={handleLogOut}
-                  className="block text-center w-full sm:px-4 px-2 py-2 hover:bg-gray-200 rounded-lg font-semibold"
-                >
-                  Logout
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
+            ))}
+          </ul>
 
-        <div
-          className={`border-t border-gray-300 p-3 flex items-center gap-1 relative`}
-        >
-          <div className="p-1 relative w-10 h-10 rounded-full shrink-0">
-            {!profile.profile_picture ? (
-              <HiUserCircle
-                size={32}
-                className="hover:bg-gray-100 rounded-full cursor-pointer p-0.5"
+          <div className="w-full">
+            <button
+              className="sm:hidden block rounded-t-md border-t-2 border-x-2 border-gray-300 p-1 mx-1 bg-gray-100 hover:bg-gray-200 outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
+              onClick={() => setIsPop((curr) => !curr)}
+            >
+              <IoIosArrowUp
+                size={24}
+                className={`${isPop ? "rotate-180" : "rotate-0"} transition-transform duration-300 ease-in-out`}
               />
-            ) : (
-              <Image
-                src={profile.profile_picture}
-                alt="Profile Picture"
-                fill
-                // width={64}
-                // height={64}
-                className="hover:bg-gray-100 rounded-full cursor-pointer object-fill"
-                sizes="100%"
-              />
-            )}
-          </div>
-          <div
-            className={`overflow-hidden leading-4 transition-all w-full ${
-              !isOpen && "opacity-0 overflow-hidden translate-x-14"
-            }`}
-          >
-            <div className="w-full pl-2 flex justify-between">
-              <h3>
-                <p className="font-semibold md:text-base text-sm">
-                  {profile.first_name}
-                </p>
-                <span className="text-xs text-gray-600 text-ellipsis">
-                  {profile.email}
-                </span>
-              </h3>
-              <button onClick={() => setIsPop((curr) => !curr)}>
-                <HiDotsVertical
-                  size={20}
-                  className="hover:bg-gray-200 rounded-full cursor-pointer p-0.5"
-                />
-              </button>
+            </button>
+
+            <div
+              className={`sm:hidden block h-fit transition-all duration-500 ${isPop ? "border-t-2 border-gray-300 opacity-100 max-h-40" : "opacity-0 max-h-0"}`}
+            >
+              <ul className="max-[400px]:p-1 p-2 text-sm text-gray-700">
+                <li>
+                  <Link
+                    href="/profile"
+                    className="block text-center sm:px-4 px-2 py-2 hover:bg-gray-200 rounded-lg font-semibold"
+                  >
+                    Profile
+                  </Link>
+                </li>
+                <li>
+                  <button
+                    onClick={handleLogOut}
+                    className="block text-center w-full sm:px-4 px-2 py-2 hover:bg-gray-200 rounded-lg font-semibold"
+                  >
+                    Logout
+                  </button>
+                </li>
+              </ul>
             </div>
           </div>
 
           <div
-            className={`absolute sm:block hidden -right-5 -top-16 bg-gray-100 space-y-1 rounded-lg shadow w-fit dark:bg-gray-700 transition-all duration-300 ${
-              isPop ? "-translate-y-5 translate-x-5" : "scale-0 origin-bottom "
-            }`}
+            className={`border-t-2 border-gray-300 px-3 pt-3.5 pb-3 flex items-center gap-1 relative`}
           >
-            <ul className="p-2 text-sm text-gray-700">
-              <li>
-                <Link
-                  href="/profile"
-                  className="block px-4 py-2 hover:bg-gray-200 rounded-lg font-semibold"
-                >
-                  Profile
-                </Link>
-              </li>
-              <li>
-                <button
-                  onClick={handleLogOut}
-                  className="block px-4 py-2 hover:bg-gray-200 rounded-lg font-semibold"
-                >
-                  Logout
+            <div
+              className="p-1 relative w-10 h-10 rounded-full shrink-0"
+              onClick={() => {
+                setIsOpen(true);
+              }}
+            >
+              {!profile.profile_picture ? (
+                <HiUserCircle
+                  size={32}
+                  className="hover:bg-gray-100 rounded-full cursor-pointer p-0.5"
+                />
+              ) : (
+                <Image
+                  src={profile.profile_picture}
+                  alt="Profile Picture"
+                  fill
+                  // width={64}
+                  // height={64}
+                  className="hover:bg-gray-100 rounded-full cursor-pointer object-fill"
+                  sizes="100%"
+                />
+              )}
+            </div>
+            <div
+              className={`overflow-hidden leading-4 transition-all w-full ${
+                !isOpen && "opacity-0 overflow-hidden translate-x-14"
+              }`}
+            >
+              <div className="w-full pl-2 flex justify-between">
+                <h3>
+                  <p className="font-semibold md:text-base text-sm whitespace-nowrap">
+                    {profile.first_name}
+                  </p>
+                  <span className="text-xs text-gray-600 text-ellipsis">
+                    {profile.email}
+                  </span>
+                </h3>
+                <button onClick={() => setIsPop((curr) => !curr)}>
+                  <HiDotsVertical
+                    size={20}
+                    className="hover:bg-gray-200 rounded-full cursor-pointer p-0.5"
+                  />
                 </button>
-              </li>
-            </ul>
+              </div>
+            </div>
+
+            <div
+              className={`absolute sm:block hidden -right-5 -top-16 bg-gray-100 space-y-1 rounded-lg shadow w-fit dark:bg-gray-700 transition-all duration-300 ${
+                isPop
+                  ? "-translate-y-5 translate-x-5"
+                  : "scale-0 origin-bottom "
+              }`}
+            >
+              <ul className="p-2 text-sm text-gray-700">
+                <li>
+                  <Link
+                    href="/profile"
+                    className="block px-4 py-2 hover:bg-gray-200 rounded-lg font-semibold"
+                  >
+                    Profile
+                  </Link>
+                </li>
+                <li>
+                  <button
+                    onClick={handleLogOut}
+                    className="block px-4 py-2 hover:bg-gray-200 rounded-lg font-semibold"
+                  >
+                    Logout
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
-        </div>
-      </nav>
-    </aside>
+        </nav>
+      </aside>
+    </>
   );
 };
 

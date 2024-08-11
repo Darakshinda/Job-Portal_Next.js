@@ -7,9 +7,11 @@ import { LuFilter } from "react-icons/lu";
 import SearchSelectDropdown from "./Forms/SearchSelectDropdown";
 import empOpns from "@/constants/data/emptype.json";
 import RangeSliderMinMax from "./Forms/RangeSilderMinMax";
+import SignupFormInput from "./Forms/SignupFormInput";
 
 interface SearchFiltersProps {
   searchParams: {
+    query: string;
     skillTags: string[];
     location: string;
     jobType: string;
@@ -28,7 +30,7 @@ const SearchFilters = ({
   const LocationTags = locOpns.countries;
 
   return (
-    <section className="w-full h-fit px-4 py-6 shadow-lg rounded-xl sticky top-6 border border-gray-100 max-w-sm">
+    <section className="w-full h-fit px-4 py-6 shadow-lg rounded-xl sticky border border-gray-100 max-w-sm">
       <h2 className="text-center text-gray-700 flex justify-center items-center gap-2.5 font-semibold mb-3">
         <span>
           <LuFilter size={18} className="inline-block text-blue-500" />
@@ -37,12 +39,22 @@ const SearchFilters = ({
       </h2>
 
       <form action="" className="space-y-2 px-2">
+        <SignupFormInput
+          id="search"
+          name="query"
+          type="text"
+          label="Search"
+          placeholder="Search ..."
+          labelcls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
+          cls="bg-[#f3f4f6] text-primary-700 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
+          handleChange={handleChange}
+        />
         <div className="grid grid-rows-[min(fit_content, fit_content)] gap-x-6 items-start">
           <SearchSelectDropdown
             req={false}
             label="Skills"
             labelcls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
-            cls="relative w-full -mt-2 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
+            cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
             tags={SkillTags}
             onChange={handleSkillChange}
             placeholder="Eg: Software Developer"
@@ -54,7 +66,7 @@ const SearchFilters = ({
           <SearchSelectDropdown
             req={false}
             label="Location"
-            name="locns"
+            name="location"
             labelcls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
             placeholder="Eg: London"
             cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"

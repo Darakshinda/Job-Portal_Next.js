@@ -33,9 +33,9 @@ const PostFormInput = ({
   description,
 }: FormInputProps) => {
   return (
-    <div className="grid md:grid-cols-2 max-md:grid-rows-2 gap-x-6 w-full">
+    <div className="flex flex-col justify-center w-full">
       <label
-        className="text-gray-800 text-lg font-semibold relative flex items-center gap-2"
+        className="text-gray-700 font-semibold relative flex items-center gap-2"
         htmlFor={name}
       >
         {label}
@@ -43,12 +43,11 @@ const PostFormInput = ({
           <>
             <button
               type="button"
-              className="w-2 h-2 p-2.5 bg-gray-200 text-gray-400 rounded-full flex items-center justify-center outline-none hover:bg-gray-300 hover:text-gray-500 focus:bg-gray-300 focus:text-gray-500 peer"
+              className="w-2 h-2 p-2.5 bg-gray-200 text-gray-400 text-sm rounded-full flex items-center justify-center outline-none hover:bg-gray-300 hover:text-gray-500 focus:bg-gray-300 focus:text-gray-500 peer"
             >
               ?
             </button>
-            {/* <div className="absolute left-20 transform bottom-0 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-gray-900 opacity-0 peer-hover:opacity-100 transition-opacity"></div> */}
-            <div className="absolute z-10 left-0 transform top-full -mt-2 mb-2 max-w-sm bg-gray-900 text-white text-xs font-medium px-2 py-1 rounded opacity-0 peer-hover:opacity-100 transition-opacity">
+            <div className="absolute -z-10 left-0 transform translate-y-full top-full mb-2 max-w-sm bg-gray-900 text-white text-xs font-medium px-2 py-1 rounded opacity-0 peer-hover:opacity-100 peer-hover:translate-y-0 peer-hover:z-10 transition-all duration-300 ease-in-out">
               {description}
             </div>
           </>
@@ -67,7 +66,7 @@ const PostFormInput = ({
           name={name}
           type={type}
           required={req}
-          className={`relative w-full md:mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus:border-primary-500 ${cls}`}
+          className={`relative w-full md:mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic ${cls}`}
           placeholder={placeholder}
           disabled={disabled}
         />
@@ -87,7 +86,7 @@ const PostFormInput = ({
           </button>
         )} */}
         <span
-          className={`text-red-500 text-xs font-semibold  ${errors ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
+          className={`text-red-500 text-xs absolute mt-1 font-semibold  ${errors ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
         >
           {errors?.message}
         </span>
