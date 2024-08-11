@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import SelectTags from "@/app/Components/SelectTags";
 import Select, { MultiValue, SingleValue } from "react-select";
 import { TextInput } from "@/stories/TextInput";
-import Sidebar from "@/app/Components/SeekerDashSide";
+import SeekerSidebar from "@/app/Components/SeekerDashSide";
 import HirerSidebar from "@/app/Components/HireDashSidebar";
 import "./Stylin.css";
 import ToggleSwitch from "@/app/Components/ToggleSwitch";
@@ -31,6 +31,7 @@ const Home: React.FC = () => {
   const [aboutFetch, setaboutFetch] = useState({
     first_name: "",
     last_name: "",
+    email:" ",
     company_name: "",
     designation: "",
     product_service: "",
@@ -48,7 +49,7 @@ const Home: React.FC = () => {
     website: "",
     linkedin: "",
     github: "",
-    x: "",
+    twtr: "",
   });
   const [socialmedia, setsocialmedia] = useState(socialmediaFetch);
 
@@ -268,97 +269,124 @@ const Home: React.FC = () => {
     buttondiv = "flex space-x-4",
     labelcls = "block text-sm font-medium text-[16px] font-bold";
 
-  const handleSave = () => {
-    const accessToken = localStorage.getItem("access_token");
-    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/accounts/profile/`;
-
-    // Map skills to technical_skills for the backend
-    const dataToSave = {
-      ...about,
-      experience: Exps,
-      education: Edus,
-      technical_skills: skills,
-      socialmedia: {
-        website: socialmedia.website || "",
-        linkedin: socialmedia.linkedin || "",
-        github: socialmedia.github || "",
-        x: socialmedia.x || "",
-      },
-      identity: {
-        pronouns: identity.pronouns,
-        pronounsSelfdescribe: identity.PronounsSelfdescribe,
-        pronounsdisp: identity.pronounsdisp,
-        gender: identity.gender,
-        genderSelfDescribe: identity.genderSelfDescribe,
-        race_ethnicity: identity.race_ethnicity,
-    },
-      achievements: achievements, // Updated field name for backend
+    const fetchProfileData = () => {
+      const accessToken = localStorage.getItem("access_token");
+      const url = process.env.NEXT_PUBLIC_BASE_URL + "/accounts/profile/";
+      axios
+        .get(url, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((response) => {
+          const data = response.data;
+          setabout({
+            first_name: data.first_name || "",
+            last_name: data.last_name || "",
+            email: data.email || "",
+            company_name: data.company_name || "",
+            designation: data.designation || "",
+            product_service: data.product_service || "",
+            company_stage: data.company_stage || "",
+            location: data.location || "",
+            primary_role: data.primary_role || "",
+            years_of_experience: data.years_of_experience || "",
+            open_to_roles: data.open_to_roles || [],
+            profile_picture: data.profile_picture || "",
+            bio: data.bio || "",
+          });
+  
+          setsocialmedia({
+            website: data.website || "",
+            linkedin: data.linkedin || "",
+            github: data.github || "",
+            twtr: data.twtr || "",
+          });
+  
+          setExps(data.experience || []);
+          setEdus(data.education || []);
+          setskills(data.skills || []);
+          setachieve(data.achievements || "");
+          setidentity({
+            pronouns: data.pronouns || "",
+            PronounsSelfdescribe: data.PronounsSelfdescribe || "",
+            pronounsdisp: data.pronounsdisp || false,
+            gender: data.gender || "",
+            genderSelfDescribe: data.genderSelfDescribe || "",
+            race_ethnicity: data.ethnicity || [],
+          });
+  
+          setusername(data.first_name.split(" ")[0]);
+          if (data.account_type === "job_hirer") {
+            setisHirer(true);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     };
-
-    axios
-      .put(url, dataToSave, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        setabout(response.data);
-        setaboutFetch(response.data);
-        setsocialmedia(response.data.socialmedia);
-        setsocialmediaFetch(response.data.socialmedia);
-        setskills(response.data.technical_skills || []); // Ensure the skills are also updated from the response
-        setskillsFetch(response.data.technical_skills || []); // For reset functionality
-        setachieve(response.data.achievements || ""); // Update achievements
-        setachieveFetch(response.data.achievements || ""); // For reset functionality
-        setidentity(response.data.identity); // Update identity
-        setidentityFetch(response.data.identity); // For reset functionality
-      })
-      .catch((error) => {
-        console.error("Error saving data:", error);
-      });
-  };
-
-  const getDetails = () => {
-    const accessToken = localStorage.getItem("access_token");
-    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/accounts/profile/`;
-
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        setabout(response.data);
-        setaboutFetch(response.data); // Store initial fetch to allow reset functionality
-        setsocialmedia(response.data.socialmedia); // Set social media data
-        setsocialmediaFetch(response.data.socialmedia);
-        setExps(response.data.experience || []); // Set experience data
-        setEdus(response.data.education || []); // Set education data
-        setskills(response.data.technical_skills || []); // Set skills data
-        setskillsFetch(response.data.technical_skills || []); // Store initial skills data for reset functionality
-        setachieve(response.data.achievements || ""); // Set achievements data
-        setachieveFetch(response.data.achievements || "");
-        setidentity(response.data.identity); // Update identity
-        setidentityFetch(response.data.identity); // For reset functionality
-        setusername(response.data.first_name.split(" ")[0]);
-        if (response.data.account_type === "job_hirer") {
-          setIsHirer(true);
+  
+    const updateProfileData = () => {
+      const accessToken = localStorage.getItem("access_token");
+      const url = process.env.NEXT_PUBLIC_BASE_URL + "/accounts/profile/";
+    
+      const formData = new FormData();
+    
+      // Append all fields to FormData
+      Object.keys(about).forEach((key) => {
+        if (key === 'profile_picture' && about[key] instanceof File) {
+          formData.append(key, about[key]);  // Assuming `about[key]` is a File object
+        } else {
+          formData.append(key, about[key]);
         }
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
       });
-  };
-
-  useEffect(() => {
-    getDetails();
-  }, []);
+    
+      // Append other fields
+      formData.append('experience', JSON.stringify(Exps));
+      formData.append('education', JSON.stringify(Edus));
+      formData.append('skills', JSON.stringify(skills));
+      formData.append('achievements', achievements || ""); // Ensure achievements is included
+      formData.append('pronouns', identity.pronouns || "");
+      formData.append('PronounsSelfdescribe', identity.PronounsSelfdescribe || "");
+      formData.append('pronounsdisp', identity.pronounsdisp || "");
+      formData.append('gender', identity.gender || "");
+      formData.append('genderSelfDescribe', identity.genderSelfDescribe || "");
+      formData.append('ethnicity', JSON.stringify(identity.race_ethnicity) || "");
+      formData.append('website', socialmedia.website || "");
+      formData.append('linkedin', socialmedia.linkedin || "");
+      formData.append('github', socialmedia.github || "");
+      formData.append('twtr', socialmedia.twtr || "");
+    
+      axios
+        .put(url, formData, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'multipart/form-data', // Important for file uploads
+          },
+        })
+        .then((response) => {
+          console.log("Profile updated successfully");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+    
+    
+  
+    useEffect(() => {
+      fetchProfileData();
+    }, []);
+  
+  
 
   return (
     <div>
-      {isHirer && <HirerSidebar userName={username} />}
-      {!isHirer && <Sidebar userName={username} />}
+       {isHirer ? (
+        <HirerSidebar userName={username} />
+      ) : (
+        <SeekerSidebar userName={username} />
+      )}
 
       <main className="grid w-full h-full pl-[240px]">
         <div className="min-h-screen bg-gray-900 text-white">
@@ -415,6 +443,24 @@ const Home: React.FC = () => {
                         </div>
                       </div>
 
+                      <div>
+                          <label htmlFor="website" className={labelcls}>
+                            <p className="text-white"> Email*</p>
+                          </label>
+                          <input
+                            className="mt-1 h-[35px] w-full rounded-md border bg-black text-white border-gray-400 p-4"
+                            value={about.email}
+                            onChange={(e) =>
+                              handle(
+                                "email",
+                                e.target.value,
+                                about,
+                                setabout
+                              )
+                            }
+                          />
+                        </div>
+
                       {isHirer && (
                         <div>
                           <label htmlFor="website" className={labelcls}>
@@ -440,7 +486,7 @@ const Home: React.FC = () => {
                           imgsrc="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTloMhHd2WEOdSnlj28yN-agPUzYU4U1iGekw&s"
                           bgcol="rgb(62, 62, 62)"
                           buttonBg="rgb(30, 7, 94)"
-                          keyy="logo"
+                          keyy="profile_picture"
                           resetflg
                           val={about.profile_picture}
                           onChange={(key: string, value: string) => {
@@ -454,7 +500,7 @@ const Home: React.FC = () => {
                       {about.profile_picture != "" && (
                         <button
                           className="text-white mt-[8px] font-bold py-2 px-8 rounded"
-                          onClick={(e) => handle("logo", "", about, setabout)}
+                          onClick={(e) => handle("profile_picture", "", about, setabout)}
                           style={{ backgroundColor: "rgb(30, 7, 94)" }}
                         >
                           Remove
@@ -490,7 +536,7 @@ const Home: React.FC = () => {
                         <LocationSearch
                           val={about.location}
                           handle={(val: string) => {
-                            handle("locn", val, about, setabout);
+                            handle("location", val, about, setabout);
                           }}
                         />
                       </div>
@@ -506,7 +552,7 @@ const Home: React.FC = () => {
                             options={primRole}
                             phdr="Select your primary role"
                             handle={(val: string) => {
-                              handle("primrole", val, about, setabout);
+                              handle("primary_role", val, about, setabout);
                             }}
                             val={about.primary_role}
                           />
@@ -519,7 +565,7 @@ const Home: React.FC = () => {
                             options={expOpns}
                             phdr="Experience"
                             handle={(val: string) => {
-                              handle("yrs", val, about, setabout);
+                              handle("years_of_experience", val, about, setabout);
                             }}
                             val={about.years_of_experience}
                           />
@@ -536,7 +582,7 @@ const Home: React.FC = () => {
                           options={primRole}
                           phdr="Select Roles"
                           handle={(val: any) => {
-                            handle("openroles", val, about, setabout);
+                            handle("open_to_roles", val, about, setabout);
                           }}
                           val={about.open_to_roles}
                         />
@@ -612,7 +658,7 @@ const Home: React.FC = () => {
                           style={{ backgroundColor: buttonbg }}
                           onClick={(e) => {
                             setaboutFetch(about);
-                            handleSave(); // Call the function to save the changes to the backend
+                            updateProfileData(); // Call the function to save the changes to the backend
                           }}
                         >
                           Save
@@ -696,13 +742,13 @@ const Home: React.FC = () => {
                         placeholder="https://twitter.com/username"
                         onChange={(e) =>
                           handle(
-                            "x",
+                            "twtr",
                             e.target.value,
                             socialmedia,
                             setsocialmedia
                           )
                         }
-                        value={socialmedia.x}
+                        value={socialmedia.twtr}
                       />
                     </div>
 
@@ -719,7 +765,7 @@ const Home: React.FC = () => {
                           className="bg-purple-500 text-white font-bold px-8 rounded"
                           onClick={(e) => {
                             setsocialmediaFetch(socialmedia);
-                            handleSave();
+                            updateProfileData();
                           }}
                           style={{ backgroundColor: buttonbg }}
                         >
@@ -858,6 +904,7 @@ const Home: React.FC = () => {
                               setExps([...Exps, exp]);
                               setexp(expDef); // Reset form state
                               setaddExp(false); // Close the form
+                              updateProfileData();
                             }}
                           >
                             Save
@@ -903,7 +950,7 @@ const Home: React.FC = () => {
                           </label>
                           <EducationSelect
                             handle={(val: string) => {
-                              handle("education", val, edu, setedu);
+                              handle("college_name", val, edu, setedu);
                             }}
                             val={edu.college_name || ""}
                           />
@@ -916,7 +963,7 @@ const Home: React.FC = () => {
                           <DateSelect
                             value={edu.year_of_graduation}
                             handleChange={(val: string) => {
-                              handle("graduation", val, edu, setedu);
+                              handle("year_of_graduation", val, edu, setedu);
                             }}
                           />
                         </div>
@@ -955,7 +1002,7 @@ const Home: React.FC = () => {
                                 placeholder="Max"
                                 value={edu.max_gpa}
                                 onChange={(e) =>
-                                  handle("maxgpa", e.target.value, edu, setedu)
+                                  handle("max_gpa", e.target.value, edu, setedu)
                                 }
                               />
                             </div>
@@ -980,6 +1027,7 @@ const Home: React.FC = () => {
                               setEdus([...Edus, edu]);
                               setedu(eduDef); // Reset form state
                               setaddEdu(false); // Close the form
+                              updateProfileData();
                             }}
                           >
                             Save
@@ -1023,7 +1071,7 @@ const Home: React.FC = () => {
                             className="bg-purple-500 text-white font-bold px-8 rounded"
                             onClick={(e) => {
                               setskillsFetch(skills);
-                              handleSave();
+                              updateProfileData();
                             }}
                             style={{ backgroundColor: buttonbg }}
                           >
@@ -1069,7 +1117,7 @@ const Home: React.FC = () => {
                             className="bg-purple-500 text-white font-bold px-8 rounded"
                             onClick={(e) => {
                               setachieveFetch(achievements);
-                              handleSave();
+                              updateProfileData();
                             }}
                             style={{ backgroundColor: buttonbg }}
                           >
@@ -1190,7 +1238,7 @@ const Home: React.FC = () => {
                       <MultiSelect
                         options={ethinicity}
                         onSelectionChange={(val: string) => {
-                          handle("ethnicity", val, identity, setidentity);
+                          handle("race_ethnicity", val, identity, setidentity);
                         }}
                         val={identity.race_ethnicity}
                       />
@@ -1208,7 +1256,7 @@ const Home: React.FC = () => {
                         <button
                           className="bg-purple-500 text-white font-bold px-8 rounded"
                           onClick={(e) => {setidentityFetch(identity)
-                            handleSave();
+                          updateProfileData();
                           }}
                           style={{ backgroundColor: buttonbg }}
                         >

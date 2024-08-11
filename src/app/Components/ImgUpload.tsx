@@ -1,16 +1,32 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 interface ImgProps {
-    keyy:string;
-    onChange: Function;resetflg:boolean;
-    val:string;bgcol:string;buttonBg:string;imgsrc:string;
-  }
+  keyy: string;
+  onChange: (key: string, file: File) => void;
+  resetflg?: boolean;
+  val?: string;
+  bgcol?: string;
+  buttonBg?: string;
+  imgsrc?: string;
+}
 
-const UploadButton: React.FC<ImgProps> = ({onChange,keyy,resetflg=false,val,bgcol='#fff',buttonBg="#e6ffff",imgsrc="https://cdn3.iconfinder.com/data/icons/photo-tools/65/upload-1024.png",}) => {
+const UploadButton: React.FC<ImgProps> = ({
+  onChange,
+  keyy,
+  resetflg = false,
+  val = '',
+  bgcol = '#fff',
+  buttonBg = "#e6ffff",
+  imgsrc = "https://cdn3.iconfinder.com/data/icons/photo-tools/65/upload-1024.png",
+}) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
 
-  if(resetflg && val!=backgroundImage) {setBackgroundImage(val);console.log(backgroundImage);}
+  useEffect(() => {
+    if (resetflg && val !== backgroundImage) {
+      setBackgroundImage(val);
+    }
+  }, [val, resetflg, backgroundImage]);
 
   const handleButtonClick = () => {
     fileInputRef.current?.click();
@@ -20,8 +36,8 @@ const UploadButton: React.FC<ImgProps> = ({onChange,keyy,resetflg=false,val,bgco
     const file = event.target.files?.[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
-      setBackgroundImage(imageUrl);onChange(keyy,imageUrl);
-      // Handle file upload logic here if needed
+      setBackgroundImage(imageUrl);
+      onChange(keyy, file); // Pass the File object
     }
   };
 
@@ -44,14 +60,22 @@ const UploadButton: React.FC<ImgProps> = ({onChange,keyy,resetflg=false,val,bgco
       }}
       onClick={handleButtonClick}
     >
-      {!backgroundImage && <div style={{display:"flex",backgroundColor:buttonBg,border:"solid",borderWidth:"1px",borderRadius:"3px"}} >
+      {!backgroundImage && (
+        <div style={{
+          display: "flex",
+          backgroundColor: buttonBg,
+          border: "solid",
+          borderWidth: "1px",
+          borderRadius: "3px"
+        }}>
           <img
             src={imgsrc}
             alt="Upload Icon"
-            style={{ width: '20px', height: '20px', marginRight: '8px',marginLeft:"3px",marginTop:"2px"  }}
+            style={{ width: '20px', height: '20px', marginRight: '8px', marginLeft: "3px", marginTop: "2px" }}
           />
-          <span style={{ fontSize: '14px', marginRight: '2px' }}><b>Upload</b></span></div>
-       }
+          <span style={{ fontSize: '14px', marginRight: '2px' }}><b>Upload</b></span>
+        </div>
+      )}
       <input
         type="file"
         ref={fileInputRef}
