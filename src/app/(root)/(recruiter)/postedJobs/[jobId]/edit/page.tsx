@@ -1,18 +1,8 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
-import { TextInput, TextArea } from "@/stories/TextInput";
-import JoditEditor from "@/Components/Jodit-Editor";
-import { Select } from "@/stories/Dropdown";
-import Tags from "@/stories/Tags";
-import Checkbox from "@/Components/check";
-import UploadButton from "@/Components/ImgUpload";
-import ColorPickerButton from "@/Components/ColorPicker";
-import JoditEditorComponent from "@/Components/Jodit-Editor";
+import React, { useEffect, useState } from "react";
 import SelectedOptions from "@/Components/Options";
-import JobCard from "@/Components/JobCard";
 import axios from "axios";
-
 import locOpns from "@/constants/data/location.json";
 import SkillTags from "@/constants/data/tags.json";
 import benefitOpns from "@/constants/data/benefits.json";
@@ -20,17 +10,15 @@ import EmployementTags from "@/constants/data/emptype.json";
 import primaryTag from "@/constants/data/primTag.json";
 import minSal from "@/constants/data/minsalary.json";
 import maxSal from "@/constants/data/maxsalary.json";
-import JobDetailsModal from "@/Components/JobModal";
-import Sidebar from "@/Components/HireDashSidebar";
-import { Router } from "next/router";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSearchParams } from "next/navigation";
-import SignupFormInput from "@/Components/Forms/SignupFormInput";
 import { postJobSchema } from "@/lib/validator";
 import PostFormInput from "@/Components/Forms/PostFormInput";
 import SearchSelectDropdown from "@/Components/Forms/SearchSelectDropdown";
+import QuillEditorComponent from "@/Components/Forms/QuillComponent";
+import Swal from "sweetalert2";
 
 type Schema = z.infer<typeof postJobSchema>;
 
@@ -51,6 +39,7 @@ type FormData = {
 
 const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
   // console.log(params);
+  const router = useRouter();
   const jobId = params.jobId;
   const baseurl =
     process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000/api";
@@ -86,13 +75,15 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
     },
   });
   const LocationTags = locOpns.countries;
-  const [parseErrors, setParseErrors] = useState<any>([]);
-  const [jobDetails, setJobDetails] = useState(null);
   const [isFormDirty, setIsFormDirty] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  const [handleError, setHandleError] = useState({
+    minsalMaxsalError: "",
+  });
+
+  // To Fetch data of the job post
   useEffect(() => {
-    // const fetchJobDetails = async () => {
     const access_token =
       typeof window !== "undefined"
         ? localStorage.getItem("access_token")
@@ -106,7 +97,6 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
           },
         })
         .then((response) => {
-          setJobDetails(response.data); // fetchApplicants();
           // console.log(response.data);
           reset({
             company_name: response.data.company_name,
@@ -115,16 +105,18 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
             apply_url: response.data.apply_url,
           });
           setFormData({
-            emptype: response.data.emptype,
+            emptype: response.data.employee_type,
             primtg: response.data.primary_tag,
             tags: response.data.tags,
             locns: response.data.location_restriction,
             desc: response.data.job_description,
-            minSal: response.data.annual_salary_min,
-            maxSal: response.data.annual_salary_max,
+            minSal: Number(response.data.annual_salary_min),
+            maxSal: Number(response.data.annual_salary_max),
             benefits: response.data.benefits,
             how2apply: response.data.how_to_apply,
             feedback: response.data.feedback,
+            tagsArray: splitStringByComma(response.data.tags),
+            benefitsArray: splitStringByComma(response.data.benefits),
           });
           setIsLoaded(true);
         })
@@ -132,37 +124,38 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
           console.log(error.code);
         });
     }
-    // };
   }, [jobId, reset, baseurl]);
 
-  const validateUseStateInputs = () => {
-    try {
-      postJobSchema.parse({
-        ...formData,
-        company_name: watch("company_name"),
-        position: watch("position"),
-        email4jobappl: watch("email4jobappl"),
-        apply_url: watch("apply_url"),
-      });
-      setParseErrors({});
-    } catch (error: any) {
-      const validationErrors: { [key: string]: string } = {};
-      console.log(error.errors);
-      error.errors.forEach((err: any) => {
-        validationErrors[err.path[0]] = err.message;
-      });
-      setParseErrors(validationErrors);
-    }
-  };
+  // const validateUseStateInputs = () => {
+  //   try {
+  //     postJobSchema.parse({
+  //       ...formData,
+  //       company_name: watch("company_name"),
+  //       position: watch("position"),
+  //       email4jobappl: watch("email4jobappl"),
+  //       apply_url: watch("apply_url"),
+  //     });
+  //     setParseErrors({});
+  //   } catch (error: any) {
+  //     const validationErrors: { [key: string]: string } = {};
+  //     console.log(error.errors);
+  //     error.errors.forEach((err: any) => {
+  //       validationErrors[err.path[0]] = err.message;
+  //     });
+  //     setParseErrors(validationErrors);
+  //   }
+  // };
 
   const handleChange = (name: string, value: string) => {
     if (name === "minSal" || name === "maxSal") {
       const val = parseInt(value.split(" ")[0]);
-      console.log(val);
+      // console.log(val);
       setFormData((prevState) => ({
         ...prevState,
         [name]: val,
       }));
+
+      // Number()
     } else {
       setFormData((prevState) => ({
         ...prevState,
@@ -170,8 +163,22 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
       }));
     }
     setIsFormDirty(true);
-    validateUseStateInputs();
+    // validateUseStateInputs();
   };
+
+  // To handle errors manually for minSal and maxSal
+  useEffect(() => {
+    if (formData.minSal > formData.maxSal) {
+      console.log("Min Salary should be less than Max Salary");
+      setHandleError({
+        minsalMaxsalError: "Min Salary should be less than Max Salary",
+      });
+    } else {
+      setHandleError({
+        minsalMaxsalError: "",
+      });
+    }
+  }, [formData.minSal, formData.maxSal]);
 
   const handleSkillChange = (skills: string[]) => {
     setFormData((prevState) => ({
@@ -194,49 +201,155 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
     return inputString.split(",").map((tag) => tag.trim());
   };
 
-  const removeEmojis = (text: string) => {
-    // Regular expression to match all emojis
-    return text.replace(
-      /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu,
-      ""
-    );
-  };
+  // useEffect(() => {
+  //   if (isLoaded) {
+  //     const tagsArray = splitStringByComma(formData.tags);
+  //     setFormData((prevState) => ({
+  //       ...prevState,
+  //       tagsArray,
+  //     }));
+
+  //     let benefitsArray = splitStringByComma(formData.benefits);
+  //     benefitsArray = benefitsArray.map((benefit) => removeEmojis(benefit));
+  //     console.log(benefitsArray);
+  //     setFormData((prevState) => ({
+  //       ...prevState,
+  //       benefitsArray,
+  //     }));
+  //   }
+  // }, [isLoaded, formData.tags, formData.benefits]);
 
   useEffect(() => {
-    if (isLoaded) {
-      const tagsArray = splitStringByComma(formData.tags);
-      setFormData((prevState) => ({
-        ...prevState,
-        tagsArray,
-      }));
-
-      let benefitsArray = splitStringByComma(formData.benefits);
-      benefitsArray = benefitsArray.map((benefit) => removeEmojis(benefit));
-      console.log(benefitsArray);
-      setFormData((prevState) => ({
-        ...prevState,
-        benefitsArray,
-      }));
-    }
-  }, [isLoaded, formData.tags, formData.benefits]);
-
-  // useEffect(() => {
-  //   console.log(formData);
-  // }, [formData]);
+    console.log(formData);
+  }, [formData]);
 
   const onSubmit = async (data: Schema) => {
+    if (handleError.minsalMaxsalError) {
+      return;
+    }
     const token = localStorage.getItem("access_token");
-    const url_job = `${baseurl}/jobs/update/${jobId}/`; // Update your endpoint
+    const url_job = `${baseurl}/jobs/${jobId}/update/`; // Update your endpoint
     // Prepare your payload and send the update request...
-    console.log(data);
+    const { company_name, position, email4jobappl, apply_url } = data;
+    const {
+      emptype,
+      primtg,
+      tagsArray,
+      locns,
+      desc,
+      minSal,
+      maxSal,
+      benefitsArray,
+      how2apply,
+      feedback,
+    } = formData;
+    let allTags = "";
+    for (let i = 0; i < tagsArray!.length; i++) {
+      allTags = allTags + tagsArray![i];
+      if (i < tagsArray!.length - 1) {
+        allTags = allTags + ",";
+      }
+    }
+    let allBenefits = "";
+    for (let i = 0; i < benefitsArray!.length; i++) {
+      allBenefits = allBenefits + benefitsArray![i];
+      if (i < benefitsArray!.length - 1) {
+        allBenefits = allBenefits + ",";
+      }
+    }
+
+    console.log("updating job");
+
+    try {
+      await axios
+        .put(
+          url_job,
+          {
+            annual_salary_max: maxSal.toString(),
+            annual_salary_min: minSal.toString(),
+            employee_type: emptype,
+            company_email: email4jobappl,
+            company_name: company_name,
+            how_to_apply: how2apply,
+            job_description: desc,
+            location_restriction: locns,
+            primary_tag: primtg,
+            benefits: allBenefits,
+            position: position,
+            tags: allTags,
+            apply_url: apply_url,
+            apply_email_address: email4jobappl,
+            feedback: feedback,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data);
+          Swal.fire({
+            title: "Job updated successfully 🎉",
+            icon: "success",
+            toast: true,
+            timer: 3000,
+            position: "top-right",
+            timerProgressBar: true,
+            showConfirmButton: false,
+          });
+          router.push("/postedJobs");
+        })
+        .catch((error) => {
+          console.error("There was an error registering the job!", error);
+          Swal.fire({
+            title: "Failed to Update Job Post 🤖",
+            icon: "error",
+            toast: true,
+            timer: 3000,
+            position: "top-right",
+            timerProgressBar: true,
+            showConfirmButton: false,
+          });
+        });
+    } catch (error) {
+      console.error("There was an error registering the job!", error);
+      Swal.fire({
+        title: "Error occurred at server 🤖",
+        icon: "error",
+        toast: true,
+        timer: 3000,
+        position: "top-right",
+        timerProgressBar: true,
+        showConfirmButton: false,
+      });
+    }
   };
+
+  // To show a warning on reload request
+  useEffect(() => {
+    const handleBeforeUnload = (e: Event) => {
+      if (isFormDirty || isDirty) {
+        e.preventDefault();
+        const message = "Form data will be lost if you leave the page.";
+        return message;
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isFormDirty, isDirty]);
+
   return (
-    <div className="flex-1 bg-white min-h-screen md:mx-2 block sm:ps-20">
+    <div className="flex-1 bg-white min-h-screen md:mx-2 block">
       {/* <div className="p-10 h-full"> */}
       {/* {!previewMode && ( */}
       <form
         id="post-form"
-        // onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit)}
         className="md:space-y-4 space-y-2 px-6 py-6 max-w-5xl mx-auto"
       >
         <h2 className="text-purple-600 font-bold py-6 text-3xl">
@@ -338,7 +451,12 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
             </label>
             <div className="col-span-1">
               <div>
-                <JoditEditorComponent
+                {/* <JoditEditorComponent
+                  keyy="desc"
+                  value={formData.desc}
+                  onChange={handleChange}
+                /> */}
+                <QuillEditorComponent
                   keyy="desc"
                   value={formData.desc}
                   onChange={handleChange}
@@ -356,7 +474,12 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
             </label>
             <div className="col-span-1">
               <div>
-                <JoditEditorComponent
+                {/* <JoditEditorComponent
+                  keyy="how2apply"
+                  value={formData.how2apply}
+                  onChange={handleChange}
+                /> */}
+                <QuillEditorComponent
                   keyy="how2apply"
                   value={formData.how2apply}
                   onChange={handleChange}
@@ -414,7 +537,7 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
                 </div>
               </label>
 
-              <div className="flex w-full justify-between items-center gap-2.5">
+              <div className="flex w-full justify-between items-center relative gap-2.5">
                 <SearchSelectDropdown
                   placeholder="Min Salary"
                   labelcls="text-gray-800 text-lg font-semibold relative flex items-center gap-2"
@@ -436,6 +559,11 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
                   onSingleChange={handleChange}
                   multiple={false}
                 />
+                <span
+                  className={`text-red-500 text-xs mt-1 font-semibold absolute ${handleError.minsalMaxsalError ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
+                >
+                  {handleError.minsalMaxsalError}
+                </span>
               </div>
             </div>
 
@@ -481,7 +609,12 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
           </label>
           <div className="col-span-1">
             <div>
-              <JoditEditorComponent
+              {/* <JoditEditorComponent
+                keyy="feedback"
+                value={formData.feedback}
+                onChange={handleChange}
+              /> */}
+              <QuillEditorComponent
                 keyy="feedback"
                 value={formData.feedback}
                 onChange={handleChange}
@@ -491,8 +624,12 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
         </div>
 
         <div className="mx-auto w-fit">
-          <div className="flex gap-4 mt-4">
-            <button type="submit" className="px-4 py-2 rounded-lg bg-gray-200">
+          <div className="flex gap-4 mt-8">
+            <button
+              type="submit"
+              disabled={!isFormDirty}
+              className="px-4 py-2 rounded-full font-semibold bg-blue-200 text-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               Update Job Post
             </button>
           </div>

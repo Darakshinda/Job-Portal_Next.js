@@ -62,7 +62,7 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
   }, [selected]);
 
   useEffect(() => {
-    console.log("existing Tags:", existingTags);
+    // console.log("existing Tags:", existingTags);
     if (existingTags) {
       setSelectedTags(existingTags);
     }

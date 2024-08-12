@@ -1,18 +1,9 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { TextInput, TextArea } from "@/stories/TextInput";
-import JoditEditor from "@/Components/Jodit-Editor";
-import { Select } from "@/stories/Dropdown";
-import Tags from "@/stories/Tags";
-import Checkbox from "@/Components/check";
-import UploadButton from "@/Components/ImgUpload";
-import ColorPickerButton from "@/Components/ColorPicker";
-import JoditEditorComponent from "@/Components/Jodit-Editor";
 import SelectedOptions from "@/Components/Options";
 import JobCard from "@/Components/JobCard";
 import axios from "axios";
-
 import locOpns from "@/constants/data/location.json";
 import SkillTags from "@/constants/data/tags.json";
 import benefitOpns from "@/constants/data/benefits.json";
@@ -20,25 +11,18 @@ import EmployementTags from "@/constants/data/emptype.json";
 import primaryTag from "@/constants/data/primTag.json";
 import minSal from "@/constants/data/minsalary.json";
 import maxSal from "@/constants/data/maxsalary.json";
-import JobDetailsModal from "@/Components/JobModal";
-import Sidebar from "@/Components/HireDashSidebar";
-import { Router } from "next/router";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSearchParams } from "next/navigation";
-import SignupFormInput from "@/Components/Forms/SignupFormInput";
 import { postJobSchema } from "@/lib/validator";
 import PostFormInput from "@/Components/Forms/PostFormInput";
 import SearchSelectDropdown from "@/Components/Forms/SearchSelectDropdown";
+import QuillEditorComponent from "@/Components/Forms/QuillComponent";
 
 type Schema = z.infer<typeof postJobSchema>;
 
 const JobForm = () => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-  const searchParams = useSearchParams();
-  const jobID = searchParams.get("jobID");
-
   const LocationTags = locOpns.countries;
 
   const [formData, setFormData] = useState<{
@@ -64,9 +48,15 @@ const JobForm = () => {
     how2apply: "",
     feedback: "",
   });
-  const [parseErrors, setParseErrors] = useState<any>([]);
+
   const [previewMode, setPreviewMode] = useState(false);
   const [isFormDirty, setIsFormDirty] = useState(false);
+
+  const [handleError, setHandleError] = useState({
+    jobDesciptionError: "",
+    howToApplyError: "",
+    minsalMaxsalError: "",
+  });
 
   const {
     register,
@@ -74,7 +64,7 @@ const JobForm = () => {
     formState: { errors, isDirty },
     watch,
   } = useForm<Schema>({
-    mode: "onChange",
+    mode: "onTouched",
     resolver: zodResolver(postJobSchema),
   });
 
@@ -82,30 +72,9 @@ const JobForm = () => {
     setPreviewMode(!previewMode);
   };
 
-  const validateUseStateInputs = () => {
-    try {
-      postJobSchema.parse({
-        ...formData,
-        company_name: watch("company_name"),
-        position: watch("position"),
-        email4jobappl: watch("email4jobappl"),
-        apply_url: watch("apply_url"),
-      });
-      setParseErrors({});
-    } catch (error: any) {
-      const validationErrors: { [key: string]: string } = {};
-      // console.log(error.errors);
-      error.errors.forEach((err: any) => {
-        validationErrors[err.path[0]] = err.message;
-      });
-      setParseErrors(validationErrors);
-    }
-  };
-
   const handleChange = (name: string, value: string) => {
     if (name === "minSal" || name === "maxSal") {
       const val = parseInt(value.split(" ")[0]);
-      console.log(val);
       setFormData((prevState) => ({
         ...prevState,
         [name]: val,
@@ -117,7 +86,6 @@ const JobForm = () => {
       }));
     }
     setIsFormDirty(true);
-    validateUseStateInputs();
   };
 
   const handleSkillChange = (skills: string[]) => {
@@ -128,33 +96,73 @@ const JobForm = () => {
     setIsFormDirty(true);
   };
 
-  const handleBenefitsChange = (benefits: string[]) => {
+  const handleBenefitsChange = (benefitsArray: string[]) => {
     setFormData((prevState) => ({
       ...prevState,
-      benefits: benefits,
+      benefits: benefitsArray,
     }));
     setIsFormDirty(true);
   };
 
-  // useEffect(() => {
-  //   const handleBeforeUnload = (e: Event) => {
-  //     if (isFormDirty || isDirty) {
-  //       e.preventDefault();
-  //       const message = "Form data will be lost if you leave the page.";
-  //       // e.returnValue = true;
-  //       return message;
-  //     }
-  //   };
+  useEffect(() => {
+    const handleBeforeUnload = (e: Event) => {
+      if (isFormDirty || isDirty) {
+        e.preventDefault();
+        const message = "Form data will be lost if you leave the page.";
+        return message;
+      }
+    };
 
-  //   window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
-  //   return () => {
-  //     window.removeEventListener("beforeunload", handleBeforeUnload);
-  //   };
-  // }, [isFormDirty, isDirty]);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isFormDirty, isDirty]);
 
+  // To handle errors manually for minSal and maxSal
+  useEffect(() => {
+    // Initialize error state
+    let newErrors: {
+      jobDesciptionError: string;
+      howToApplyError: string;
+      minsalMaxsalError: string;
+    } = {
+      jobDesciptionError: "",
+      howToApplyError: "",
+      minsalMaxsalError: "",
+    };
+
+    // Validate job description
+    if (formData.desc === "") {
+      newErrors.jobDesciptionError = "This Field is Required";
+    } else {
+      newErrors.jobDesciptionError = "";
+    }
+
+    // Validate how to apply
+    if (formData.how2apply === "") {
+      newErrors.howToApplyError = "This Field is Required";
+    } else {
+      newErrors.howToApplyError = "";
+    }
+
+    // Validate salary range
+    if (formData.minSal > formData.maxSal) {
+      newErrors.minsalMaxsalError = "Min Salary should be less than Max Salary";
+    } else {
+      newErrors.minsalMaxsalError = "";
+    }
+
+    // Update error state in one go
+    setHandleError((prevState) => ({
+      ...prevState,
+      ...newErrors,
+    }));
+  }, [formData.minSal, formData.maxSal, formData.desc, formData.how2apply]);
+
+  // console.log("formData", formData.benefits);
   // console.log("is dirty", isFormDirty || isDirty);
-
   // console.log(formData);
   // console.log("email4jobappl", watch("email4jobappl"));
   // console.log("apply_url", watch("apply_url"));
@@ -164,6 +172,13 @@ const JobForm = () => {
   // };
 
   const onSubmit = async (data: Schema) => {
+    if (
+      handleError.minsalMaxsalError ||
+      handleError.jobDesciptionError ||
+      handleError.howToApplyError
+    ) {
+      return;
+    }
     const token = localStorage.getItem("access_token"); // Assuming you store your JWT token in localStorage
     const url_job = `${baseUrl}/jobs/create/`;
     const { company_name, position, email4jobappl, apply_url } = data;
@@ -182,7 +197,18 @@ const JobForm = () => {
     let allTags = "";
     for (let i = 0; i < tags.length; i++) {
       allTags = allTags + tags[i];
+      if (i < tags.length - 1) {
+        allTags = allTags + ",";
+      }
     }
+    let allBenefits = "";
+    for (let i = 0; i < benefits.length; i++) {
+      allBenefits = allBenefits + benefits[i];
+      if (i < benefits.length - 1) {
+        allBenefits = allBenefits + ",";
+      }
+    }
+
     console.log("registering");
 
     try {
@@ -194,15 +220,15 @@ const JobForm = () => {
             annual_salary_max: maxSal,
             annual_salary_min: minSal,
             emptype: emptype,
-            company_email: apply_url,
+            company_email: email4jobappl,
             company_name: company_name,
             how_to_apply: how2apply,
             job_description: desc,
             location_restriction: locns,
             primary_tag: primtg,
-            benefits: benefits,
+            benefits: allBenefits,
             position: position,
-            tags: tags,
+            tags: allTags,
             apply_url: apply_url,
             apply_email_address: email4jobappl,
             feedback: feedback,
@@ -228,7 +254,7 @@ const JobForm = () => {
   };
 
   return (
-    <div className="flex-1 bg-white min-h-screen md:mx-2 block sm:ps-20">
+    <div className="flex-1 bg-white min-h-screen md:mx-2 block">
       {/* <div className="p-10 h-full"> */}
       {/* {!previewMode && ( */}
       <form
@@ -329,12 +355,22 @@ const JobForm = () => {
               <span className="text-red-500">*</span>
             </label>
             <div className="col-span-1">
-              <div>
-                <JoditEditorComponent
+              <div className="relative">
+                {/* <JoditEditorComponent
+                  keyy="desc"
+                  value={formData.desc}
+                  onChange={handleChange}
+                /> */}
+                <QuillEditorComponent
                   keyy="desc"
                   value={formData.desc}
                   onChange={handleChange}
                 />
+                <span
+                  className={`text-red-500 text-xs mt-1 font-semibold absolute ${handleError.jobDesciptionError ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
+                >
+                  {handleError.jobDesciptionError}
+                </span>
               </div>
             </div>
           </div>
@@ -347,12 +383,22 @@ const JobForm = () => {
               How to apply ?<span className="text-red-500">*</span>
             </label>
             <div className="col-span-1">
-              <div>
-                <JoditEditorComponent
+              <div className="relative">
+                {/* <JoditEditorComponent
+                  keyy="how2apply"
+                  value={formData.how2apply}
+                  onChange={handleChange}
+                /> */}
+                <QuillEditorComponent
                   keyy="how2apply"
                   value={formData.how2apply}
                   onChange={handleChange}
                 />
+                <span
+                  className={`text-red-500 text-xs mt-1 font-semibold absolute ${handleError.howToApplyError ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
+                >
+                  {handleError.howToApplyError}
+                </span>
               </div>
             </div>
           </div>
@@ -386,7 +432,7 @@ const JobForm = () => {
           </div>
 
           <div className="grid md:grid-cols-2 grid-cols-1 gap-x-6 gap-y-2 items-start">
-            <div>
+            <div className="flex flex-col">
               <label
                 className="text-gray-700 text-base font-semibold relative flex items-start gap-2"
                 htmlFor="salary"
@@ -406,7 +452,7 @@ const JobForm = () => {
                 </div>
               </label>
 
-              <div className="flex w-full justify-between items-center gap-2.5">
+              <div className="flex w-full justify-between relative items-center gap-2.5">
                 <SearchSelectDropdown
                   placeholder="Min Salary"
                   labelcls="text-gray-800 text-lg font-semibold relative flex items-center gap-2"
@@ -426,6 +472,11 @@ const JobForm = () => {
                   onSingleChange={handleChange}
                   multiple={false}
                 />
+                <span
+                  className={`text-red-500 text-xs mt-1 font-semibold absolute ${handleError.minsalMaxsalError ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
+                >
+                  {handleError.minsalMaxsalError}
+                </span>
               </div>
             </div>
 
@@ -470,7 +521,12 @@ const JobForm = () => {
           </label>
           <div className="col-span-1">
             <div>
-              <JoditEditorComponent
+              {/* <JoditEditorComponent
+                keyy="feedback"
+                value={formData.feedback}
+                onChange={handleChange}
+              /> */}
+              <QuillEditorComponent
                 keyy="feedback"
                 value={formData.feedback}
                 onChange={handleChange}
@@ -502,7 +558,7 @@ const JobForm = () => {
       {previewMode && (
         <>
           {/* Overlay Background */}
-          <div className="fixed inset-0 bg-black opacity-80 backdrop-blur-lg z-40 transition-opacity duration-300"></div>
+          <div className="fixed inset-0 bg-black opacity-80 backdrop-blur-sm z-40 transition-opacity duration-300"></div>
 
           <div className="fixed inset-0 flex md:justify-center items-center z-50 w-full overflow-auto">
             <div className="min-w-[52rem] h-fit px-10 rounded-lg">
@@ -528,6 +584,7 @@ const JobForm = () => {
                   email4jobappl: watch("email4jobappl"),
                   apply_url: watch("apply_url"),
                 }}
+                seekerside={false}
               />
 
               <div className="w-full flex mt-3">

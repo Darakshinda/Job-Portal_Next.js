@@ -1,3 +1,4 @@
+import { set } from "date-fns";
 import React, { useState, useEffect } from "react";
 
 interface SelectedOptionsProps {
@@ -14,16 +15,21 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({
   onChange,
 }) => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>(selected);
+
+  // useEffect(() => {
+  //   setSelectedOptions(selected);
+  // }, [selected]);
+
   const displayTagsLength = 10;
   const increament = 5;
 
   const [displayedOptions, setDisplayedOptions] = useState<string[]>(
     options.slice(0, displayTagsLength)
   );
-
   let [excessTagsCount, setExcessTagsCount] = useState<number>(
     options.length - displayTagsLength
   );
+
   const handleExpansion = () => {
     if (excessTagsCount > increament) {
       setDisplayedOptions(
@@ -43,12 +49,6 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({
       setExcessTagsCount(excessTagsCount);
     }
   };
-
-  useEffect(() => {
-    if (JSON.stringify(selected) !== JSON.stringify(selectedOptions)) {
-      setSelectedOptions(selected);
-    }
-  }, [selected]);
 
   const removeEmojis = (text: string) => {
     return text.replace(
@@ -78,32 +78,30 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({
   };
 
   return (
-    <div>
-      <div className="flex flex-wrap">
-        {displayedOptions.map((option, index) => (
-          <button
-            key={index}
-            type="button"
-            onClick={() => handleOptionClick(option)}
-            className={`m-1 px-2 py-1.5 ${
-              selectedOptions.some(
-                (selected) => removeEmojis(selected) === removeEmojis(option)
-              )
-                ? "bg-red-500"
-                : "bg-gray-500"
-            } border rounded-xl text-sm cursor-pointer text-white`}
-          >
-            {option}
-          </button>
-        ))}
+    <div className="flex flex-wrap">
+      {displayedOptions.map((option, index) => (
         <button
+          key={index}
           type="button"
-          onClick={handleExpansion}
-          className={`text-primary-500 text-xs font-semibold h-fit px-4 py-2 mt-1.5 hover:bg-gray-200 rounded-full transition-colors duration-150`}
+          onClick={() => handleOptionClick(option)}
+          className={`m-1 px-2 py-1.5 ${
+            selectedOptions.some(
+              (selected) => removeEmojis(selected) === removeEmojis(option)
+            )
+              ? "bg-red-500"
+              : "bg-gray-500"
+          } border rounded-xl text-sm cursor-pointer text-white`}
         >
-          {excessTagsCount ? `+${excessTagsCount}` : "Show less"}
+          {option}
         </button>
-      </div>
+      ))}
+      <button
+        type="button"
+        onClick={handleExpansion}
+        className={`text-primary-500 text-xs font-semibold h-fit px-4 py-2 mt-1.5 hover:bg-gray-200 rounded-full transition-colors duration-150`}
+      >
+        {excessTagsCount ? `+${excessTagsCount}` : "Show less"}
+      </button>
     </div>
   );
 };

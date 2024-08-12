@@ -12,6 +12,11 @@ const nextConfig = {
         hostname: "job-portal-2.s3.amazonaws.com",
         port: "",
       },
+      {
+        protocol: "https",
+        hostname: "via.placeholder.com",
+        port: "",
+      },
     ],
   },
 };

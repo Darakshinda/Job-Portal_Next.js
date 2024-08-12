@@ -46,7 +46,7 @@ export default function Page() {
   // }, []);
 
   return (
-    <main className="h-screen ps-20 w-full overflow-x-auto bg-[#FAFAFA] flex-1">
+    <main className="h-screen w-full overflow-x-auto bg-[#FAFAFA] flex-1">
       <div className="px-4 pt-6 py-4 sm:px-8 lg:px-14 lg:pt-10 lg:pb-2 mx-auto">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4 xl:gap-12 lg:gap-6">
           <div className="flex-none lg:flex-1">

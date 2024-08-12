@@ -1,5 +1,3 @@
-import Sidebar from "@/Components/HireDashSidebar";
-
 export default function RecruiterLayout({
   children,
 }: Readonly<{
@@ -7,10 +5,7 @@ export default function RecruiterLayout({
 }>) {
   return (
     <main className="min-h-screen w-full bg-white">
-      <div className="flex">
-        <Sidebar />
-        {children}
-      </div>
+      <div className="flex ps-[4.5rem]">{children}</div>
     </main>
   );
 }

@@ -107,6 +107,7 @@ const SignupSeeker = () => {
         skills += technical_skills[i] + ", ";
       }
     }
+    phone_number.replaceAll(" ", "");
 
     try {
       const response = await axios.post(
@@ -149,8 +150,8 @@ const SignupSeeker = () => {
 
       console.log("Signed up successfully");
       // Optionally redirect or show success message to the user
-    } catch (error) {
-      console.error("Registration failed:", error);
+    } catch (error: any) {
+      console.error("Registration failed:", error.response.data);
       Swal.fire({
         title: "Registration Failed",
         text: "Please try again.",
@@ -172,6 +173,9 @@ const SignupSeeker = () => {
       // Handle error and display appropriate message to the user
     }
   };
+
+  const defaultCls =
+    "relative mt-1 p-2 bg-gray-200 text-primary-700 rounded-lg border border-gray-300 outline-none focus:border-primary-500";
 
   return (
     <div className="min-h-screen bg-gray-800 flex lg:flex-row flex-col sm:gap-y-8 gap-y-3 bg-signup bg-cover bg-no-repeat bg-center">
@@ -219,7 +223,7 @@ const SignupSeeker = () => {
                   register={register}
                   placeholder="John"
                   req={true}
-                  cls=""
+                  cls={defaultCls}
                   errors={errors.first_name}
                 />
               </div>
@@ -233,7 +237,7 @@ const SignupSeeker = () => {
                   register={register}
                   placeholder="Doe"
                   req={true}
-                  cls=""
+                  cls={defaultCls}
                   errors={errors.last_name}
                 />
               </div>
@@ -248,7 +252,7 @@ const SignupSeeker = () => {
                 register={register}
                 placeholder="name@personal.com"
                 req={true}
-                cls=""
+                cls={defaultCls}
                 errors={errors.email}
               />
             </div>
@@ -263,7 +267,7 @@ const SignupSeeker = () => {
                   register={register}
                   placeholder="username"
                   req={true}
-                  cls=""
+                  cls={defaultCls}
                   errors={errors.username}
                 />
               </div>
@@ -304,7 +308,7 @@ const SignupSeeker = () => {
                     register={register}
                     placeholder="••••••••"
                     req={true}
-                    cls=""
+                    cls={defaultCls}
                     errors={errors.password}
                   />
                 </div>
@@ -318,7 +322,7 @@ const SignupSeeker = () => {
                     register={register}
                     placeholder="••••••••"
                     req={true}
-                    cls=""
+                    cls={defaultCls}
                     errors={errors.confirm_password}
                   />
                 </div>
@@ -336,7 +340,7 @@ const SignupSeeker = () => {
                     register={register}
                     placeholder="Location"
                     req={true}
-                    cls=""
+                    cls={defaultCls}
                     errors={errors.location}
                   />
                 </div>
@@ -350,7 +354,7 @@ const SignupSeeker = () => {
                     register={register}
                     placeholder="Experience"
                     req={true}
-                    cls=""
+                    cls={defaultCls}
                     errors={errors.experience}
                   />
                 </div>
@@ -378,7 +382,7 @@ const SignupSeeker = () => {
                 register={register}
                 placeholder="How did you hear about us"
                 req={false}
-                cls=""
+                cls={defaultCls}
                 errors={errors.how_heard_about_codeunity}
               />
             </div>

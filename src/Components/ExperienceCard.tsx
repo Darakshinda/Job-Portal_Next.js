@@ -68,7 +68,7 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({
   return (
     <div>
       {!edit && (
-        <div className="border rounded-lg p-4 shadow-md flex justify-between items-start hover:border-purple-400 bg-black mt-[9px]">
+        <div className="border rounded-lg p-4 shadow-md flex justify-between items-start hover:border-purple-400 bg-white mt-[9px]">
           <div className="flex items-start">
             <div>
               <h3 className="text-lg font-semibold">{title}</h3>
@@ -97,7 +97,7 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({
         </div>
       )}
       {edit && (
-        <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-[black] p-[8px] border  border-white rounded">
+        <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 bg-white p-[8px] border  border-white rounded">
           <div className="sm:col-span-2">
             <label htmlFor="website" className={labelcls}>
               Company*

@@ -103,7 +103,7 @@ interface Profile {
   profile_picture: string;
 }
 
-const HamburgerMenu = () => {
+const HamburgerMenu = ({ isHirer }: { isHirer: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPop, setIsPop] = useState(false);
   const [profile, setProfile] = useState<Profile>({
@@ -112,14 +112,23 @@ const HamburgerMenu = () => {
     profile_picture: "",
   });
   const Links = [
-    { name: "Home", icon: <GoHome size={20} />, href: "/dashboard" },
     {
-      name: "Posted Jobs",
-      icon: <CiViewList size={20} />,
-      href: "/postedJobs",
+      name: "Home",
+      icon: <GoHome size={20} />,
+      href: isHirer ? "/dashboard" : "/seeker-dashboard",
     },
-    { name: "Post a job", icon: <VscGitStashApply size={20} />, href: "/post" },
+    {
+      name: isHirer ? "Posted Jobs" : "Applied Jobs",
+      icon: <CiViewList size={20} />,
+      href: isHirer ? "/postedJobs" : "/appliedJobs",
+    },
   ];
+  isHirer &&
+    Links.push({
+      name: "Post a job",
+      icon: <VscGitStashApply size={20} />,
+      href: "/post",
+    });
   const pathname = usePathname();
   const router = useRouter();
 
@@ -142,7 +151,7 @@ const HamburgerMenu = () => {
         },
       });
       setProfile({
-        email: response.data.working_email,
+        email: response.data.working_email || response.data.email,
         first_name: response.data.first_name,
         profile_picture: response.data.profile_picture,
       });
@@ -163,10 +172,15 @@ const HamburgerMenu = () => {
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    setIsOpen(false);
+    setIsPop(false);
+  }, [pathname]);
+
   return (
     <>
       {isOpen && (
-        <div className="fixed z-40 w-[100vw] h-[100dvh] inset-0 bg-black opacity-70 backdrop-blur-lg transition-opacity duration-1000"></div>
+        <div className="fixed z-40 w-[100vw] h-[100dvh] inset-0 bg-black opacity-70 backdrop-blur-sm transition-opacity duration-1000"></div>
       )}
       <aside
         className={`h-screen fixed z-50 transition-all duration-500 ${
@@ -179,7 +193,7 @@ const HamburgerMenu = () => {
           className={`relative h-full flex flex-col bg-[#FAFAFA] border-r-2 border-gray-300 pt-2`}
         >
           <Link
-            href="/dashboard"
+            href={isHirer ? "/dashboard" : "seeker-dashboard"}
             className="w-full px-4 text-center outline-none"
           >
             {isOpen ? (

@@ -6,6 +6,7 @@ import Image from "next/image";
 
 interface Job {
   id?: number;
+  logo?: string;
   company_name: string;
   position: string;
   emptype: string;
@@ -22,7 +23,15 @@ interface Job {
   created_at?: string;
 }
 
-const JobCard = ({ type, job }: { type?: string; job: Job }) => {
+const JobCard = ({
+  type,
+  job,
+  seekerside = false,
+}: {
+  type?: string;
+  job: Job;
+  seekerside: boolean;
+}) => {
   const stripHTML = (html: string) => {
     const cleaned = new DOMParser().parseFromString(html, "text/html");
     return cleaned.body.textContent || "";
@@ -33,7 +42,7 @@ const JobCard = ({ type, job }: { type?: string; job: Job }) => {
       <article className="rounded-3xl border border-gray-100 shadow-md transition-all duration-300 hover:shadow-lg py-4 px-6 relative">
         <div className="flex items-center gap-2 w-full">
           <Image
-            src="/assets/images/default-profile.webp"
+            src={job.logo || "/assets/images/default-profile.webp"}
             alt="profile"
             width={400}
             height={200}
@@ -87,7 +96,9 @@ const JobCard = ({ type, job }: { type?: string; job: Job }) => {
           </div>
 
           {type !== "preview" && (
-            <Link href={`/postedJobs/${job.id}`}>
+            <Link
+              href={`/${seekerside ? "seeker-dashboard" : "postedJobs"}/${job.id}`}
+            >
               <button className="rounded-full hover:bg-blue-100 flex items-center gap-2 text-sm px-2.5 py-1 transition-colors duration-300 group">
                 <span className="text-blue-400 group-hover:text-blue-500">
                   View Details

@@ -1,13 +1,26 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/Components/Navbar";
 import JobList from "@/Components/JobList";
 import { Tags2 } from "@/stories/Tags2";
+import locationOptions from "@/constants/data/location.json";
+import tagOptions from "@/constants/data/tags.json";
+import Sidebar from "@/Components/HireDashSidebar";
+import JobDetailsModal from "@/Components/JobModal";
+import axios from "axios";
+import SalaryRangeSlider from "@/Components/FilterBox";
 import SearchFilters from "@/Components/SearchFilters";
-import Skeleton from "./skeleton";
+import Skeleton from "@/app/(root)/(recruiter)/postedJobs/skeleton";
+
+// const jobPositionOptions = [
+//   { label: "Software Engineer" },
+//   { label: "Data Analyst" },
+//   { label: "Product Manager" },
+//   { label: "UX/UI Designer" },
+// ];
 
 interface SearchParams {
   query: string;
@@ -51,14 +64,18 @@ const PostedJobs = () => {
     <div className="bg-[#FAFAFA] flex-1 px-6 flex flex-col max-h-screen">
       <div className="w-full text-left">
         <h1 className="text-4xl my-4 ms-2 text-blue-500 font-semibold ps-14">
-          Posted Jobs
+          All Jobs
         </h1>
       </div>
       {/* {selectedJob && (
         <JobDetailsModal job={selectedJob} onClose={handleCloseModal} />
       )} */}
       <div className="flex-1 w-full md:grid grid-flow-col grid-cols-[1fr,minmax(0,384px)] pb-6 justify-end scrollbar-hide overflow-y-auto gap-x-6 overscroll-contain">
-        <JobList postedJobs={true} searchParams={memoizedSearchParams} />
+        <JobList
+          postedJobs={false}
+          appliedJobs={true}
+          searchParams={memoizedSearchParams}
+        />
 
         <SearchFilters
           searchParams={searchParams}

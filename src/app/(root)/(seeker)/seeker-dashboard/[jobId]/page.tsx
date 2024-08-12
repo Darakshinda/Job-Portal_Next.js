@@ -14,8 +14,6 @@ import DeleteConfirmation from "@/Components/DeleteConfirmation";
 import SearchSelectDropdown from "@/Components/Forms/SearchSelectDropdown";
 import Spinner from "@/Components/Spinner";
 import Link from "next/link";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 interface Application {
   job: number;
@@ -42,13 +40,11 @@ interface JobDetails {
   created_at: string;
   apply_email_address: string | null;
   apply_url: string | null;
-  employee_type: string;
 }
 
 const JobDetails = ({ params }: { params: { jobId: number } }) => {
-  const router = useRouter();
   const jobId = params.jobId;
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  //   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [jobDetails, setJobDetails] = useState<JobDetails | null>(null);
   const [searchParams, setSearchParams] = useState<{ skillTags: string[] }>({
     skillTags: [],
@@ -57,13 +53,54 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
   const [visibleApplicants, setVisibleApplicants] = useState<Application[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const displayApplicantsLength = 4; // with this also change the max-h- in the div below appropriately to show the scrollbar
+  const [isApplied, setIsApplied] = useState<boolean>(false);
 
   const handleSkillChange = (skills: string[]) => {
     setSearchParams((prevState) => ({
       ...prevState,
       skillTags: skills,
     }));
+  };
+
+  const handleApplyJob = async () => {
+    const baseurl =
+      process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000/api";
+    const access_token = localStorage.getItem("access_token");
+
+    if (!access_token) {
+      console.log("Not logged in");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${baseurl}/jobs/apply`,
+        {
+          job: jobId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+      console.log("Applied for job", response.data);
+      setIsApplied(true);
+      Swal.fire({
+        title: "Success",
+        text: "Application submitted successfully. Please wait for the recruiter to contact you.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    } catch (error: any) {
+      console.log("Error applying for job", error.response.data || error);
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to submit the application. Please try again.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
   };
 
   const baseurl =
@@ -87,9 +124,9 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
           setJobDetails(response.data); // fetchApplicants();
           // console.log(response.data);
           setApplicants(response.data.applications); // Assuming applications are part of the job details response
-          setVisibleApplicants(
-            response.data.applications.slice(0, displayApplicantsLength)
-          );
+          //   setVisibleApplicants(
+          //     response.data.applications.slice(0, displayApplicantsLength)
+          //   );
         })
         .catch((error) => {
           console.log(error.code);
@@ -97,54 +134,53 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
     }
   }, [jobId, baseurl]);
 
-  const loadMoreApplicants = () => {
-    // console.log("Loading more applicants...");
-    if (loading || !hasMore) return;
+  //   const loadMoreApplicants = () => {
+  //     // console.log("Loading more applicants...");
+  //     if (loading || !hasMore) return;
 
-    setLoading(true);
+  //     setLoading(true);
 
-    setTimeout(() => {
-      const nextApplicants = applicants.slice(
-        visibleApplicants.length,
-        visibleApplicants.length + displayApplicantsLength
-      );
-      setVisibleApplicants((prev) => [...prev, ...nextApplicants]);
-      setLoading(false);
+  //     setTimeout(() => {
+  //       const nextApplicants = applicants.slice(
+  //         visibleApplicants.length,
+  //         visibleApplicants.length + displayApplicantsLength
+  //       );
+  //       setVisibleApplicants((prev) => [...prev, ...nextApplicants]);
+  //       setLoading(false);
 
-      if (nextApplicants.length < displayApplicantsLength) {
-        setHasMore(false); // No more applicants to load
-      }
-    }, 1000); // Simulate loading delay
-  };
+  //       if (nextApplicants.length < displayApplicantsLength) {
+  //         setHasMore(false); // No more applicants to load
+  //       }
+  //     }, 1000); // Simulate loading delay
+  //   };
 
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+  //   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+  //     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
 
-    if (scrollTop + clientHeight >= scrollHeight - 5) {
-      loadMoreApplicants();
-    }
-  };
+  //     if (scrollTop + clientHeight >= scrollHeight - 5) {
+  //       loadMoreApplicants();
+  //     }
+  //   };
 
-  const deleteJob = (id: any) => {
-    const access_token =
-      typeof window !== "undefined"
-        ? localStorage.getItem("access_token")
-        : null;
-    axios
-      .delete(`${baseurl}/jobs/${id}/delete/`, {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-        Swal.fire("Deleted Successfully", "", "success");
-        router.push("/postedJobs");
-      })
-      .catch((error) => {
-        console.log((error as any)?.response?.data || error);
-      });
-  };
+  //   const deleteJob = (id: any) => {
+  //     const access_token =
+  //       typeof window !== "undefined"
+  //         ? localStorage.getItem("access_token")
+  //         : null;
+  //     axios
+  //       .delete(`${baseurl}/jobs/${id}/delete/`, {
+  //         headers: {
+  //           Authorization: `Bearer ${access_token}`,
+  //         },
+  //       })
+  //       .then((response) => {
+  //         console.log(response.data);
+  //         Swal.fire("Deleted Successfully", "", "success");
+  //       })
+  //       .catch((error) => {
+  //         console.log((error as any)?.response?.data || error);
+  //       });
+  //   };
 
   const getTimePast = (date: string) => {
     const currentDate = new Date();
@@ -170,14 +206,6 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
     }
   };
 
-  useEffect(() => {
-    if (isModalOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-  }, [isModalOpen]);
-
   if (!jobDetails)
     return (
       <div className="flex items-center justify-center w-full h-[100dvh]">
@@ -186,27 +214,24 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
     );
 
   return (
-    <section className="w-full min-h-screen bg-white py-4 sm:px-16 md:px-10 px-1">
-      {isModalOpen && (
+    <section className="w-full min-h-screen bg-white py-4 px-6 ps-24">
+      {/* {isModalOpen && (
         <>
-          <div className="fixed z-[60] w-[100vw] h-[100dvh] inset-0 bg-black opacity-70 backdrop-blur-sm transition-opacity duration-1000"></div>
+          <div className="fixed z-[60] w-[100vw] h-[100dvh] inset-0 bg-black opacity-70 backdrop-blur-lg transition-opacity duration-1000"></div>
 
           <DeleteConfirmation
             deletefn={() => deleteJob(jobId)}
             closemodal={() => setIsModalOpen(false)}
           />
         </>
-      )}
+      )} */}
       <h1 className="text-center text-4xl font-bold text-gray-800">
         {jobDetails.position || "Job Title"}
       </h1>
 
-      <div className="sm:mx-4 sm:my-6 my-2 sm:px-10 px-4 sm:py-6 py-2 border-2 border-gray-300 rounded-xl  relative">
+      <div className="mx-4 my-6 border-2 border-gray-300 rounded-xl px-10 py-6 relative">
         <h4 className="text-lg font-semibold text-gray-600 mb-1">
-          {jobDetails.primary_tag || "Primary Tag"} -{" "}
-          <span className="hover:text-blue-500 transition-colors duration-300">
-            {jobDetails.employee_type} Oppurtunity
-          </span>
+          {jobDetails.primary_tag || "Primary Tag"}
         </h4>
         <h5 className="text-sm font-semibold text-gray-400 mb-2">
           {jobDetails.company_name || "Company Name"}
@@ -226,7 +251,7 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
             <p className="text-gray-500 text-sm inline-block">
               <span className="inline-block font-semibold">Salary -</span> ₹
               {jobDetails.annual_salary_min || "Min"} -
-              {jobDetails.annual_salary_max || "Max"} LPA
+              {jobDetails.annual_salary_max || "Max"} per year
             </p>
           </h2>
         </div>
@@ -237,20 +262,20 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
             Posted {getTimePast(jobDetails.created_at)}
           </span>
           <span className="bg-gray-200 text-xs text-gray-600 px-1.5 py-1 rounded-lg">
-            {jobDetails.employee_type} {/*Need to add jobDetails.emptype*/}
+            Full Time {/*Need to add jobDetails.emptype*/}
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        {/* <div className="flex items-center gap-1.5">
           <FiUsers size={24} className="inline me-1.5" />
           <span className="text-gray-500 text-sm">
             {jobDetails.applications.length} applicants
           </span>
-        </div>
+        </div> */}
 
         <hr className="border-gray-200 border my-6" />
 
-        <div className="absolute right-2 top-2 p-2 space-y-3">
+        {/* <div className="absolute right-2 top-2 p-2 space-y-3">
           <Link
             href={`/postedJobs/${jobId}/edit`}
             title="Edit Job"
@@ -261,14 +286,14 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
           <button
             title="Delete Job"
             onClick={() => {
-              // document.body.style.overflow = isModalOpen ? "hidden" : "auto";
               setIsModalOpen((curr) => !curr);
+              document.body.style.overflow = isModalOpen ? "hidden" : "auto";
             }}
             className="p-1 block outline-none border-2 border-gray-300 bg-gray-200/70 hover:bg-gray-300/60 rounded-lg"
           >
             <MdOutlineDeleteForever size={20} className="text-red-500" />
           </button>
-        </div>
+        </div> */}
 
         <h2 className="text-base font-semibold text-blue-600 mb-4">
           About the internship /Job
@@ -278,7 +303,7 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
           dangerouslySetInnerHTML={{ __html: jobDetails.job_description }}
         ></article>
 
-        <h2 className="text-base font-semibold text-blue-600 mt-6 mb-4">
+        <h2 className="text-base font-semibold text-blue-600 mb-4">
           How to Apply
         </h2>
 
@@ -288,7 +313,7 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
 
         <hr className="border-gray-200 border my-6" />
 
-        <h2 className="mb-2 flex flex-wrap justify-between items-start gap-y-2">
+        {/* <h2 className="mb-2 flex justify-between items-start">
           <span className="text-base font-semibold text-blue-600">
             Applicants
           </span>
@@ -296,40 +321,33 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
             <SearchSelectDropdown
               req={false}
               label="Skills"
-              labelcls="text-gray-700 font-semibold relative flex items-center gap-2 mb-5"
-              cls="relative w-full p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
+              labelcls="text-gray-700 font-semibold relative flex items-center gap-2 mb-2"
+              cls="relative w-full -mt-2 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
               tags={SkillTags}
               onChange={handleSkillChange}
               placeholder="Eg: Software Developer"
               displayTagsLength={4}
             />
           </div>
-        </h2>
-        {visibleApplicants.length > 0 ? (
-          <div
-            className="overflow-y-auto max-h-72 scrollbar-hide grid lg:grid-cols-2 grid-cols-1 gap-4 py-6"
-            onScroll={handleScroll}
-          >
-            {visibleApplicants.map((applicant, index) => (
-              <ApplicantCard key={index} applicant={applicant} />
-            ))}
-            {loading && <Spinner />}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center w-full h-fit">
-            <p className="text-gray-500 font-semibold sm:text-2xl text-xl">
-              No applicants found
-            </p>
-            <Image
-              src="/assets/icons/no-applications.svg"
-              alt="No applicants found"
-              width={500}
-              height={500}
-              className="sm:w-40 sm:h-40 h-20 w-20"
-            />
-          </div>
-        )}
+        </h2> */}
+
+        {/* <div
+          className="overflow-y-auto max-h-72 scrollbar-hide grid lg:grid-cols-2 grid-cols-1 gap-4 py-6"
+          onScroll={handleScroll}
+        >
+          {visibleApplicants.map((applicant, index) => (
+            <ApplicantCard key={index} applicant={applicant} />
+          ))}
+          {loading && <Spinner />}
+        </div> */}
       </div>
+      <button
+        onClick={handleApplyJob}
+        disabled={isApplied}
+        className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4"
+      >
+        Apply
+      </button>
     </section>
   );
 };

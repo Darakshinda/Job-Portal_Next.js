@@ -96,27 +96,34 @@ const seekerSignupFormSchema = z
     path: ["confirm_password"],
   });
 
-const postJobSchema = z
-  .object({
-    company_name: z.string().min(1, { message: "Company name is required" }),
-    position: z.string().min(1, { message: "Position is required" }),
-    emptype: z.string(),
-    primtg: z.string(),
-    tags: z.array(z.string()),
-    locns: z.string(),
-    minSal: z.number(),
-    maxSal: z.number(),
-    desc: z.string().min(1, { message: "Job description is required" }),
-    benefits: z.array(z.string()),
-    how2apply: z.string(),
-    email4jobappl: z.string().email(),
-    apply_url: z.string().url(),
-    feedback: z.string(),
-  })
-  .refine((data) => data.minSal <= data.maxSal, {
-    message: "Minimum salary must be less than or equal to maximum salary",
-    path: ["minSal", "maxSal"],
-  });
+const postJobSchema = z.object({
+  company_name: z.string().min(1, { message: "Company name is required" }),
+  position: z.string().min(1, { message: "Position is required" }),
+  email4jobappl: z.string().email(),
+  apply_url: z.string().url(),
+});
+
+const aboutSchema = z.object({
+  first_name: z
+    .string()
+    .min(3, { message: "First name must be at least 3 characters long" }),
+  last_name: z
+    .string()
+    .min(3, { message: "Last name must be at least 3 characters long" }),
+  email: z
+    .string()
+    .email()
+    .max(50, { message: "Email must be at most 50 characters long" }),
+  textarea: z.string().min(1, { message: "This field is required" }),
+  designation: z.string().optional(),
+});
+
+const socialProfilesSchema = z.object({
+  linkedin: z.string().url(),
+  github: z.string().url(),
+  website: z.string().url(),
+  telegram: z.string().url(),
+});
 
 export {
   forgotPasswordSchema,
@@ -125,4 +132,6 @@ export {
   recruiterSignupFormSchema,
   seekerSignupFormSchema,
   postJobSchema,
+  aboutSchema,
+  socialProfilesSchema,
 };

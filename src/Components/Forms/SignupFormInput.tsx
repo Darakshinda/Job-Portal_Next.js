@@ -61,7 +61,7 @@ const SignupFormInput = ({
             return false;
           }
         }}
-        className={`relative mt-1 p-2 bg-gray-200 text-primary-700 rounded-lg border border-gray-300 outline-none focus:border-primary-500 ${cls}`}
+        className={cls}
         placeholder={placeholder}
         disabled={disabled}
         onChange={(e) => handleChange && handleChange(name, e.target.value)}

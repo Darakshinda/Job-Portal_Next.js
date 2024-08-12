@@ -4,13 +4,15 @@ import axios from "axios";
 import JobCard from "./JobCard";
 import ApplyPopup from "./ApplyPopup";
 import Skeleton from "@/app/(root)/(recruiter)/postedJobs/skeleton";
+import Image from "next/image";
+import Link from "next/link";
 
 // Define an interface representing the structure of a job object
 interface Job {
   id?: number;
   company_name: string;
   position: string;
-  emptype: string;
+  employee_type: string;
   primary_tag: string;
   tags: string;
   location_restriction: string;
@@ -34,9 +36,10 @@ interface SearchParams {
     minSalary: number;
     maxSalary: number;
   };
+  appliedJobs?: boolean;
 }
 
-const JobList = ({ searchParams, postedJobs }: SearchParams) => {
+const JobList = ({ searchParams, postedJobs, appliedJobs }: SearchParams) => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [jobsCopy, setJobsCopy] = useState<Job[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -74,11 +77,17 @@ const JobList = ({ searchParams, postedJobs }: SearchParams) => {
         // console.log("Tags:", skills);
         params.append("tags", skills);
       }
+      // if (minSalary) {
+      //   params.append("salary_min", minSalary.toString());
+      // }
+      // if (maxSalary) {
+      //   params.append("salary_max", maxSalary.toString());
+      // }
 
       params.append("limit", fetchCount.toString()); // no.of entries to fetch
       params.append("offset", ((page - 1) * fetchCount).toString()); // no.of entries to skip
 
-      const url = `${baseurl}/${postedJobs ? "posted-jobs" : "jobs"}/?${params.toString()}`;
+      const url = `${baseurl}/${postedJobs ? "posted-jobs" : appliedJobs ? "applied-jobs" : "jobs"}/?${params.toString()}`;
       const token = localStorage.getItem("access_token");
       const config = postedJobs
         ? { headers: { Authorization: `Bearer ${token}` } }
@@ -96,7 +105,7 @@ const JobList = ({ searchParams, postedJobs }: SearchParams) => {
       console.error("Error fetching jobs:", error?.response?.data);
     }
     setLoading(false);
-  }, [baseurl, fetchCount, location, page, postedJobs, skillTags]);
+  }, [baseurl, fetchCount, location, page, postedJobs, appliedJobs, skillTags]);
 
   const fetchLogo = () => {
     const url = `${baseurl}/accounts/profile/`;
@@ -125,7 +134,7 @@ const JobList = ({ searchParams, postedJobs }: SearchParams) => {
   useEffect(() => {
     setJobs([]); // Clear previous jobs when tags change
     fetchJobs();
-  }, [searchParams, postedJobs]);
+  }, [searchParams, appliedJobs, postedJobs]);
 
   useEffect(() => {
     // console.log(page);
@@ -134,7 +143,7 @@ const JobList = ({ searchParams, postedJobs }: SearchParams) => {
 
   useEffect(() => {
     fetchLogo();
-  }, [searchParams, page, postedJobs]);
+  }, [searchParams, page, postedJobs, appliedJobs]);
 
   const handleScroll = () => {
     if (scrollRef.current) {
@@ -180,52 +189,108 @@ const JobList = ({ searchParams, postedJobs }: SearchParams) => {
           ref={scrollRef}
           className="overflow-auto scrollbar-hide overscroll-contain w-fit justify-self-center"
         >
-          <ul className="space-y-4 w-full flex flex-col items-center">
-            {jobs.map((job) => (
-              <React.Fragment key={job.id}>
-                <JobCard
-                  // key={job.id}
-                  job={{
-                    id: job.id,
-                    company_name: job.company_name,
-                    position: job.position,
-                    emptype: job.emptype,
-                    primtg: job.primary_tag,
-                    tags: job.tags.split(","),
-                    locns: job.location_restriction,
-                    desc: job.job_description,
-                    minsal: job.annual_salary_min,
-                    maxsal: job.annual_salary_max,
-                    how2apply: job.how_to_apply,
-                    benefits: job.benefits.split(","),
-                    email4jobappl: job.apply_email_address,
-                    apply_url: job.apply_url,
-                  }}
+          {jobs.length > 0 ? (
+            <ul className="space-y-4 w-full flex flex-col items-center">
+              {jobs.map((job) => (
+                <React.Fragment key={job.id}>
+                  <JobCard
+                    // key={job.id}
+                    job={{
+                      id: job.id,
+                      logo: logo,
+                      company_name: job.company_name,
+                      position: job.position,
+                      emptype: job.employee_type,
+                      primtg: job.primary_tag,
+                      tags: job.tags.split(","),
+                      locns: job.location_restriction,
+                      desc: job.job_description,
+                      minsal: job.annual_salary_min,
+                      maxsal: job.annual_salary_max,
+                      how2apply: job.how_to_apply,
+                      benefits: job.benefits.split(","),
+                      email4jobappl: job.apply_email_address,
+                      apply_url: job.apply_url,
+                    }}
+                    seekerside={appliedJobs || !postedJobs}
+                  />
+                  <JobCard
+                    // key={job.id}
+                    job={{
+                      id: job.id,
+                      logo: logo,
+                      company_name: job.company_name,
+                      position: job.position,
+                      emptype: job.employee_type,
+                      primtg: job.primary_tag,
+                      tags: job.tags.split(","),
+                      locns: job.location_restriction,
+                      desc: job.job_description,
+                      minsal: job.annual_salary_min,
+                      maxsal: job.annual_salary_max,
+                      how2apply: job.how_to_apply,
+                      benefits: job.benefits.split(","),
+                      email4jobappl: job.apply_email_address,
+                      apply_url: job.apply_url,
+                    }}
+                    seekerside={appliedJobs || !postedJobs}
+                  />
+                </React.Fragment>
+              ))}
+              {loading && <Skeleton />}
+              <div ref={bottomBoundaryRef}></div>
+            </ul>
+          ) : appliedJobs ? (
+            <>
+              <div className="w-full h-full flex flex-col items-center justify-center gap-y-2">
+                <h1 className="text-2xl text-gray-600 font-semibold my-4">
+                  No jobs applied
+                </h1>
+                <Image
+                  src="/assets/icons/no-applications.svg"
+                  alt="No applicants found"
+                  width={500}
+                  height={500}
+                  className="sm:w-80 sm:h-80 h-32 w-32"
                 />
-                <JobCard
-                  // key={job.id}
-                  job={{
-                    id: job.id,
-                    company_name: job.company_name,
-                    position: job.position,
-                    emptype: job.emptype,
-                    primtg: job.primary_tag,
-                    tags: job.tags.split(","),
-                    locns: job.location_restriction,
-                    desc: job.job_description,
-                    minsal: job.annual_salary_min,
-                    maxsal: job.annual_salary_max,
-                    how2apply: job.how_to_apply,
-                    benefits: job.benefits.split(","),
-                    email4jobappl: job.apply_email_address,
-                    apply_url: job.apply_url,
-                  }}
+                <p className="text-gray-500">Try changing the search filters</p>
+                <span className="uppercase text-xl font-semibold text-gray-300">
+                  or
+                </span>
+                <Link href="/seeker-dashboard">
+                  <p className="text-blue-500 underline hover:underline-offset-2">
+                    Go to all jobs posted
+                  </p>
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="w-full h-full flex flex-col items-center justify-center gap-y-2">
+                <h1 className="text-2xl text-gray-600 font-semibold my-4">
+                  No jobs found
+                </h1>
+                <Image
+                  src="/assets/icons/no-applications.svg"
+                  alt="No applicants found"
+                  width={500}
+                  height={500}
+                  className="sm:w-80 sm:h-80 h-32 w-32"
                 />
-              </React.Fragment>
-            ))}
-            {loading && <Skeleton />}
-            <div ref={bottomBoundaryRef}></div>
-          </ul>
+                <p className="text-gray-500">
+                  Try changing the search filters to find more jobs
+                </p>
+                <span className="uppercase text-xl font-semibold text-gray-300">
+                  or
+                </span>
+                <Link href="/post">
+                  <p className="text-blue-500 underline hover:underline-offset-2">
+                    Post a job
+                  </p>
+                </Link>
+              </div>
+            </>
+          )}
           {/* {showPopup && <ApplyPopup job={selectedJob} onClose={handleClosePopup} />} */}
         </section>
       )}

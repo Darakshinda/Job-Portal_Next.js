@@ -29,6 +29,9 @@ const SearchFilters = ({
 }: SearchFiltersProps) => {
   const LocationTags = locOpns.countries;
 
+  const defaultFieldStylesCls =
+    "relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic";
+
   return (
     <section className="w-full h-fit px-4 py-6 shadow-lg rounded-xl sticky border border-gray-100 max-w-sm">
       <h2 className="text-center text-gray-700 flex justify-center items-center gap-2.5 font-semibold mb-3">
@@ -46,7 +49,7 @@ const SearchFilters = ({
           label="Search"
           placeholder="Search ..."
           labelcls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
-          cls="bg-[#f3f4f6] text-primary-700 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
+          cls={defaultFieldStylesCls}
           handleChange={handleChange}
         />
         <div className="grid grid-rows-[min(fit_content, fit_content)] gap-x-6 items-start">
@@ -54,7 +57,7 @@ const SearchFilters = ({
             req={false}
             label="Skills"
             labelcls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
-            cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
+            cls={defaultFieldStylesCls}
             tags={SkillTags}
             onChange={handleSkillChange}
             placeholder="Eg: Software Developer"
@@ -69,7 +72,7 @@ const SearchFilters = ({
             name="location"
             labelcls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
             placeholder="Eg: London"
-            cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
+            cls={defaultFieldStylesCls}
             tags={LocationTags}
             onSingleChange={handleChange}
             description="Only fill if you'd only like to hire people from a specific location or timezone this job is restricted to. If not restricted, please leave it as worldwide."
@@ -84,7 +87,7 @@ const SearchFilters = ({
             name="emptype"
             labelcls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
             placeholder="Eg: Full-Time"
-            cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
+            cls={defaultFieldStylesCls}
             tags={empOpns}
             onSingleChange={handleChange}
             description="Select the type of employment you would like to filter with."
