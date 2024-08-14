@@ -1,10 +1,9 @@
-// components/MultiSelect.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 interface MultiSelectProps {
   options: string[];
   onSelectionChange: (selectedOptions: string[]) => void;
-  val: string[];
+  val: string[] | undefined;
 }
 
 const MultiSelect: React.FC<MultiSelectProps> = ({
@@ -14,6 +13,12 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 }) => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [selfDescribe, setSelfDescribe] = useState<string>("");
+
+  useEffect(() => {
+    if (val && val !== selectedOptions) {
+      setSelectedOptions(val);
+    }
+  }, [val, selectedOptions]);
 
   const handleCheckboxChange = (option: string) => {
     let updatedSelectedOptions;
@@ -46,8 +51,6 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
       onSelectionChange(updatedSelectedOptions);
     }
   };
-
-  if (val != selectedOptions) setSelectedOptions(val);
 
   return (
     <div>

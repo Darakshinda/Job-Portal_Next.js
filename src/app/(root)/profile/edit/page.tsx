@@ -30,6 +30,7 @@ import ExperienceCard from "@/Components/ExperienceCard";
 import { FaPlus } from "react-icons/fa";
 import EducationCard from "@/Components/EducationCard";
 import Swal from "sweetalert2";
+import ImgUpload from "@/Components/ImgUpload";
 
 const LocationTags = locOpns.countries;
 type AboutSchema = z.infer<typeof aboutSchema>;
@@ -43,7 +44,8 @@ type About = {
   first_name?: string;
   last_name?: string;
   email?: string;
-  profile_pic: string;
+  profile_picture: File | null;
+  profile_picture_url: string;
   location: string; // seeker
   designation?: string; // hirer
   years_of_experience: string; // seeker
@@ -84,9 +86,10 @@ type General = {
 
 const EditProfilePage = () => {
   const [aboutFormData, setAboutFormData] = useState<About>({
-    profile_pic: "",
+    profile_picture: null,
     location: "",
     years_of_experience: "",
+    profile_picture_url: "",
     company_name: "",
     skillsArray: [],
     product_service: "",
@@ -158,7 +161,7 @@ const EditProfilePage = () => {
     setIsFormDirty(true);
   };
 
-  const handleGeneralChange = (key: string, value: string) => {
+  const handleGeneralChange = (key: string, value: string | string[]) => {
     setGeneralFormData((prevState) => ({
       ...prevState,
       [key]: value,
@@ -198,13 +201,14 @@ const EditProfilePage = () => {
     setAboutReset(true);
     console.log("resetting about form");
     setAboutFormData({
-      profile_pic: "",
+      profile_picture: null,
       location: "",
       years_of_experience: "",
       company_name: "",
       skillsArray: [],
       product_service: "",
       company_stage: "",
+      profile_picture_url: "",
     });
     console.log(aboutFormData);
   };
@@ -250,32 +254,90 @@ const EditProfilePage = () => {
     onSubmit(data);
   };
 
+  // const onSubmit = async (data: any) => {
+  //   // console.log(data);
+  //   const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
+  //   const access_token = localStorage.getItem("access_token");
+  //   try {
+  //     const response = await axios.put(
+  //       `${baseurl}/accounts/profile/`,
+  //       isHirer
+  //         ? {
+  //             ...data,
+  //             account_type: isHirer ? "job_hirer" : "job_seeker",
+  //             company_description: data.textarea,
+  //           }
+  //         : {
+  //             ...data,
+  //             account_type: isHirer ? "job_hirer" : "job_seeker",
+  //             bio: data.textarea,
+  //             work_experience_details: workExperienceArray,
+  //             // education_details: educationArray,
+  //           },
+  //       {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //           Authorization: `Bearer ${access_token}`,
+  //         },
+  //       }
+  //     );
+  //     console.log(response.data);
+  //     Swal.fire({
+  //       icon: "success",
+  //       title: "Profile updated successfully",
+  //       text: "Your profile has been updated successfully.",
+  //     });
+  //   } catch (error: any) {
+  //     console.log(error.response.data || error);
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "Cannot update profile",
+  //       text: error.response.data || "Please try again.",
+  //     });
+  //   }
+  // };
+
   const onSubmit = async (data: any) => {
-    console.log(data);
     const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
     const access_token = localStorage.getItem("access_token");
+
+    const formData = new FormData();
+
+    // Append form data fields
+    for (const key in data) {
+      if (data.hasOwnProperty(key)) {
+        // If the key is 'profile_picture' and it's a file, append it as a file
+        if (key === "profile_picture" && data[key] instanceof File) {
+          formData.append(key, data[key]);
+        } else {
+          formData.append(key, data[key]);
+        }
+      }
+    }
+
+    // Append additional fields
+    formData.append("account_type", isHirer ? "job_hirer" : "job_seeker");
+
+    if (isHirer) {
+      formData.append("company_description", data.textarea);
+    } else {
+      formData.append("bio", data.textarea);
+      // formData.append("work_experience_details", JSON.stringify(workExperienceArray));
+      // formData.append("education_details", JSON.stringify(educationArray)); // Uncomment if you have educationArray
+    }
+
     try {
       const response = await axios.put(
         `${baseurl}/accounts/profile/`,
-        isHirer
-          ? {
-              ...data,
-              account_type: isHirer ? "job_hirer" : "job_seeker",
-              company_description: data.textarea,
-            }
-          : {
-              ...data,
-              account_type: isHirer ? "job_hirer" : "job_seeker",
-              bio: data.textarea,
-              work_experience_details: workExperienceArray,
-              // education_details: educationArray,
-            },
+        formData,
         {
           headers: {
+            "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${access_token}`,
           },
         }
       );
+
       console.log(response.data);
       Swal.fire({
         icon: "success",
@@ -283,11 +345,11 @@ const EditProfilePage = () => {
         text: "Your profile has been updated successfully.",
       });
     } catch (error: any) {
-      console.log(error.response.data || error);
+      console.log(error.response?.data || error);
       Swal.fire({
         icon: "error",
         title: "Cannot update profile",
-        text: error.response.data || "Please try again.",
+        text: error.response?.data || "Please try again.",
       });
     }
   };
@@ -326,7 +388,7 @@ const EditProfilePage = () => {
         });
         setIsHirer(response.data.account_type === "job_hirer");
         setAboutFormData({
-          profile_pic: response.data.profile_picture,
+          profile_picture: null,
           location: response.data.location,
           years_of_experience: "0",
           //remove yoe for hirer
@@ -337,6 +399,7 @@ const EditProfilePage = () => {
               : response.data.technical_skills.split(","), //not present
           product_service: response.data.product_service,
           company_stage: response.data.company_stage,
+          profile_picture_url: response.data.profile_picture,
         });
         console.log("Achievements: ", response.data.achievements);
 
@@ -385,13 +448,19 @@ const EditProfilePage = () => {
               </p>
             </div>
 
-            <div className="w-full">
-              <Image
+            <div className="w-full flex justify-center">
+              {/* <Image
                 src="/assets/images/default-profile.webp"
                 alt="Profile Image"
                 width={100}
                 height={100}
                 className="rounded-full w-40 h-40 object-contain mx-auto"
+              /> */}
+              <ImgUpload
+                keyy="profile_picture"
+                onChange={handleAboutChange}
+                val={aboutFormData.profile_picture_url}
+                resetflg={aboutReset}
               />
             </div>
           </div>
@@ -843,6 +912,7 @@ const EditProfilePage = () => {
                   tags={["He/Him", "She/Her", "They/Them", "Self-describe"]}
                   onSingleChange={handleGeneralChange}
                   multiple={false}
+                  selected={generalFormData.pronouns}
                 />
               </div>
 
@@ -862,6 +932,7 @@ const EditProfilePage = () => {
                   ]}
                   onSingleChange={handleGeneralChange}
                   multiple={false}
+                  selected={generalFormData.gender}
                 />
               </div>
             </div>
@@ -900,13 +971,13 @@ const EditProfilePage = () => {
               )}
             </div>
 
-            {/* <MultiSelect
+            <MultiSelect
               options={ethinicity}
-              onSelectionChange={(val: string) => {
-                handleChange("race_ethnicity", val);
+              onSelectionChange={(val: string[]) => {
+                handleGeneralChange("race_ethnicity", val);
               }}
-              val={formData.race_ethnicity}
-            /> */}
+              val={generalFormData.race_ethnicity}
+            />
           </div>
 
           <div className="md:col-start-2 md:col-span-1 justify-self-center space-x-4 pt-4">
