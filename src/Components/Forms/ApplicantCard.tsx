@@ -108,19 +108,29 @@
 // export default ApplicantCard;
 
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 interface ApplicantProps {
+  val: number;
   applicant: {
     applicant_name: string;
     applicant_email: string;
     applicant_phone: string;
     applicant_profile_picture: string | null;
+    applicant_resume: string | null;
     applied_at: string;
   };
+  setIndex?: React.Dispatch<React.SetStateAction<number>>;
+  setIsCoverOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ApplicantCard = ({ applicant }: ApplicantProps) => {
+const ApplicantCard = ({
+  applicant,
+  val,
+  setIndex,
+  setIsCoverOpen,
+}: ApplicantProps) => {
   return (
     <div className="flex border p-4 rounded-lg bg-gray-100">
       <div className="flex-1 flex items-center gap-x-4">
@@ -153,12 +163,21 @@ const ApplicantCard = ({ applicant }: ApplicantProps) => {
       </div>
 
       <div className="flex flex-col justify-center gap-2">
-        <button className="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-gray-50 bg-gray-300 hover:bg-blue-400 rounded-lg transition-colors duration-300 whitespace-nowrap">
+        <button
+          onClick={() => {
+            setIndex && setIndex(val);
+            setIsCoverOpen && setIsCoverOpen(true);
+          }}
+          className="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-gray-50 bg-gray-300 hover:bg-blue-400 rounded-lg transition-colors duration-300 whitespace-nowrap"
+        >
           Cover Letter
         </button>
-        <button className="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-gray-50 bg-gray-300 hover:bg-blue-400 rounded-lg transition-colors duration-300">
+        <Link
+          href={applicant.applicant_resume || "#"}
+          className="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-gray-50 bg-gray-300 hover:bg-blue-400 rounded-lg transition-colors duration-300 text-center"
+        >
           Resume
-        </button>
+        </Link>
       </div>
     </div>
   );

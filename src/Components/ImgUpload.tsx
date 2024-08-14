@@ -1,28 +1,26 @@
+"use client";
+
 import Image from "next/image";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 interface ImgProps {
   keyy: string;
   onChange: Function;
-  resetflg: boolean;
   val: string | null;
   setflg?: Function;
 }
 
-const UploadButton: React.FC<ImgProps> = ({
-  onChange,
-  keyy,
-  resetflg = false,
-  setflg,
-  val,
-}) => {
+const UploadButton: React.FC<ImgProps> = ({ onChange, keyy, setflg, val }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [backgroundImg, setBackgroundImg] = useState<string | null>(val);
 
-  if (resetflg && val != backgroundImage) {
-    setBackgroundImage(val);
-    console.log("Background Image", backgroundImage);
-  }
+  // Update backgroundImg when resetflg is true and val is different
+  // useEffect(() => {
+  //   if (val !== backgroundImg) {
+  //     setBackgroundImg(val);
+  //     console.log("Background Image Updated:", val);
+  //   }
+  // }, [val, backgroundImg]);
 
   const handleButtonClick = () => {
     fileInputRef.current?.click();
@@ -32,68 +30,45 @@ const UploadButton: React.FC<ImgProps> = ({
     const file = event.target.files?.[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
-      setBackgroundImage(imageUrl);
-      onChange(keyy, file);
+      setBackgroundImg(imageUrl); // Update background image
+      onChange(keyy, file); // Handle file upload logic
       setflg && setflg(true);
-      // Handle file upload logic here if needed
     }
   };
 
   return (
     <div
+      className={`flex items-center justify-center w-28 h-28 border-2 border-gray-300 rounded-full cursor-pointer relative bg-white ${backgroundImg ? `bg-cover bg-center` : ""}`}
       style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100px",
-        height: "100px",
-        border: "2px solid #ddd",
-        borderRadius: "50%",
-        cursor: "pointer",
-        position: "relative",
-        backgroundColor: "white",
-        backgroundImage: backgroundImage ? `url(${backgroundImage})` : "none",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-      onClick={handleButtonClick}
+        backgroundImage: backgroundImg ? `url(${backgroundImg})` : "none",
+      }} // Background image set conditionally
+      onClick={backgroundImg ? handleButtonClick : undefined}
     >
-      {!backgroundImage && (
-        <div
-          style={{
-            display: "flex",
-            backgroundColor: "white",
-            border: "solid",
-            borderWidth: "1px",
-            borderRadius: "3px",
-            borderColor: "black",
-          }}
-        >
+      {!backgroundImg && (
+        <div className="flex flex-col w-full h-full items-center relative">
           <Image
             src="/assets/images/default-profile.webp"
             alt="Upload Icon"
-            width={64}
-            height={64}
-            style={{
-              width: "20px",
-              height: "20px",
-              marginRight: "8px",
-              marginLeft: "3px",
-              marginTop: "2px",
-              backgroundColor: "white",
-            }}
+            sizes="100%"
+            width={100}
+            height={100}
+            className="w-32 aspect-square rounded-full bg-white"
           />
-          <span
-            style={{ fontSize: "14px", marginRight: "2px", color: "black" }}
+
+          <label
+            htmlFor="image"
+            className="text-sm text-gray-200 font-semibold absolute top-1/2 -translate-y-1/2 bg-gray-500 px-1.5 py-1 rounded cursor-pointer"
           >
-            <b>Upload</b>
-          </span>
+            Upload
+          </label>
         </div>
       )}
       <input
+        id="image"
+        name="image"
         type="file"
         ref={fileInputRef}
-        style={{ display: "none" }}
+        className="hidden"
         onChange={handleFileChange}
       />
     </div>

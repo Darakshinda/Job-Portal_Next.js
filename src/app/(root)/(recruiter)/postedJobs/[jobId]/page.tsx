@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { FaMoneyBillAlt } from "react-icons/fa";
-import { FaLocationDot } from "react-icons/fa6";
+import { FaDeleteLeft, FaLocationDot } from "react-icons/fa6";
 import { IoTimerOutline } from "react-icons/io5";
-import { FiUsers } from "react-icons/fi";
+import { FiDelete, FiUsers } from "react-icons/fi";
 import axios from "axios";
 import SkillTags from "@/constants/data/tags.json";
 import ApplicantCard from "@/Components/Forms/ApplicantCard";
@@ -16,6 +16,7 @@ import Spinner from "@/Components/Spinner";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { IoMdClose } from "react-icons/io";
 
 interface Application {
   job: number;
@@ -23,6 +24,8 @@ interface Application {
   applicant_email: string;
   applicant_phone: string;
   applicant_profile_picture: string | null;
+  applicant_cover_letter: string | null;
+  applicant_resume: string | null;
   applied_at: string;
 }
 
@@ -48,6 +51,8 @@ interface JobDetails {
 const JobDetails = ({ params }: { params: { jobId: number } }) => {
   const router = useRouter();
   const jobId = params.jobId;
+  const [isCoverOpen, setIsCoverOpen] = useState<boolean>(false);
+  const [index, setIndex] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [jobDetails, setJobDetails] = useState<JobDetails | null>(null);
   const [searchParams, setSearchParams] = useState<{ skillTags: string[] }>({
@@ -197,6 +202,32 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
           />
         </>
       )}
+      {isCoverOpen && (
+        <>
+          <div className="fixed z-[60] w-[100vw] h-[100dvh] inset-0 bg-black opacity-70 backdrop-blur-sm transition-opacity duration-1000"></div>
+
+          <div className="overflow-y-auto overflow-x-hidden fixed z-[70] flex justify-center items-center w-full inset-0 h-full select-none">
+            <div className="relative p-4 w-full max-w-md h-auto">
+              <div className="relative p-4 flex flex-col w-full text-center bg-gray-100 rounded-lg shadow dark:bg-gray-800 sm:p-5">
+                <h2 className="text-gray-500 font-semibold w-full mb-4">
+                  Cover Letter
+                </h2>
+                <button className="absolute top-5 right-6">
+                  <IoMdClose
+                    size={24}
+                    className="text-red-500 "
+                    onClick={() => setIsCoverOpen(false)}
+                  />
+                </button>
+                <p>
+                  {jobDetails.applications[index].applicant_cover_letter ||
+                    "I'm interested in this opportunity and I believe I have the right skills for this opportunity."}
+                </p>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
       <h1 className="text-center text-4xl font-bold text-gray-800">
         {jobDetails.position || "Job Title"}
       </h1>
@@ -311,7 +342,13 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
             onScroll={handleScroll}
           >
             {visibleApplicants.map((applicant, index) => (
-              <ApplicantCard key={index} applicant={applicant} />
+              <ApplicantCard
+                key={index}
+                val={index}
+                applicant={applicant}
+                setIndex={setIndex}
+                setIsCoverOpen={setIsCoverOpen}
+              />
             ))}
             {loading && <Spinner />}
           </div>

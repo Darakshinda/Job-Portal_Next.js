@@ -341,16 +341,24 @@ const EditProfilePage = () => {
 
       console.log(response.data);
       Swal.fire({
+        title: "Profile update successful",
         icon: "success",
-        title: "Profile updated successfully",
-        text: "Your profile has been updated successfully.",
+        toast: true,
+        timer: 3000,
+        position: "top-right",
+        timerProgressBar: true,
+        showConfirmButton: false,
       });
     } catch (error: any) {
       console.log(error.response?.data || error);
       Swal.fire({
+        title: "Profile update failed. Please try again",
         icon: "error",
-        title: "Cannot update profile",
-        text: error.response?.data || "Please try again.",
+        toast: true,
+        timer: 3000,
+        position: "top-right",
+        timerProgressBar: true,
+        showConfirmButton: false,
       });
     }
   };
@@ -464,20 +472,19 @@ const EditProfilePage = () => {
             </div>
 
             <div className="w-full flex justify-center">
-              {/* <Image
-                src="/assets/images/default-profile.webp"
-                alt="Profile Image"
-                width={100}
-                height={100}
-                className="rounded-full w-40 h-40 object-contain mx-auto"
-              /> */}
               <ImgUpload
                 keyy="profile_picture"
                 onChange={handleAboutChange}
                 val={aboutFormData.profile_picture_url}
                 setflg={setProfilePicChanged} //changes when profile pic is changed
-                resetflg
               />
+              {/* <Image
+                  src="/assets/images/default-profile.webp"
+                  alt="Profile Image"
+                  width={100}
+                  height={100}
+                  className="rounded-full w-32 h-32 object-contain mx-auto"
+                /> */}
             </div>
           </div>
 
@@ -643,7 +650,7 @@ const EditProfilePage = () => {
                 name="textarea"
                 id="textarea"
                 rows={6}
-                className="bg-gray-100 border border-gray-300 text-gray-800 rounded w-full placeholder:text-sm px-4 py-3 min-h-28 max-h-60 placeholder:italic placeholder-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+                className="textarea bg-gray-100 border border-gray-300 text-gray-800 rounded w-full placeholder:text-sm px-4 py-3 min-h-28 max-h-60 placeholder:italic placeholder-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
                 placeholder={
                   isHirer
                     ? "Tell us about your company"

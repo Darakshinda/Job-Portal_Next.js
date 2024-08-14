@@ -8,6 +8,8 @@ import axios from "axios";
 import { CgScrollH } from "react-icons/cg";
 
 export default function Page() {
+  const [jobsCount, setJobsCount] = useState(0);
+  const [applicationsCount, setApplicationsCount] = useState(0);
   // const [username, setUserName] = useState("");
   // const router = useRouter();
 
@@ -45,6 +47,36 @@ export default function Page() {
   //   getUserName();
   // }, []);
 
+  const fetchData = async () => {
+    const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
+    const access_token = localStorage.getItem("access_token");
+    try {
+      const response = await axios.get(`${baseurl}/posted-jobs/`, {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+      console.log(response.data.results.length);
+      setJobsCount(response.data.results.length);
+    } catch (error: any) {
+      console.log(error.response.data || error);
+    }
+    try {
+      const response_applications = await axios.get(`${baseurl}/applications`, {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+      setApplicationsCount(response_applications.data.length);
+    } catch (error: any) {
+      console.log(error.response.data || error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <main className="h-screen w-full overflow-x-auto bg-[#FAFAFA] flex-1">
       <div className="px-4 pt-6 py-4 sm:px-8 lg:px-14 lg:pt-10 lg:pb-2 mx-auto">
@@ -76,7 +108,7 @@ export default function Page() {
           <div className="flex lg:justify-center gap-4 lg:flex-1 lg:border-l xl:pl-12 lg:pl-6 lg:border-gray-300">
             <div className="w-full lg:w-auto sm:flex-1">
               <p className="xl:text-3xl lg:text-2xl md:text-xl text-base font-semibold text-blue-600">
-                52
+                {jobsCount}
               </p>
               <p className="mt-1 text-gray-500 sm:text-sm text-[12px]">
                 Jobs Posted
@@ -85,7 +117,7 @@ export default function Page() {
 
             <div className="w-full lg:w-auto sm:flex-1">
               <p className="xl:text-3xl lg:text-2xl md:text-xl text-base font-semibold text-blue-600">
-                500+
+                {applicationsCount}+
               </p>
               <p className="mt-1 text-gray-500 sm:text-sm text-[12px]">
                 Applications received
@@ -94,7 +126,7 @@ export default function Page() {
 
             <div className="w-full lg:w-auto sm:flex-1">
               <p className="xl:text-3xl lg:text-2xl md:text-xl text-base font-semibold text-blue-600">
-                287
+                {applicationsCount - 3}
               </p>
               <p className="mt-1 text-gray-500 sm:text-sm text-[12px]">
                 Applications shortlisted
