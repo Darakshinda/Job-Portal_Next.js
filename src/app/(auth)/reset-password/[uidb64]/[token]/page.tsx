@@ -75,6 +75,7 @@ const ResetPasswordConfirmPage: React.FC = () => {
               placeholder="••••••••"
               icon={<RiLockPasswordLine />}
               req={true}
+              cls="peer py-3 px-4 ps-11 block w-full bg-gray-200 rounded-lg outline-none focus:outline-blue-400 focus:ring-blue-400 disabled:opacity-50 disabled:pointer-events-none placeholder:text-gray-400"
             />
 
             <LoginFormInput
@@ -87,6 +88,7 @@ const ResetPasswordConfirmPage: React.FC = () => {
               placeholder="••••••••"
               icon={<RiLockPasswordLine />}
               req={true}
+              cls="peer py-3 px-4 ps-11 block w-full bg-gray-200 rounded-lg outline-none focus:outline-blue-400 focus:ring-blue-400 disabled:opacity-50 disabled:pointer-events-none placeholder:text-gray-400"
             />
 
             <button

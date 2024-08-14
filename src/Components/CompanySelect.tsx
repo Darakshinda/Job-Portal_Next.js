@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Select, {
   SingleValue,
   ActionMeta,
@@ -17,14 +17,21 @@ interface OptionType {
 interface Props {
   handle: Function;
   val: string;
+  reset?: boolean;
 }
 
-const CompanySelect: React.FC<Props> = ({ handle, val }) => {
+const CompanySelect = ({ handle, val, reset }: Props) => {
   const [options, setOptions] = useState<OptionType[]>([]);
   const [selectedOption, setSelectedOption] = useState<SingleValue<OptionType>>(
     { value: val, label: val }
   );
   const [inputValue, setInputValue] = useState("");
+
+  useEffect(() => {
+    if (reset) {
+      setSelectedOption({ value: "", label: "" });
+    }
+  }, [reset]);
 
   if (inputValue === "" && options.length) setOptions([]);
 
@@ -95,7 +102,7 @@ const CompanySelect: React.FC<Props> = ({ handle, val }) => {
               handleCreate();
             }}
           >
-            Create "{inputValue}"
+            Create &quot;{inputValue}&quot;
           </div>
         )}
       </components.Menu>
@@ -115,6 +122,7 @@ const CompanySelect: React.FC<Props> = ({ handle, val }) => {
         <Select
           options={options}
           value={selectedOption}
+          instanceId={1}
           classNamePrefix="react-select"
           onInputChange={handleInputChange}
           onChange={handleChange}

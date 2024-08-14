@@ -215,16 +215,6 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
 
   return (
     <section className="w-full min-h-screen bg-white py-4 px-6 ps-24">
-      {/* {isModalOpen && (
-        <>
-          <div className="fixed z-[60] w-[100vw] h-[100dvh] inset-0 bg-black opacity-70 backdrop-blur-lg transition-opacity duration-1000"></div>
-
-          <DeleteConfirmation
-            deletefn={() => deleteJob(jobId)}
-            closemodal={() => setIsModalOpen(false)}
-          />
-        </>
-      )} */}
       <h1 className="text-center text-4xl font-bold text-gray-800">
         {jobDetails.position || "Job Title"}
       </h1>

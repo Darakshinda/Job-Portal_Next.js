@@ -17,7 +17,7 @@ interface FormInputProps {
   register?: UseFormRegister<any>;
   errors?: FieldError;
   name: string;
-  handleChange?: (key: string, value: string) => void;
+  handleChange?: (key: string, value: string | number) => void;
 }
 
 const SignupFormInput = ({
@@ -37,14 +37,15 @@ const SignupFormInput = ({
   const [showPassword, setShowPassword] = useState<boolean>();
 
   return (
-    <div className="relative flex flex-col w-full isolate">
+    <div className="relative flex flex-col w-full">
       <label
         className={`text-gray-500 font-semibold ${labelcls}`}
         htmlFor={name}
       >
-        {label}{" "}
+        {label}
         <span
-          className={`text-red-500 ${req && label ? "inline-block" : "hidden"}`}
+          title="Required"
+          className={`text-red-500 ${req && label ? "ms-1.5 inline-block" : "hidden"}`}
         >
           *
         </span>
@@ -82,7 +83,7 @@ const SignupFormInput = ({
         </button>
       )}
       <span
-        className={`text-red-500 text-xs font-semibold  ${errors ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
+        className={`text-red-500 text-xs font-semibold  ${errors ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full mt-1`}
       >
         {errors?.message}
       </span>

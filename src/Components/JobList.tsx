@@ -187,55 +187,32 @@ const JobList = ({ searchParams, postedJobs, appliedJobs }: SearchParams) => {
       ) : (
         <section
           ref={scrollRef}
-          className="overflow-auto scrollbar-hide overscroll-contain w-fit justify-self-center"
+          className="overflow-auto scrollbar-hide overscroll-contain w-full justify-self-center"
         >
           {jobs.length > 0 ? (
             <ul className="space-y-4 w-full flex flex-col items-center">
               {jobs.map((job) => (
-                <React.Fragment key={job.id}>
-                  <JobCard
-                    // key={job.id}
-                    job={{
-                      id: job.id,
-                      logo: logo,
-                      company_name: job.company_name,
-                      position: job.position,
-                      emptype: job.employee_type,
-                      primtg: job.primary_tag,
-                      tags: job.tags.split(","),
-                      locns: job.location_restriction,
-                      desc: job.job_description,
-                      minsal: job.annual_salary_min,
-                      maxsal: job.annual_salary_max,
-                      how2apply: job.how_to_apply,
-                      benefits: job.benefits.split(","),
-                      email4jobappl: job.apply_email_address,
-                      apply_url: job.apply_url,
-                    }}
-                    seekerside={appliedJobs || !postedJobs}
-                  />
-                  <JobCard
-                    // key={job.id}
-                    job={{
-                      id: job.id,
-                      logo: logo,
-                      company_name: job.company_name,
-                      position: job.position,
-                      emptype: job.employee_type,
-                      primtg: job.primary_tag,
-                      tags: job.tags.split(","),
-                      locns: job.location_restriction,
-                      desc: job.job_description,
-                      minsal: job.annual_salary_min,
-                      maxsal: job.annual_salary_max,
-                      how2apply: job.how_to_apply,
-                      benefits: job.benefits.split(","),
-                      email4jobappl: job.apply_email_address,
-                      apply_url: job.apply_url,
-                    }}
-                    seekerside={appliedJobs || !postedJobs}
-                  />
-                </React.Fragment>
+                <JobCard
+                  key={job.id}
+                  job={{
+                    id: job.id,
+                    logo: logo,
+                    company_name: job.company_name,
+                    position: job.position,
+                    emptype: job.employee_type,
+                    primtg: job.primary_tag,
+                    tags: job.tags.split(","),
+                    locns: job.location_restriction,
+                    desc: job.job_description,
+                    minsal: job.annual_salary_min,
+                    maxsal: job.annual_salary_max,
+                    how2apply: job.how_to_apply,
+                    benefits: job.benefits.split(","),
+                    email4jobappl: job.apply_email_address,
+                    apply_url: job.apply_url,
+                  }}
+                  seekerside={appliedJobs || !postedJobs}
+                />
               ))}
               {loading && <Skeleton />}
               <div ref={bottomBoundaryRef}></div>

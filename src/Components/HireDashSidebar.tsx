@@ -290,7 +290,7 @@ const HamburgerMenu = ({ isHirer }: { isHirer: boolean }) => {
           </div>
 
           <div
-            className={`border-t-2 border-gray-300 px-3 pt-3.5 pb-3 flex items-center gap-1 relative`}
+            className={`border-t-2 border-gray-300 px-3 pt-3.5 pb-3 flex gap-x-1 items-center relative`}
           >
             <div
               className="p-1 relative w-10 h-10 rounded-full shrink-0"
@@ -320,16 +320,19 @@ const HamburgerMenu = ({ isHirer }: { isHirer: boolean }) => {
                 !isOpen && "opacity-0 overflow-hidden translate-x-14"
               }`}
             >
-              <div className="w-full pl-2 flex justify-between">
-                <h3>
+              <div className="w-full pl-2 flex justify-between items-center">
+                <h3 className="flex-1 min-w-0">
                   <p className="font-semibold md:text-base text-sm whitespace-nowrap">
                     {profile.first_name}
                   </p>
-                  <span className="text-xs text-gray-600 text-ellipsis">
+                  <span className="text-xs text-gray-600 truncate block">
                     {profile.email}
                   </span>
                 </h3>
-                <button onClick={() => setIsPop((curr) => !curr)}>
+                <button
+                  className="w-fit"
+                  onClick={() => setIsPop((curr) => !curr)}
+                >
                   <HiDotsVertical
                     size={20}
                     className="hover:bg-gray-200 rounded-full cursor-pointer p-0.5"

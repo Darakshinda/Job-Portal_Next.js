@@ -1,7 +1,22 @@
 .custom-select-container .react-select__control {
   background-color: rgb(243, 244, 246); /* Change the background color */
   color: rgb(82, 82, 82); /* Change the text color */
+  height: 2.625rem;
+  border: 1px solid #d1d5db;
 }
+
+.react-select__control:hover {
+  border: 1px solid #d1d5db !important;
+}
+
+.react-select__control:focus-within {
+  outline: 3px solid #93c5fd !important;
+}
+
+/* .react-select__control--is-focused {
+  box-shadow: none !important;
+  border-radius: 0.25rem !important;
+} */
 
 .custom-select-container .react-select__placeholder {
   color: rgb(55, 65, 81) !important; /* Change the placeholder color */

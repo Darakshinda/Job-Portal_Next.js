@@ -142,6 +142,7 @@ const Login = () => {
             placeholder="John Doe"
             icon={<FaUserAstronaut />}
             req={true}
+            cls="peer py-3 px-4 ps-11 block w-full bg-gray-200 rounded-lg outline-none focus:outline-primary-500 focus:ring-primary-500 disabled:opacity-50 disabled:pointer-events-none placeholder:text-gray-400"
           />
 
           <LoginFormInput
@@ -154,6 +155,7 @@ const Login = () => {
             placeholder="••••••••"
             icon={<RiLockPasswordLine />}
             req={true}
+            cls="peer py-3 px-4 ps-11 block w-full bg-gray-200 rounded-lg outline-none focus:outline-primary-500 focus:ring-primary-500 disabled:opacity-50 disabled:pointer-events-none placeholder:text-gray-400"
           />
 
           <div className="my-4 block text-right">

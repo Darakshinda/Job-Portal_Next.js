@@ -31,7 +31,7 @@ const PostedJobs = () => {
   const memoizedSearchParams = useMemo(() => searchParams, [searchParams]);
 
   const handleChange = (name: string, value: string | number) => {
-    console.log(name, value);
+    // console.log(name, value);
     setSearchParams((prevState) => ({
       ...prevState,
       [name]: value,

@@ -14,6 +14,7 @@ interface FormInputProps {
   placeholder: string;
   req: boolean;
   icon: React.ReactNode;
+  cls?: string;
 }
 
 const FormInput: React.FC<FormInputProps> = ({
@@ -26,6 +27,7 @@ const FormInput: React.FC<FormInputProps> = ({
   placeholder,
   req,
   icon,
+  cls,
 }) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
@@ -34,11 +36,12 @@ const FormInput: React.FC<FormInputProps> = ({
       <div className="relative">
         <label
           htmlFor={id}
-          className="text-gray-500 font-semibold mb-2 text-sm"
+          className="text-gray-500 font-semibold inline-block mb-1 text-sm"
         >
           {label}
           <span
-            className={`text-red-500 ${req && label ? "inline-block ml-2" : "hidden"}`}
+            title="Required"
+            className={`text-red-500 ${req && label ? "inline-block ml-1.5" : "hidden"}`}
           >
             *
           </span>
@@ -50,7 +53,7 @@ const FormInput: React.FC<FormInputProps> = ({
           type={
             type === "password" ? (!showPassword ? "password" : "text") : type
           }
-          className="peer py-3 px-4 ps-11 block w-full bg-gray-200 rounded-lg outline-none focus:outline-primary-500 focus:ring-primary-500 disabled:opacity-50 disabled:pointer-events-none"
+          className={cls}
           placeholder={placeholder}
           required={req}
         />
@@ -74,7 +77,7 @@ const FormInput: React.FC<FormInputProps> = ({
         )}
       </div>
       <span
-        className={`text-red-500 text-xs font-semibold  ${errors ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"} transition-all transform duration-300 absolute mt-1 z-10 px-2 py-1`}
+        className={`text-red-500 text-xs font-semibold  ${errors ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"} transition-all transform duration-300 absolute z-10 px-2 py-1`}
       >
         {errors?.message}
       </span>

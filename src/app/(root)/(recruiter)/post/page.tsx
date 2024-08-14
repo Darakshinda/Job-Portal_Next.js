@@ -72,6 +72,14 @@ const JobForm = () => {
     setPreviewMode(!previewMode);
   };
 
+  useEffect(() => {
+    if (previewMode) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [previewMode]);
+
   const handleChange = (name: string, value: string) => {
     if (name === "minSal" || name === "maxSal") {
       const val = parseInt(value.split(" ")[0]);
@@ -558,9 +566,9 @@ const JobForm = () => {
       {previewMode && (
         <>
           {/* Overlay Background */}
-          <div className="fixed inset-0 bg-black opacity-80 backdrop-blur-sm z-40 transition-opacity duration-300"></div>
+          <div className="fixed inset-0 bg-black opacity-80 backdrop-blur-sm z-[60] transition-opacity duration-300"></div>
 
-          <div className="fixed inset-0 flex md:justify-center items-center z-50 w-full overflow-auto">
+          <div className="fixed inset-0 flex md:justify-center items-center z-[80] w-full overflow-auto">
             <div className="min-w-[52rem] h-fit px-10 rounded-lg">
               <h3 className="text-purple-600 font-bold text-3xl">Preview</h3>
               <p className="text-gray-200 text-lg py-3">

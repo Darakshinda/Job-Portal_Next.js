@@ -114,8 +114,15 @@ const aboutSchema = z.object({
     .string()
     .email()
     .max(50, { message: "Email must be at most 50 characters long" }),
-  textarea: z.string().min(1, { message: "This field is required" }),
-  designation: z.string().optional(),
+  textarea: z
+    .string()
+    .min(1, { message: "Description is required" })
+    .max(1000, { message: "Description must be at most 500 characters long" }),
+  designation: z
+    .string()
+    .min(1, { message: "Your designation is required" })
+    .max(50, { message: "Designation must be at most 50 characters long" })
+    .optional(),
 });
 
 const socialProfilesSchema = z.object({
@@ -123,6 +130,38 @@ const socialProfilesSchema = z.object({
   github: z.string().url(),
   website: z.string().url(),
   telegram: z.string().url(),
+});
+
+const experienceSchema = z.object({
+  // start_date: z.string().min(1, { message: "Start date is required" }),
+  // end_date: z.string().min(1, { message: "End date is required" }),
+  // is_working: z.boolean(),
+  title: z.string().min(1, { message: "Title is required" }),
+  description: z.string().min(1, { message: "Work Description is required" }),
+});
+
+const educationSchema = z.object({
+  year_of_graduation: z.coerce
+    .number()
+    .gte(new Date().getFullYear() - 100, {
+      message: "Graduation year cannot be before 1922",
+    })
+    .lte(new Date().getFullYear() + 6, {
+      message: "Graduation year cannot be more than 6 years in the future",
+    })
+    .or(z.null()),
+  gpa: z.coerce.number().gte(0, { message: "CGPA cannot be 0" }),
+});
+
+const generalSchema = z.object({
+  gender_self_describe: z
+    .string()
+    .min(1, { message: "Field must not be empty" })
+    .optional(),
+  pronouns_self_describe: z
+    .string()
+    .min(1, { message: "Field must not be empty" })
+    .optional(),
 });
 
 export {
@@ -134,4 +173,7 @@ export {
   postJobSchema,
   aboutSchema,
   socialProfilesSchema,
+  experienceSchema,
+  educationSchema,
+  generalSchema,
 };
