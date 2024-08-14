@@ -31,6 +31,7 @@ import { FaPlus } from "react-icons/fa";
 import EducationCard from "@/Components/EducationCard";
 import Swal from "sweetalert2";
 import ImgUpload from "@/Components/ImgUpload";
+import { set } from "date-fns";
 
 const LocationTags = locOpns.countries;
 type AboutSchema = z.infer<typeof aboutSchema>;
@@ -115,6 +116,7 @@ const EditProfilePage = () => {
   const [isHirer, setIsHirer] = useState(false);
   const [expAddButton, setExpAddButton] = useState(true);
   const [educationAddButton, setEducationAddButton] = useState(true);
+  const [profilePicChanged, setProfilePicChanged] = useState(false);
 
   const {
     register: aboutRegister,
@@ -303,17 +305,16 @@ const EditProfilePage = () => {
 
     const formData = new FormData();
 
-    // Append form data fields
-    for (const key in data) {
-      if (data.hasOwnProperty(key)) {
-        // If the key is 'profile_picture' and it's a file, append it as a file
-        if (key === "profile_picture" && data[key] instanceof File) {
-          formData.append(key, data[key]);
-        } else {
-          formData.append(key, data[key]);
-        }
-      }
+    if (profilePicChanged && aboutFormData.profile_picture) {
+      formData.append("profile_picture", aboutFormData.profile_picture);
     }
+
+    // Append form data fields
+    Object.keys(data).forEach((key) => {
+      if (key !== "profile_picture") {
+        formData.append(key, data[key]);
+      }
+    });
 
     // Append additional fields
     formData.append("account_type", isHirer ? "job_hirer" : "job_seeker");
@@ -371,6 +372,20 @@ const EditProfilePage = () => {
   //   });
   // };
 
+  // const urlToFile = async (url: string, fileName: string): Promise<File> => {
+  //   const response = await fetch(url, {
+  //     mode: "cors",
+  //   });
+  //   const blob = await response.blob();
+
+  //   // Extract the file extension from the URL or response
+  //   const fileExtension = url.split(".").pop() || "jpg"; // Default to 'jpg'
+  //   const fileType = blob.type || `image/${fileExtension}`;
+
+  //   // Create a File object from the Blob
+  //   return new File([blob], `${fileName}.${fileExtension}`, { type: fileType });
+  // };
+
   const defaultPostEditFormInputCls =
     "bg-gray-100 mt-1 p-2 rounded border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic placeholder-gray-400";
   const socialProfilesCls =
@@ -401,7 +416,7 @@ const EditProfilePage = () => {
           company_stage: response.data.company_stage,
           profile_picture_url: response.data.profile_picture,
         });
-        console.log("Achievements: ", response.data.achievements);
+        console.log("Profile Picture URL: ", response.data.profile_picture);
 
         setGeneralFormData({
           achievements: response.data.achievements, //doesn't exist for hirer
@@ -460,7 +475,8 @@ const EditProfilePage = () => {
                 keyy="profile_picture"
                 onChange={handleAboutChange}
                 val={aboutFormData.profile_picture_url}
-                resetflg={aboutReset}
+                setflg={setProfilePicChanged} //changes when profile pic is changed
+                resetflg
               />
             </div>
           </div>

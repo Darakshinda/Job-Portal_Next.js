@@ -6,12 +6,14 @@ interface ImgProps {
   onChange: Function;
   resetflg: boolean;
   val: string | null;
+  setflg?: Function;
 }
 
 const UploadButton: React.FC<ImgProps> = ({
   onChange,
   keyy,
   resetflg = false,
+  setflg,
   val,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -32,6 +34,7 @@ const UploadButton: React.FC<ImgProps> = ({
       const imageUrl = URL.createObjectURL(file);
       setBackgroundImage(imageUrl);
       onChange(keyy, file);
+      setflg && setflg(true);
       // Handle file upload logic here if needed
     }
   };
