@@ -20,7 +20,7 @@ const RangeSliderMinMax = ({
         max={maxSal - 1}
         className="w-full h-1.5 bg-gray-300 rounded-lg appearance-none cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
         onChange={(e) => {
-          handleChange("minSalary", Number(e.target.value));
+          handleChange("minSalary", e.target.value);
         }}
       />
 
@@ -34,7 +34,7 @@ const RangeSliderMinMax = ({
         max="75"
         className="w-full h-1.5 bg-gray-300 rounded-lg appearance-none cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
         onChange={(e) => {
-          handleChange("maxSalary", Number(e.target.value));
+          handleChange("maxSalary", e.target.value);
         }}
       />
 

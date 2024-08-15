@@ -77,15 +77,18 @@ const JobList = ({ searchParams, postedJobs, appliedJobs }: SearchParams) => {
         // console.log("Tags:", skills);
         params.append("tags", skills);
       }
-      // if (minSalary) {
+      if (jobType) {
+        params.append("emptype", jobType);
+      }
+      // if (maxSalary || minSalary) {
       //   params.append("salary_min", minSalary.toString());
-      // }
-      // if (maxSalary) {
       //   params.append("salary_max", maxSalary.toString());
       // }
 
       params.append("limit", fetchCount.toString()); // no.of entries to fetch
       params.append("offset", ((page - 1) * fetchCount).toString()); // no.of entries to skip
+
+      console.log("Params:", params.toString());
 
       const url = `${baseurl}/${postedJobs ? "posted-jobs" : appliedJobs ? "applied-jobs" : "jobs"}/?${params.toString()}`;
       const token = localStorage.getItem("access_token");
@@ -105,7 +108,18 @@ const JobList = ({ searchParams, postedJobs, appliedJobs }: SearchParams) => {
       console.error("Error fetching jobs:", error?.response?.data);
     }
     setLoading(false);
-  }, [baseurl, fetchCount, location, page, postedJobs, appliedJobs, skillTags]);
+  }, [
+    minSalary,
+    maxSalary,
+    baseurl,
+    fetchCount,
+    location,
+    page,
+    postedJobs,
+    appliedJobs,
+    skillTags,
+  ]);
+  // }, [baseurl, fetchCount, location, page, postedJobs, appliedJobs, skillTags]);
 
   const fetchLogo = () => {
     const url = `${baseurl}/accounts/profile/`;

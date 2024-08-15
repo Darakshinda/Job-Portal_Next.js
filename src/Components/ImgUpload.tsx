@@ -12,7 +12,7 @@ interface ImgProps {
 
 const UploadButton: React.FC<ImgProps> = ({ onChange, keyy, setflg, val }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [backgroundImg, setBackgroundImg] = useState<string | null>(val);
+  const [backgroundImg, setBackgroundImg] = useState<string | null>(null);
 
   // Update backgroundImg when resetflg is true and val is different
   // useEffect(() => {
@@ -35,6 +35,12 @@ const UploadButton: React.FC<ImgProps> = ({ onChange, keyy, setflg, val }) => {
       setflg && setflg(true);
     }
   };
+
+  useEffect(() => {
+    if (val) {
+      setBackgroundImg(val);
+    }
+  }, [val]);
 
   return (
     <div

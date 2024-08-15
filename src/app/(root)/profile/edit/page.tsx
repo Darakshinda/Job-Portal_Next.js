@@ -32,6 +32,7 @@ import EducationCard from "@/Components/EducationCard";
 import Swal from "sweetalert2";
 import ImgUpload from "@/Components/ImgUpload";
 import { set } from "date-fns";
+import { error } from "console";
 
 const LocationTags = locOpns.countries;
 type AboutSchema = z.infer<typeof aboutSchema>;
@@ -112,7 +113,8 @@ const EditProfilePage = () => {
   const [educationArray, setEducationArray] = useState<Education[]>([]);
 
   const [aboutReset, setAboutReset] = useState(false);
-  const [isDirty, setIsFormDirty] = useState(false);
+  const [identityDirty, setIdentityDirty] = useState(false);
+  const [aboutFormDirty, setAboutFormDirty] = useState(false);
   const [isHirer, setIsHirer] = useState(false);
   const [expAddButton, setExpAddButton] = useState(true);
   const [educationAddButton, setEducationAddButton] = useState(true);
@@ -121,8 +123,9 @@ const EditProfilePage = () => {
   const {
     register: aboutRegister,
     handleSubmit: handleAboutSubmit,
-    formState: { errors: aboutErrors },
+    formState: { errors: aboutErrors, isDirty: aboutIsDirty },
     setValue: setAboutValue,
+    reset: aboutFieldReset,
   } = useForm<AboutSchema>({
     mode: "onChange",
     resolver: zodResolver(aboutSchema),
@@ -131,8 +134,9 @@ const EditProfilePage = () => {
   const {
     register: socialProfilesRegister,
     handleSubmit: socialProfilesHandleSubmit,
-    formState: { errors: socialProfilesErrors },
+    formState: { errors: socialProfilesErrors, isDirty: socialProfilesIsDirty },
     setValue,
+    reset: socialProfilesReset,
   } = useForm<SocialProfilesSchema>({
     mode: "onChange",
     resolver: zodResolver(socialProfilesSchema),
@@ -141,7 +145,7 @@ const EditProfilePage = () => {
   const {
     register: generalRegister,
     handleSubmit: generalHandleSubmit,
-    formState: { errors: generalErrors },
+    formState: { errors: generalErrors, isDirty: generalIsDirty },
     watch,
   } = useForm<GeneralSchema>({
     mode: "onBlur",
@@ -153,6 +157,7 @@ const EditProfilePage = () => {
       ...prevState,
       [key]: value,
     }));
+    setAboutFormDirty(true);
   };
 
   const handleSkillChange = (skills: string[]) => {
@@ -160,10 +165,13 @@ const EditProfilePage = () => {
       ...prevState,
       skillsArray: skills,
     }));
-    setIsFormDirty(true);
+    setAboutFormDirty(true);
   };
 
   const handleGeneralChange = (key: string, value: string | string[]) => {
+    if (key !== "achievements") {
+      setIdentityDirty(true);
+    }
     setGeneralFormData((prevState) => ({
       ...prevState,
       [key]: value,
@@ -198,6 +206,8 @@ const EditProfilePage = () => {
     };
     onSubmit(newFormData);
   };
+
+  console.log("about form errors: ", aboutErrors);
 
   const handleAboutFormReset = () => {
     setAboutReset(true);
@@ -299,6 +309,21 @@ const EditProfilePage = () => {
   //   }
   // };
 
+  const yoeStringToNumber = (yoe: string): string => {
+    // Handle the specific case for "Less than 1 year"
+    if (yoe === "Less than 1 year") {
+      return "0";
+    }
+
+    // Extract digits from the string using a regular expression
+    const match = yoe.match(/\d+/);
+
+    // If a match is found, return it; otherwise, return "1" for the specific case
+    return match ? match[0] : "0";
+  };
+
+  console.log("yoe: ", aboutFormData.years_of_experience);
+
   const onSubmit = async (data: any) => {
     const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
     const access_token = localStorage.getItem("access_token");
@@ -309,15 +334,43 @@ const EditProfilePage = () => {
       formData.append("profile_picture", aboutFormData.profile_picture);
     }
 
+    let skills = "";
+    for (var i = 0; i < aboutFormData.skillsArray.length; i++) {
+      skills += aboutFormData.skillsArray[i];
+      if (i !== aboutFormData.skillsArray.length - 1) {
+        skills += ",";
+      }
+    }
+
     // Append form data fields
     Object.keys(data).forEach((key) => {
-      if (key !== "profile_picture") {
+      if (
+        key !== "profile_picture" &&
+        key !== "years_of_experience" &&
+        key !== "skillsArray"
+      ) {
         formData.append(key, data[key]);
+      }
+      if (key === "skillsArray") {
+        if (isHirer) {
+          formData.append("hiring_skills", skills);
+        } else {
+          formData.append("technical_skills", skills);
+        }
       }
     });
 
     // Append additional fields
     formData.append("account_type", isHirer ? "job_hirer" : "job_seeker");
+    let races = "";
+    // for (var i = 0; i < generalFormData.race_ethnicity!.length; i++) {
+    //   races += generalFormData.race_ethnicity![i];
+    //   if (i !== generalFormData.race_ethnicity!.length - 1) {
+    //     races += ",";
+    //   }
+    // }
+
+    // formData.append("race_ethnicity", races);
 
     if (isHirer) {
       formData.append("company_description", data.textarea);
@@ -339,7 +392,24 @@ const EditProfilePage = () => {
         }
       );
 
+      const responsetwo = await axios.put(
+        `${baseurl}/accounts/profile/`,
+        {
+          years_of_experience: yoeStringToNumber(
+            aboutFormData.years_of_experience
+          ),
+          account_type: isHirer ? "job_hirer" : "job_seeker",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      ); //This is not the right way to do but formData object doesn't take number data type
+
       console.log(response.data);
+      console.log(responsetwo.data);
       Swal.fire({
         title: "Profile update successful",
         icon: "success",
@@ -400,6 +470,18 @@ const EditProfilePage = () => {
     "peer py-3 px-4 ps-11 block w-full bg-gray-100 rounded-lg outline-none disabled:opacity-50 disabled:pointer-events-none placeholder:text-gray-400";
 
   useEffect(() => {
+    function yoeToString(yoe: number): string {
+      if (yoe === 0) {
+        return "Less than 1 year";
+      } else if (yoe === 1) {
+        return "1 year";
+      } else if (yoe === 10) {
+        return "10+ years";
+      } else {
+        return `${yoe} years`;
+      }
+    }
+
     async function fetchData() {
       const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
       const access_token = localStorage.getItem("access_token");
@@ -413,12 +495,14 @@ const EditProfilePage = () => {
         setAboutFormData({
           profile_picture: null,
           location: response.data.location,
-          years_of_experience: "0",
+          years_of_experience: !isHirer
+            ? yoeToString(Math.floor(response.data.years_of_experience))
+            : "",
           //remove yoe for hirer
           company_name: response.data.company_name,
           skillsArray:
             response.data.account_type === "job_hirer"
-              ? [] // to be added in backend as hiring_skills
+              ? response.data.hiring_skills.split(",") // to be added in backend as hiring_skills
               : response.data.technical_skills.split(","), //not present
           product_service: response.data.product_service,
           company_stage: response.data.company_stage,
@@ -430,22 +514,54 @@ const EditProfilePage = () => {
           achievements: response.data.achievements, //doesn't exist for hirer
           pronouns: response.data.pronouns,
           gender: response.data.gender,
-          // race_ethnicity: response.data.race_ethnicity
+          race_ethnicity: response.data.race_ethnicity,
         });
         setWorkExperienceArray(response.data.work_experience_details);
         setEducationArray(response.data.education_details);
-        setValue("website", response.data.website);
-        setValue("linkedin", response.data.linkedin);
-        setValue("github", response.data.github);
-        setValue("telegram", response.data.telegram);
-        setAboutValue("first_name", response.data.first_name);
-        setAboutValue("last_name", response.data.last_name);
-        setAboutValue("email", response.data.email);
-        setAboutValue("designation", response.data.designation);
-        setAboutValue(
-          "textarea",
-          response.data.company_description || response.data.bio
-        );
+        const sociallinks = {
+          website: response.data.website,
+          linkedin: response.data.linkedin,
+          github: response.data.github,
+          telegram: response.data.telegram,
+        };
+        socialProfilesReset(sociallinks);
+        const aboutdetails = {
+          first_name: response.data.first_name,
+          last_name: response.data.last_name,
+          email: response.data.email,
+          designation:
+            response.data.account_type === "job_hirer"
+              ? response.data.designation
+              : "N/A",
+          textarea:
+            response.data.account_type === "job_hirer"
+              ? response.data.company_description
+              : response.data.bio,
+        };
+        aboutFieldReset(aboutdetails);
+        // setValue("website", response.data.website, { shouldDirty: false });
+        // setValue("linkedin", response.data.linkedin, { shouldDirty: false });
+        // setValue("github", response.data.github, { shouldDirty: false });
+        // setValue("telegram", response.data.telegram, { shouldDirty: false });
+        // setAboutValue("first_name", response.data.first_name, {
+        //   shouldDirty: false,
+        // });
+        // setAboutValue("last_name", response.data.last_name, {
+        //   shouldDirty: false,
+        // });
+        // setAboutValue("email", response.data.email, { shouldDirty: false });
+        // if (response.data.account_type === "job_hirer") {
+        //   setAboutValue("designation", response.data.designation, {
+        //     shouldDirty: false,
+        //   });
+        // }
+        // if (response.data.account_type === "job_hirer") {
+        //   setAboutValue("textarea", response.data.company_description, {
+        //     shouldDirty: false,
+        //   });
+        // } else {
+        //   setAboutValue("textarea", response.data.bio, { shouldDirty: false });
+        // }
       } catch (error: any) {
         console.log(error.response?.data || error);
       }
@@ -556,6 +672,11 @@ const EditProfilePage = () => {
                     multiple={false}
                     req={true}
                   />
+                  {aboutFormData.location === "" && (
+                    <span className="text-red-500 text-xs font-semibold">
+                      Location is required
+                    </span>
+                  )}
                 </div>
               )}
 
@@ -586,6 +707,11 @@ const EditProfilePage = () => {
                     multiple={false}
                     req={false}
                   />
+                  {aboutFormData.years_of_experience === "" && (
+                    <span className="text-red-500 text-xs font-semibold">
+                      Years of experience is required
+                    </span>
+                  )}
                 </div>
               )}
             </div>
@@ -603,6 +729,11 @@ const EditProfilePage = () => {
                 multiple={true}
                 req={false}
               />
+              {aboutFormData.skillsArray.length === 0 && (
+                <span className="text-red-500 text-xs font-semibold">
+                  {isHirer ? "Skills are required" : "Skills are required"}
+                </span>
+              )}
             </div>
 
             {isHirer && (
@@ -619,6 +750,11 @@ const EditProfilePage = () => {
                     onSingleChange={handleAboutChange}
                     multiple={false}
                   />
+                  {aboutFormData.product_service === "" && (
+                    <span className="text-red-500 text-xs font-semibold">
+                      Product/Service is required
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex flex-col justify-center w-full">
@@ -633,6 +769,11 @@ const EditProfilePage = () => {
                     onSingleChange={handleAboutChange}
                     multiple={false}
                   />
+                  {aboutFormData.company_stage === "" && (
+                    <span className="text-red-500 text-xs font-semibold">
+                      Company stage is required
+                    </span>
+                  )}
                 </div>
               </div>
             )}
@@ -665,22 +806,29 @@ const EditProfilePage = () => {
             </div>
           </div>
 
-          <div className="md:col-start-2 md:col-span-1 justify-self-center space-x-4 pt-2">
-            <button
-              type="submit"
-              className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
-            >
-              Save
-            </button>
+          {(aboutFormDirty || aboutIsDirty) && (
+            <div className="md:col-start-2 md:col-span-1 justify-self-center space-x-4 pt-2">
+              <button
+                type="submit"
+                className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={
+                  aboutFormData.location === "" ||
+                  aboutFormData.skillsArray.length === 0 ||
+                  aboutFormData.years_of_experience === ""
+                }
+              >
+                Save
+              </button>
 
-            <button
-              className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
-              type="reset"
-              onClick={handleAboutFormReset}
-            >
-              Reset
-            </button>
-          </div>
+              <button
+                className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
+                type="reset"
+                onClick={handleAboutFormReset}
+              >
+                Reset
+              </button>
+            </div>
+          )}
         </form>
 
         <form
@@ -752,22 +900,32 @@ const EditProfilePage = () => {
             />
           </div>
 
-          <div className="md:col-start-2 md:col-span-1 justify-self-center space-x-4 pt-4">
-            <button
-              type="submit"
-              className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
-            >
-              Save
-            </button>
+          {socialProfilesIsDirty && (
+            <div className="md:col-start-2 md:col-span-1 justify-self-center space-x-4 pt-4">
+              <button
+                type="submit"
+                className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={
+                  !!(
+                    socialProfilesErrors.website ||
+                    socialProfilesErrors.linkedin ||
+                    socialProfilesErrors.github ||
+                    socialProfilesErrors.telegram
+                  )
+                }
+              >
+                Save
+              </button>
 
-            <button
-              type="reset"
-              onClick={socialProfilesFormReset}
-              className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
-            >
-              Reset
-            </button>
-          </div>
+              <button
+                type="reset"
+                onClick={socialProfilesFormReset}
+                className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
+              >
+                Reset
+              </button>
+            </div>
+          )}
         </form>
 
         {!isHirer && (
@@ -892,7 +1050,7 @@ const EditProfilePage = () => {
               }
             />
 
-            {generalFormData.achievements && (
+            {generalIsDirty && (
               <div className="md:col-start-2 md:col-span-1 justify-self-center space-x-4 pt-4">
                 <button
                   type="submit"
@@ -900,7 +1058,8 @@ const EditProfilePage = () => {
                   onClick={() => {
                     console.log(generalFormData.achievements);
                   }}
-                  className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
+                  className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={generalFormData.achievements === ""}
                 >
                   Save
                 </button>
@@ -937,6 +1096,11 @@ const EditProfilePage = () => {
                   multiple={false}
                   selected={generalFormData.pronouns}
                 />
+                {generalFormData.pronouns === "" && (
+                  <span className="text-red-500 text-xs font-semibold">
+                    Pronouns are required
+                  </span>
+                )}
               </div>
 
               <div className="flex flex-col justify-center w-full">
@@ -957,6 +1121,11 @@ const EditProfilePage = () => {
                   multiple={false}
                   selected={generalFormData.gender}
                 />
+                {generalFormData.gender === "" && (
+                  <span className="text-red-500 text-xs font-semibold">
+                    Gender is required
+                  </span>
+                )}
               </div>
             </div>
 
@@ -1003,26 +1172,32 @@ const EditProfilePage = () => {
             />
           </div>
 
-          <div className="md:col-start-2 md:col-span-1 justify-self-center space-x-4 pt-4">
-            <button
-              type="submit"
-              // onClick={handleGeneralFormSubmit}
-              // onClick={() => {
-              //   console.log(generalFormData);
-              // }}
-              className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
-            >
-              Save
-            </button>
+          {(generalIsDirty || identityDirty) && (
+            <div className="md:col-start-2 md:col-span-1 justify-self-center space-x-4 pt-4">
+              <button
+                type="submit"
+                // onClick={handleGeneralFormSubmit}
+                // onClick={() => {
+                //   console.log(generalFormData);
+                // }}
+                disabled={
+                  generalFormData.pronouns === "" ||
+                  generalFormData.gender === ""
+                }
+                className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Save
+              </button>
 
-            <button
-              type="reset"
-              onClick={handleGeneralFormReset}
-              className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
-            >
-              Reset
-            </button>
-          </div>
+              <button
+                type="reset"
+                onClick={handleGeneralFormReset}
+                className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
+              >
+                Reset
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </div>

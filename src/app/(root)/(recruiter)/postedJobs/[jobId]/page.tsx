@@ -176,12 +176,12 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
   };
 
   useEffect(() => {
-    if (isModalOpen) {
+    if (isModalOpen || isCoverOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
     }
-  }, [isModalOpen]);
+  }, [isModalOpen, isCoverOpen]);
 
   if (!jobDetails)
     return (
