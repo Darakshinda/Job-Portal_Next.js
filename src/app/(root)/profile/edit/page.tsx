@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -33,6 +33,9 @@ import Swal from "sweetalert2";
 import ImgUpload from "@/Components/ImgUpload";
 import { set } from "date-fns";
 import { error } from "console";
+import Spinner from "@/Components/Spinner";
+import debounce from "lodash/debounce";
+import PdfUploadForm from "@/Components/Forms/ResumeUpload";
 
 const LocationTags = locOpns.countries;
 type AboutSchema = z.infer<typeof aboutSchema>;
@@ -47,6 +50,7 @@ type About = {
   last_name?: string;
   email?: string;
   profile_picture: File | null;
+  resume: File | null;
   profile_picture_url: string;
   location: string; // seeker
   designation?: string; // hirer
@@ -58,13 +62,14 @@ type About = {
   company_stage: string; // hirer
   company_description?: string; // hirer
   bio?: string; // seeker
+  resume_url: string; //seeker
 };
 
 type WorkExperience = {
   company_name: string;
   title: string;
-  start_date: Date;
-  end_date: Date | null;
+  start_date: string;
+  end_date: string | null;
   currently_working: boolean;
   description: string;
 };
@@ -96,6 +101,8 @@ const EditProfilePage = () => {
     skillsArray: [],
     product_service: "",
     company_stage: "",
+    resume: null,
+    resume_url: "",
   });
 
   const [generalFormData, setGeneralFormData] = useState<General>({
@@ -119,6 +126,8 @@ const EditProfilePage = () => {
   const [expAddButton, setExpAddButton] = useState(true);
   const [educationAddButton, setEducationAddButton] = useState(true);
   const [profilePicChanged, setProfilePicChanged] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [resumeChanged, setResumeChanged] = useState(false);
 
   const {
     register: aboutRegister,
@@ -148,7 +157,7 @@ const EditProfilePage = () => {
     formState: { errors: generalErrors, isDirty: generalIsDirty },
     watch,
   } = useForm<GeneralSchema>({
-    mode: "onBlur",
+    mode: "onChange",
     resolver: zodResolver(generalSchema),
   });
 
@@ -221,6 +230,8 @@ const EditProfilePage = () => {
       product_service: "",
       company_stage: "",
       profile_picture_url: "",
+      resume: null,
+      resume_url: "",
     });
     console.log(aboutFormData);
   };
@@ -254,16 +265,6 @@ const EditProfilePage = () => {
       gender: "",
       genderSelfdescribe: "",
     });
-  };
-
-  const handleExpSubmit = (data: WorkExperience[]) => {
-    setWorkExperienceArray(data);
-    onSubmit(data);
-  };
-
-  const handleEduSubmit = (data: Education[]) => {
-    setEducationArray(data);
-    onSubmit(data);
   };
 
   // const onSubmit = async (data: any) => {
@@ -324,112 +325,157 @@ const EditProfilePage = () => {
 
   console.log("yoe: ", aboutFormData.years_of_experience);
 
+  const onSubmitArrays = async () => {
+    if (!isLoading) {
+      const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
+      const access_token = localStorage.getItem("access_token");
+      try {
+        const responsethree = await axios.put(
+          `${baseurl}/accounts/profile/`,
+          {
+            work_experience_details: workExperienceArray,
+            education_details: educationArray,
+            account_type: isHirer ? "job_hirer" : "job_seeker",
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${access_token}`,
+            },
+          }
+        );
+        console.log(responsethree.data);
+        Swal.fire({
+          title: "Profile update successful",
+          icon: "success",
+          toast: true,
+          timer: 3000,
+          position: "top-right",
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+      } catch (error: any) {
+        console.log(error.response?.data || error);
+      }
+    }
+  };
+
   const onSubmit = async (data: any) => {
-    const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
-    const access_token = localStorage.getItem("access_token");
+    if (!isLoading) {
+      const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
+      const access_token = localStorage.getItem("access_token");
 
-    const formData = new FormData();
+      const formData = new FormData();
 
-    if (profilePicChanged && aboutFormData.profile_picture) {
-      formData.append("profile_picture", aboutFormData.profile_picture);
-    }
-
-    let skills = "";
-    for (var i = 0; i < aboutFormData.skillsArray.length; i++) {
-      skills += aboutFormData.skillsArray[i];
-      if (i !== aboutFormData.skillsArray.length - 1) {
-        skills += ",";
+      if (profilePicChanged && aboutFormData.profile_picture) {
+        formData.append("profile_picture", aboutFormData.profile_picture);
       }
-    }
 
-    // Append form data fields
-    Object.keys(data).forEach((key) => {
-      if (
-        key !== "profile_picture" &&
-        key !== "years_of_experience" &&
-        key !== "skillsArray"
-      ) {
-        formData.append(key, data[key]);
+      if (resumeChanged && aboutFormData.resume) {
+        formData.append("resume", aboutFormData.resume);
       }
-      if (key === "skillsArray") {
-        if (isHirer) {
-          formData.append("hiring_skills", skills);
-        } else {
-          formData.append("technical_skills", skills);
+
+      let skills = "";
+      for (var i = 0; i < aboutFormData.skillsArray.length; i++) {
+        skills += aboutFormData.skillsArray[i];
+        if (i !== aboutFormData.skillsArray.length - 1) {
+          skills += ",";
         }
       }
-    });
 
-    // Append additional fields
-    formData.append("account_type", isHirer ? "job_hirer" : "job_seeker");
-    let races = "";
-    // for (var i = 0; i < generalFormData.race_ethnicity!.length; i++) {
-    //   races += generalFormData.race_ethnicity![i];
-    //   if (i !== generalFormData.race_ethnicity!.length - 1) {
-    //     races += ",";
-    //   }
-    // }
-
-    // formData.append("race_ethnicity", races);
-
-    if (isHirer) {
-      formData.append("company_description", data.textarea);
-    } else {
-      formData.append("bio", data.textarea);
-      // formData.append("work_experience_details", JSON.stringify(workExperienceArray));
-      // formData.append("education_details", JSON.stringify(educationArray)); // Uncomment if you have educationArray
-    }
-
-    try {
-      const response = await axios.put(
-        `${baseurl}/accounts/profile/`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${access_token}`,
-          },
+      // Append form data fields
+      Object.keys(data).forEach((key) => {
+        if (
+          key !== "profile_picture" &&
+          key !== "years_of_experience" &&
+          key !== "skillsArray" &&
+          key !== "work_experience_details" &&
+          key !== "education_details" &&
+          key !== "resume"
+        ) {
+          formData.append(key, data[key]);
         }
-      );
-
-      const responsetwo = await axios.put(
-        `${baseurl}/accounts/profile/`,
-        {
-          years_of_experience: yoeStringToNumber(
-            aboutFormData.years_of_experience
-          ),
-          account_type: isHirer ? "job_hirer" : "job_seeker",
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${access_token}`,
-          },
+        if (key === "skillsArray") {
+          if (isHirer) {
+            formData.append("hiring_skills", skills);
+          } else {
+            formData.append("technical_skills", skills);
+          }
         }
-      ); //This is not the right way to do but formData object doesn't take number data type
-
-      console.log(response.data);
-      console.log(responsetwo.data);
-      Swal.fire({
-        title: "Profile update successful",
-        icon: "success",
-        toast: true,
-        timer: 3000,
-        position: "top-right",
-        timerProgressBar: true,
-        showConfirmButton: false,
       });
-    } catch (error: any) {
-      console.log(error.response?.data || error);
-      Swal.fire({
-        title: "Profile update failed. Please try again",
-        icon: "error",
-        toast: true,
-        timer: 3000,
-        position: "top-right",
-        timerProgressBar: true,
-        showConfirmButton: false,
-      });
+
+      console.log("FormData: ", formData);
+
+      // Append additional fields
+      formData.append("account_type", isHirer ? "job_hirer" : "job_seeker");
+      // for (var i = 0; i < generalFormData.race_ethnicity!.length; i++) {
+      //   races += generalFormData.race_ethnicity![i];
+      //   if (i !== generalFormData.race_ethnicity!.length - 1) {
+      //     races += ",";
+      //   }
+      // }
+
+      // formData.append("race_ethnicity", races);
+
+      if (isHirer) {
+        formData.append("company_description", data.textarea);
+      } else {
+        formData.append("bio", data.textarea);
+        // formData.append("work_experience_details", JSON.stringify(workExperienceArray));
+        // formData.append("education_details", JSON.stringify(educationArray)); // Uncomment if you have educationArray
+      }
+
+      try {
+        const response = await axios.put(
+          `${baseurl}/accounts/profile/`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${access_token}`,
+            },
+          }
+        );
+
+        const responsetwo = await axios.put(
+          `${baseurl}/accounts/profile/`,
+          {
+            years_of_experience: yoeStringToNumber(
+              aboutFormData.years_of_experience
+            ),
+            account_type: isHirer ? "job_hirer" : "job_seeker",
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${access_token}`,
+            },
+          }
+        ); //This is not the right way to do but formData object doesn't take number data type
+
+        console.log(response.data);
+        console.log(responsetwo.data);
+
+        Swal.fire({
+          title: "Profile update successful",
+          icon: "success",
+          toast: true,
+          timer: 3000,
+          position: "top-right",
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+      } catch (error: any) {
+        console.log(error.response?.data || error);
+        Swal.fire({
+          title: "Profile update failed. Please try again",
+          icon: "error",
+          toast: true,
+          timer: 3000,
+          position: "top-right",
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+      }
     }
   };
 
@@ -469,6 +515,20 @@ const EditProfilePage = () => {
   const socialProfilesCls =
     "peer py-3 px-4 ps-11 block w-full bg-gray-100 rounded-lg outline-none disabled:opacity-50 disabled:pointer-events-none placeholder:text-gray-400";
 
+  const debounceOnSubmit = useRef(debounce(onSubmitArrays, 1000)).current;
+
+  useEffect(() => {
+    if (!isLoading) {
+      debounceOnSubmit();
+    }
+  }, [workExperienceArray]);
+
+  useEffect(() => {
+    if (!isLoading) {
+      debounceOnSubmit();
+    }
+  }, [educationArray]);
+
   useEffect(() => {
     function yoeToString(yoe: number): string {
       if (yoe === 0) {
@@ -502,11 +562,13 @@ const EditProfilePage = () => {
           company_name: response.data.company_name,
           skillsArray:
             response.data.account_type === "job_hirer"
-              ? response.data.hiring_skills.split(",") // to be added in backend as hiring_skills
+              ? response.data.hiring_skills?.split(",") // to be added in backend as hiring_skills
               : response.data.technical_skills.split(","), //not present
           product_service: response.data.product_service,
           company_stage: response.data.company_stage,
           profile_picture_url: response.data.profile_picture,
+          resume: null, //update this
+          resume_url: response.data.resume,
         });
         console.log("Profile Picture URL: ", response.data.profile_picture);
 
@@ -562,12 +624,21 @@ const EditProfilePage = () => {
         // } else {
         //   setAboutValue("textarea", response.data.bio, { shouldDirty: false });
         // }
+        setIsLoading(false);
       } catch (error: any) {
         console.log(error.response?.data || error);
       }
     }
     fetchData();
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center w-full h-[100dvh]">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 bg-white min-h-screen ps-20 ">
@@ -729,7 +800,7 @@ const EditProfilePage = () => {
                 multiple={true}
                 req={false}
               />
-              {aboutFormData.skillsArray.length === 0 && (
+              {aboutFormData.skillsArray?.length === 0 && (
                 <span className="text-red-500 text-xs font-semibold">
                   {isHirer ? "Skills are required" : "Skills are required"}
                 </span>
@@ -803,6 +874,30 @@ const EditProfilePage = () => {
               >
                 {aboutErrors.textarea?.message}
               </span>
+            </div>
+
+            <div className="flex flex-col justify-center w-full gap-1.5">
+              {/* <label
+                htmlFor="file-input"
+                className="text-gray-500 font-semibold"
+              >
+                Resume
+              </label>
+              <input
+                type="file"
+                name="resume"
+                id="resume"
+                accept=".pdf"
+                multiple={false}
+                onChange={(e) => setAboutFormData((prevState) => ({ ...prevState, resume: e.target.files![0] }))}
+                className="block w-full border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none file:bg-gray-500 file:border-0 file:me-4 file:py-3 file:px-4 placeholder:text-gray-400"
+              /> */}
+              <PdfUploadForm
+                setFormData={handleAboutChange}
+                formDataKey="resume"
+                setFlg={setResumeChanged}
+                val={aboutFormData.resume_url}
+              />
             </div>
           </div>
 
@@ -949,7 +1044,7 @@ const EditProfilePage = () => {
                       currently_working={workExperience.currently_working}
                       description={workExperience.description}
                       // prop drill
-                      setWorkExperienceArray={handleExpSubmit}
+                      setWorkExperienceArray={setWorkExperienceArray}
                       defaultPostEditFormInputCls={defaultPostEditFormInputCls}
                     />
                   ))}
@@ -967,7 +1062,7 @@ const EditProfilePage = () => {
                   </div>
                 ) : (
                   <ExperienceForm
-                    setWorkExperienceArray={handleExpSubmit}
+                    setWorkExperienceArray={setWorkExperienceArray}
                     defaultPostEditFormInputCls={defaultPostEditFormInputCls}
                     dropdown={setExpAddButton}
                   />
@@ -996,7 +1091,7 @@ const EditProfilePage = () => {
                       gpa={education.gpa}
                       major={education.major}
                       // prop drill
-                      setEducationArray={handleEduSubmit}
+                      setEducationArray={setEducationArray}
                       defaultPostEditFormInputCls={defaultPostEditFormInputCls}
                     />
                   ))}
@@ -1014,7 +1109,7 @@ const EditProfilePage = () => {
                   </div>
                 ) : (
                   <EducationForm
-                    setEducationArray={handleEduSubmit}
+                    setEducationArray={setEducationArray}
                     defaultPostEditFormInputCls={defaultPostEditFormInputCls}
                     dropdown={setEducationAddButton}
                   />

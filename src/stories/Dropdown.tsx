@@ -33,12 +33,14 @@ export const Select = ({
       <select
         className={`${cls}`}
         required={req}
-        onChange={(event) => onChange(keyy, event.target.value)}
+        onChange={(event) => onChange!(keyy, event.target.value)}
         id={id}
         style={{ display: "inline", width: "37%" }}
       >
-        {items.map((option) => (
-          <option className="bg-[#101011] text-white">{option.label}</option>
+        {items.map((option, index) => (
+          <option key={index} className="bg-[#101011] text-white">
+            {option}
+          </option>
         ))}
       </select>
     );
@@ -47,11 +49,13 @@ export const Select = ({
     <select
       className={`${cls} bg-[#101011]`}
       required={req}
-      onChange={(event) => onChange(keyy, event.target.value)}
+      onChange={(event) => onChange!(keyy, event.target.value)}
       id={id}
     >
-      {items.map((option) => (
-        <option className="bg-[#101011] text-white">{option.label}</option>
+      {items.map((option, index) => (
+        <option key={index} className="bg-[#101011] text-white">
+          {option}
+        </option>
       ))}
     </select>
   );

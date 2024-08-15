@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 interface Option {
   label: string;
@@ -15,16 +15,16 @@ interface SearchableSelectInputProps {
 }
 
 export const SearchableSelectInput: React.FC<SearchableSelectInputProps> = ({
-  cls = 'select',
+  cls = "select",
   value,
   onChange,
   options,
   req = false,
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [sel, setsel] = useState(0);
 
-  const filteredOptions = options.filter(option =>
+  const filteredOptions = options.filter((option) =>
     option.label.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -32,18 +32,35 @@ export const SearchableSelectInput: React.FC<SearchableSelectInputProps> = ({
     <div className={`searchable-select  ${cls}`}>
       <input
         type="text"
-        className={`search-input ${cls}`} style={{width:"350px",borderStyle:"none"}}
+        className={`search-input ${cls}`}
+        style={{ width: "350px", borderStyle: "none" }}
         placeholder="Type a tag or keyword to search and add it"
         value={searchTerm}
-        onChange={e => {setSearchTerm(e.target.value);setsel(1);}}
+        onChange={(e) => {
+          setSearchTerm(e.target.value);
+          setsel(1);
+        }}
       />
-{sel==1 && <ul tabIndex={0} className={`dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box`} style={{backgroundColor:`white`}}>
-        {filteredOptions.map(option => (
-          <li><button onClick={()=>{setSearchTerm(option.label);setsel(0);}}>{option.label}</button></li>
-          
-        ))}
-      </ul>}
- 
-</div>
+      {sel == 1 && (
+        <ul
+          tabIndex={0}
+          className={`dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box`}
+          style={{ backgroundColor: `white` }}
+        >
+          {filteredOptions.map((option, index) => (
+            <li key={index}>
+              <button
+                onClick={() => {
+                  setSearchTerm(option.label);
+                  setsel(0);
+                }}
+              >
+                {option.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 };

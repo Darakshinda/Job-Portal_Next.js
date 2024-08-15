@@ -329,6 +329,16 @@ input[type="tel"] {
   border-radius: 100% !important;
 }
 
+.react-datepicker__month-select {
+  background-color: #f3f4f6;
+  color: black;
+}
+
+.react-datepicker__year-select {
+  background-color: #f3f4f6;
+  color: black;
+}
+
 /* .react-datepicker__time-list-item--selected {
   background-color: var(--blue-500) !important;
 } */

@@ -92,14 +92,15 @@ const JobList = ({ searchParams, postedJobs, appliedJobs }: SearchParams) => {
 
       const url = `${baseurl}/${postedJobs ? "posted-jobs" : appliedJobs ? "applied-jobs" : "jobs"}/?${params.toString()}`;
       const token = localStorage.getItem("access_token");
-      const config = postedJobs
-        ? { headers: { Authorization: `Bearer ${token}` } }
-        : {};
+      const config =
+        postedJobs || appliedJobs
+          ? { headers: { Authorization: `Bearer ${token}` } }
+          : {};
 
       const response = await axios.get(url, config);
 
       // console.log("Params:", params.toString());
-      // console.log("URL:", url);
+      console.log("URL:", url);
       // console.log("Token: ", token);
       // console.log("Fetched jobs:", response.data.results);
       setJobs(response.data.results); // Replace new jobs to existing jobs

@@ -77,7 +77,7 @@ const ProfilePage = () => {
         const mappedData: ProfileData = {
           ...data,
           education: data.education_details || [],
-          work_experience: data.work_experience || [],
+          work_experience: data.work_experience_details || [],
         };
 
         setProfileData(mappedData);
@@ -148,7 +148,7 @@ const ProfilePage = () => {
           <p className="text-gray-500">
             Phone: {profileData.phone_number || "Not provided"} <br />
           </p>
-          {profileData.location && (
+          {profileData.account_type === "job_seeker" && (
             <p className="text-gray-500">Location: {profileData.location}</p>
           )}
         </div>
@@ -257,7 +257,7 @@ const ProfilePage = () => {
         )}
 
         <ul className="mt-5 flex flex-col gap-y-3">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1">
             <Link
               href={profileData.telegram || "#"}
               className="flex items-center gap-2.5 group w-fit px-1.5 py-0.5 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-blue-500"

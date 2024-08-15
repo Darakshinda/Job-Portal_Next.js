@@ -49,8 +49,8 @@ const EducationCard: React.FC<EducationCardProps> = ({
         hover:shadow-md transition-all duration-300 hover:border-blue-400 bg-white"
         >
           <div className="relative w-full">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
+            <div className="space-y-2 w-full">
+              <div className="flex items-center gap-2 w-[85%] truncate">
                 <h3 className="font-semibold text-gray-800">{degree}</h3>
                 <span className="font-normal text-gray-600 italic">from</span>
                 <h3 className="font-semibold text-gray-800">{college_name}</h3>

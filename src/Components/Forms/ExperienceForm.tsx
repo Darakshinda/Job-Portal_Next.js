@@ -15,8 +15,8 @@ type ExperienceSchema = z.infer<typeof experienceSchema>;
 type Experience = {
   company_name: string;
   title?: string;
-  start_date: Date | null;
-  end_date: Date | null;
+  start_date: string | null;
+  end_date: string | null;
   currently_working: boolean;
   description?: string;
 };
@@ -68,7 +68,7 @@ const ExperienceForm = ({
 
   const handleExperienceChange = (
     key: string,
-    value: string | boolean | Date | null
+    value: string | boolean | Date | null | undefined
   ) => {
     if (key === "currently_working" && value === true) {
       setExperienceFormData((prevState) => ({
@@ -90,6 +90,8 @@ const ExperienceForm = ({
       ...experienceFormData,
       ...data,
     };
+    console.log("finalFormData", finalFormData);
+
     console.log("finalFormData", finalFormData); //To add to backend
     if (index !== undefined) {
       setWorkExperienceArray((prev: Experience[]) => {
@@ -170,15 +172,29 @@ const ExperienceForm = ({
             </label>
             <div className="flex items-center bg-gray-100 w-full rounded relative border border-gray-300 h-[2.6875rem]">
               <DatePicker
-                dateFormat="dd/MM/yyyy"
-                selected={experienceFormData.start_date}
+                dateFormat="yyyy/MM/dd"
+                selected={
+                  experienceFormData.start_date
+                    ? new Date(experienceFormData.start_date)
+                    : new Date()
+                }
                 maxDate={new Date()}
                 onKeyDown={(e) => e.preventDefault()}
                 onChange={(date: Date | null) =>
-                  handleExperienceChange("start_date", date)
+                  handleExperienceChange(
+                    "start_date",
+                    date?.toLocaleString("en-CA", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })
+                  )
                 }
                 className="input-field pl-3 caret-transparent"
                 wrapperClassName="datePicker"
+                showYearDropdown
+                showMonthDropdown
+                dropdownMode="select"
               />
             </div>
             {/* {errors.start_date && (
@@ -193,16 +209,23 @@ const ExperienceForm = ({
               </label>
               <div className="flex items-center bg-gray-100 w-full rounded relative border border-gray-300 h-[2.6875rem]">
                 <DatePicker
-                  dateFormat="dd/MM/yyyy"
+                  dateFormat="yyyy/MM/dd"
                   selected={
                     experienceFormData.end_date
                       ? new Date(experienceFormData.end_date)
                       : null
                   }
-                  minDate={experienceFormData.start_date!}
+                  minDate={new Date(experienceFormData.start_date!)}
                   maxDate={new Date()}
                   onChange={(date: Date | null) =>
-                    handleExperienceChange("end_date", date)
+                    handleExperienceChange(
+                      "end_date",
+                      date?.toLocaleString("en-CA", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })
+                    )
                   }
                   onKeyDown={(e) => e.preventDefault()}
                   className="input-field pl-3 caret-transparent"

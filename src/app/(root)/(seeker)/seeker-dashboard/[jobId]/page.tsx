@@ -74,7 +74,7 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
 
     try {
       const response = await axios.post(
-        `${baseurl}/jobs/apply`,
+        `${baseurl}/jobs/apply/`,
         {
           job: jobId,
         },
@@ -106,44 +106,47 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
   const baseurl =
     process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000/api";
 
-    useEffect(() => {
-      const access_token =
-        typeof window !== "undefined"
-          ? localStorage.getItem("access_token")
-          : null;
-  
-      if (access_token) {
-        const fetchJobDetailsAndCheckApplicationStatus = async () => {
-          try {
-            // Fetch job details
-            const jobResponse = await axios.get(`${baseurl}/jobs/${jobId}/`, {
+  useEffect(() => {
+    const access_token =
+      typeof window !== "undefined"
+        ? localStorage.getItem("access_token")
+        : null;
+
+    if (access_token) {
+      const fetchJobDetailsAndCheckApplicationStatus = async () => {
+        try {
+          // Fetch job details
+          const jobResponse = await axios.get(`${baseurl}/jobs/${jobId}/`, {
+            headers: {
+              Authorization: `Bearer ${access_token}`,
+            },
+          });
+          setJobDetails(jobResponse.data);
+
+          // Check application status
+          const applicationResponse = await axios.get(
+            `${baseurl}/applied-jobs/`,
+            {
               headers: {
                 Authorization: `Bearer ${access_token}`,
               },
-            });
-            setJobDetails(jobResponse.data);
-  
-            // Check application status
-            const applicationResponse = await axios.get(`${baseurl}/applied-jobs/`, {
-              headers: {
-                Authorization: `Bearer ${access_token}`,
-              },
-            });
-  
-            const appliedJobs = applicationResponse.data;
-            const hasApplied = appliedJobs.some(
-              (application: Application) => application.job === jobId
-            );
-  
-            setIsApplied(hasApplied);
-          } catch (error) {
-            console.log("Error fetching data", error);
-          }
-        };
-  
-        fetchJobDetailsAndCheckApplicationStatus();
-      }
-    }, [jobId, baseurl]);
+            }
+          );
+
+          const appliedJobs = applicationResponse.data;
+          const hasApplied = appliedJobs.some(
+            (application: Application) => application.job === jobId
+          );
+
+          setIsApplied(hasApplied);
+        } catch (error) {
+          console.log("Error fetching data", error);
+        }
+      };
+
+      fetchJobDetailsAndCheckApplicationStatus();
+    }
+  }, [jobId, baseurl]);
 
   //   const loadMoreApplicants = () => {
   //     // console.log("Loading more applicants...");
@@ -342,14 +345,15 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
           {loading && <Spinner />}
         </div> */}
       </div>
-      <button
-        onClick={handleApplyJob}
-        disabled={isApplied}
-        className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4"
-      >
-        {isApplied ? "Already Applied" : "Apply"}
-      </button>
-      
+      <div className="flex justify-center">
+        <button
+          onClick={handleApplyJob}
+          disabled={isApplied}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4"
+        >
+          {isApplied ? "Already Applied" : "Apply"}
+        </button>
+      </div>
     </section>
   );
 };

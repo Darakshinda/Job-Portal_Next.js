@@ -12,8 +12,8 @@ interface ExperienceCardProps {
   index: number;
   company_name: string;
   title: string;
-  start_date: Date;
-  end_date: Date | null;
+  start_date: string;
+  end_date: string | null;
   currently_working: boolean;
   description: string;
   // ind: number;
@@ -102,11 +102,9 @@ const ExperienceCard = ({
                 </Link>
               </div>
               <div className="text-gray-500 text-sm">
-                {start_date && start_date.toLocaleDateString().toString()}
+                {start_date!}
                 <span className="text-gray-500 mx-2">-</span>
-                {end_date
-                  ? end_date.toLocaleDateString().toString()
-                  : "Currently Working"}
+                {end_date ? end_date : "Currently Working"}
               </div>
               <p className="mt-2 text-xs">{description}</p>
             </div>
