@@ -1,46 +1,92 @@
 import React from "react";
-import Navbar from "./Navbar";
-import JobList from "./Components/JobList";
+import Navbar from "../Components/Navbar";
+import JobList from "../Components/JobList";
+import Image from "next/image";
 
 export default function Home() {
   return (
-    <main>
+    <main className="w-full h-[100dvh] flex flex-col items-center">
       <Navbar />
-      <div>
-        <div className="pb-4 h-20xl max-w-18xl bg-white size-5xl">
-          <div className="relative isolate overflow-hidden bg-white pb-20 px-6 pt-40 text-center sm:px-18 sm:shadow-sm">
-            <p className="mx-auto max-w-6xl text-5xl font-Nunito font-semibold tracking-tight text-gray-900">
-              "Where Employers and Job Seekers Meet" <br /> Explore
-              Opportunities Now
-            </p>
 
-            <form action="/search">
-              <label
-                className="mx-auto mt-8 relative bg-white min-w-sm max-w-4xl flex flex-col md:flex-row items-center justify-center border py-2 px-2 rounded-2xl gap-2 shadow-2xl focus-within:border-gray-300"
-                htmlFor="search-bar"
-              >
-                <input
-                  id="search-bar"
-                  placeholder="Enter your Dream Job"
-                  name="q"
-                  className="px-6 py-2 w-full rounded-md flex-1 outline-none bg-white"
-                  required={true}
-                />
-                <button
-                  type="submit"
-                  className="w-full md:w-auto px-6 py-3 bg-black border-black text-white fill-white active:scale-95 duration-100 border will-change-transform overflow-hidden relative rounded-xl transition-all"
-                >
-                  <div className="flex items-center transition-all opacity-1">
-                    <span className="text-sm font-semibold whitespace-nowrap truncate mx-auto">
-                      Search
-                    </span>
-                  </div>
-                </button>
-              </label>
-            </form>
+      <div className="flex-1 flex flex-col items-center justify-start bg-primary-50 w-full h-full">
+        <p className="max-w-6xl xl:text-5xl md:text-3xl text-2xl font-Nunito leading-relaxed font-semibold tracking-tighter text-neutral-800 text-center mt-12">
+          &quot;Where Employers and Job Seekers Meet&quot; <br />
+          Explore Opportunities Now
+        </p>
+
+        <Image
+          src="/assets/icons/home.svg"
+          alt="Hero Image"
+          width={500}
+          height={500}
+          className="object-contain"
+        />
+
+        {/* <form className="mt-8 w-full max-sm:px-4">
+          <label
+            className="max-w-[600px] bg-white mx-auto flex flex-col sm:flex-row items-center justify-center border py-2 px-2 rounded-2xl gap-2 shadow-2xl focus-within:border-primary-300 outline-none focus-within:ring-1 focus-within:ring-primary-500 focus-within:ring-offset-0"
+            htmlFor="search-bar"
+          >
+            <input
+              id="search-bar"
+              placeholder="Enter your Dream Job"
+              name="search"
+              className="px-6 py-2 w-full rounded-md flex-1 outline-none bg-white"
+              required={true}
+            />
+            <button
+              type="submit"
+              className="w-full text-sm sm:w-auto px-6 py-3 bg-primary-700 active:bg-primary-700/80 border-black text-white active:scale-95  outline-none rounded-xl transition-all duration-100 focus-visible:outline-primary-300"
+            >
+              Search
+            </button>
+          </label>
+        </form> */}
+
+        {/* <div className="flex gap-4 justify-center items-center">
+          <div>
+            <h3 className="text-lg font-semibold mb-2"></h3>
+            
+            <Tags2
+              options={locationOptions}
+              cls="input_company{background-color: #f2f1ed;width: 95%;margin-top:10px;margin-left: 14px;border-radius: 7px;border-width: 1px;border-color: #b1b3b6;padding: 3px 10px;}"
+              placeholder="Search by Location"
+              dynamic={true}
+              onSelect={handleLocationTagSelection}
+            />
           </div>
-          <JobList />
+          <div>
+            <h3 className="text-lg font-semibold mb-2"></h3>
+            <Tags2
+              options={jobPositionOptions}
+              cls="input_company{background-color: #f2f1ed;width: 95%;margin-top:10px;margin-left: 14px;border-radius: 7px;border-width: 1px;border-color: #b1b3b6;padding: 3px 10px;}"
+              placeholder="Search by Job Position"
+              dynamic={true}
+              onSelect={handleJobTagSelection}
+            />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-2"></h3>
+            <Tags2
+              options={tagOptions}
+              cls="input_company{background-color: #f2f1ed;width: 95%;margin-top:10px;margin-left: 14px;border-radius: 7px;border-width: 1px;border-color: #b1b3b6;padding: 3px 10px;}"
+              placeholder="Search by Tags"
+              dynamic={true}
+              onSelect={handleTagTagSelection}
+            />
+          </div>
+          <div className="">
+            <SalaryRangeSlider
+              onRangeChange={handleSalaryRangeChange}
+              salaryRange={salaryRange}
+            />
+          </div>
         </div>
+        <JobList
+          selectedLocationTags={selectedLocationTags}
+          selectedJobTags={selectedJobTags}
+          selectedTagTags={selectedTagTags}
+        /> */}
       </div>
     </main>
   );

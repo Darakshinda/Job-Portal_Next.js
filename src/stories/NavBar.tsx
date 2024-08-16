@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 interface NavBarProps {
   starticon?: boolean;
@@ -6,6 +7,7 @@ interface NavBarProps {
   endIcon?: boolean;
   variant?: 'default' | 'neutral' | 'primary';
   withSearch?: boolean;
+  post?: boolean;
 }
 
 export const NavBar = ({
@@ -14,6 +16,7 @@ export const NavBar = ({
   endIcon = true,
   variant = 'default',
   withSearch = false,
+  post=false
 }: NavBarProps) => {
   let navbarClass = "navbar";
   let buttonClass = "btn btn-ghost text-xl";
@@ -26,7 +29,7 @@ export const NavBar = ({
       navbarClass += " bg-primary text-primary-content";
       break;
     default:
-      navbarClass += " bg-base-100";
+      navbarClass += " bg-white";
   }
 
   return (
@@ -40,8 +43,10 @@ export const NavBar = ({
           </button>
         </div>
       )}
-      <div className="flex-1">
-        <a className={buttonClass}>daisyUI</a>
+      <div className="flex-1"> 
+        <a className={`text-black p-6 text-3xl `} >Code Unity</a>
+        {post&&<main className="flex-1"><a className={`${buttonClass} text-black ml-[25%] font-serif p-21 text-[250%] `}>{"Hire remotely"}</a>
+        <Link href="/"><button className='btn btn-error ml-[35%] text-white font-bold'>Back{" <--"}</button></Link></main>}
       </div>
       {menu && (
         <div className="flex-none">

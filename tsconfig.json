@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "target": "es6",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -25,7 +26,8 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "src/app/(root)/profile/edit"
   ],
   "exclude": ["node_modules"]
 }
