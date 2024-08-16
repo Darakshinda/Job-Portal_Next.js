@@ -1,11 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import CompanySelect from "./CompanySelect";
-import ToggleSwitch from "./ToggleSwitch";
-import DateSelect from "./DatePickerComponent";
 import { format } from "date-fns";
 import EducationSelect from "./EducationSelect";
-import SearchableSelect from "./SearchableSelect";
 import degreeOpns from "@/constants/data/degree.json";
 import ExperienceForm from "./Forms/ExperienceForm";
 import EducationForm from "./Forms/EducationForm";

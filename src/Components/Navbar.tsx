@@ -57,7 +57,7 @@ const Navbar = () => {
 
             <button
               onClick={handleLogout}
-              className="font-semibold font-Nunito box-content px-4 sm:py-2 py-1 sm:rounded-xl rounded-full outline outline-2 outline-primary-700 focus-visible:ring-2 ring-primary-300 focus-visible:ring-offset-2 whitespace-nowrap"
+              className="font-medium font-Nunito box-content px-4 sm:py-2 py-1 sm:rounded-xl rounded-full outline outline-2 outline-primary-700 focus-visible:ring-2 ring-primary-300 focus-visible:ring-offset-2 whitespace-nowrap"
             >
               Logout
               <span className="sr-only">Login</span>
@@ -66,7 +66,7 @@ const Navbar = () => {
         ) : (
           <Link
             href={"/login"}
-            className="font-semibold font-Nunito box-content px-4 sm:py-2 py-1 sm:rounded-xl rounded-full outline outline-2 outline-primary-700 focus-visible:ring-2 ring-primary-300 focus-visible:ring-offset-2 whitespace-nowrap"
+            className="font-medium font-Nunito box-content px-4 sm:py-2 py-1 sm:rounded-xl rounded-full outline outline-2 outline-primary-700 focus-visible:ring-2 ring-primary-300 focus-visible:ring-offset-2 whitespace-nowrap"
           >
             Login
             <span className="sr-only">Login</span>

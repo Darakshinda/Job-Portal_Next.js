@@ -1,8 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import CompanySelect from "./CompanySelect";
-import ToggleSwitch from "./ToggleSwitch";
-import DateSelect from "./DatePickerComponent";
 import { format } from "date-fns";
 import ExperienceForm from "./Forms/ExperienceForm";
 import Link from "next/link";
