@@ -344,6 +344,7 @@ const EditProfilePage = () => {
           }
         );
         console.log(responsethree.data);
+        if (Swal.isVisible()) return;
         Swal.fire({
           title: "Profile update successful",
           icon: "success",
@@ -355,6 +356,15 @@ const EditProfilePage = () => {
         });
       } catch (error: any) {
         console.log(error.response?.data || error);
+        Swal.fire({
+          title: "Profile update failed. Please try again",
+          icon: "error",
+          toast: true,
+          timer: 3000,
+          position: "top-right",
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
       }
     }
   };
@@ -515,19 +525,21 @@ const EditProfilePage = () => {
   const socialProfilesCls =
     "peer py-3 px-4 ps-11 block w-full bg-gray-100 rounded-lg outline-none disabled:opacity-50 disabled:pointer-events-none placeholder:text-gray-400";
 
-  const debounceOnSubmit = useRef(debounce(onSubmitArrays, 1000)).current;
+  // const debounceOnSubmit = useRef(debounce(onSubmitArrays, 1000)).current;
 
   useEffect(() => {
     if (!isLoading) {
-      debounceOnSubmit();
+      // debounceOnSubmit();
+      onSubmitArrays();
     }
-  }, [workExperienceArray]);
+  }, [workExperienceArray, isLoading]);
 
   useEffect(() => {
     if (!isLoading) {
-      debounceOnSubmit();
+      // debounceOnSubmit();
+      onSubmitArrays();
     }
-  }, [educationArray]);
+  }, [educationArray, isLoading]);
 
   useEffect(() => {
     function yoeToString(yoe: number): string {
@@ -892,12 +904,14 @@ const EditProfilePage = () => {
                 onChange={(e) => setAboutFormData((prevState) => ({ ...prevState, resume: e.target.files![0] }))}
                 className="block w-full border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none file:bg-gray-500 file:border-0 file:me-4 file:py-3 file:px-4 placeholder:text-gray-400"
               /> */}
-              <PdfUploadForm
-                setFormData={handleAboutChange}
-                formDataKey="resume"
-                setFlg={setResumeChanged}
-                val={aboutFormData.resume_url}
-              />
+              {!isHirer && (
+                <PdfUploadForm
+                  setFormData={handleAboutChange}
+                  formDataKey="resume"
+                  setFlg={setResumeChanged}
+                  val={aboutFormData.resume_url}
+                />
+              )}
             </div>
           </div>
 
