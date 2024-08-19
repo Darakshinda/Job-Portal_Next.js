@@ -36,6 +36,7 @@ const Signup = () => {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
     watch,
@@ -239,7 +240,8 @@ const Signup = () => {
                   name="first_name"
                   type="text"
                   label="First Name"
-                  register={register}
+                  // register={register}
+                  control={control}
                   placeholder="John"
                   req={true}
                   cls={defaultCls}
@@ -253,7 +255,8 @@ const Signup = () => {
                   name="last_name"
                   type="text"
                   label="Last Name"
-                  register={register}
+                  // register={register}
+                  control={control}
                   placeholder="Doe"
                   req={true}
                   cls={defaultCls}
@@ -268,7 +271,8 @@ const Signup = () => {
                 name="email"
                 type="email"
                 label="Email"
-                register={register}
+                // register={register}
+                control={control}
                 placeholder="name@personal.com"
                 req={true}
                 cls={defaultCls}
@@ -282,7 +286,8 @@ const Signup = () => {
                 name="working_email"
                 type="email"
                 label="Work Email"
-                register={register}
+                // register={register}
+                control={control}
                 placeholder="name@work.com"
                 req={true}
                 cls={defaultCls}
@@ -297,7 +302,8 @@ const Signup = () => {
                   name="username"
                   type="text"
                   label="Username"
-                  register={register}
+                  // register={register}
+                  control={control}
                   placeholder="username"
                   req={true}
                   cls={defaultCls}
@@ -338,7 +344,8 @@ const Signup = () => {
                     name="password"
                     type="password"
                     label="Password"
-                    register={register}
+                    // register={register}
+                    control={control}
                     placeholder="••••••••"
                     req={true}
                     cls={defaultCls}
@@ -352,7 +359,8 @@ const Signup = () => {
                     name="confirm_password"
                     type="password"
                     label="Confirm Password"
-                    register={register}
+                    // register={register}
+                    control={control}
                     placeholder="••••••••"
                     req={true}
                     cls={defaultCls}
@@ -413,7 +421,8 @@ const Signup = () => {
                 name="how_heard_about_codeunity"
                 type="text"
                 label="How did you hear about CodeUnity?"
-                register={register}
+                // register={register}
+                control={control}
                 placeholder="How did you hear about us"
                 req={false}
                 cls={defaultCls}

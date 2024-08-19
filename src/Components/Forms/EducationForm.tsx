@@ -40,6 +40,7 @@ const EducationForm = ({
 }: EducationFormProps) => {
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     watch,
@@ -170,7 +171,8 @@ const EducationForm = ({
               label="Graduation"
               placeholder="20xx"
               cls={defaultPostEditFormInputCls}
-              register={register}
+              // register={register}
+              control={control}
               errors={errors.year_of_graduation}
               req={false}
             />
@@ -203,7 +205,8 @@ const EducationForm = ({
               label="CGPA"
               placeholder="Eg: 8.45"
               cls={defaultPostEditFormInputCls}
-              register={register}
+              // register={register}
+              control={control}
               req={true}
               errors={errors.gpa}
             />

@@ -130,6 +130,7 @@ const EditProfilePage = () => {
   const [resumeChanged, setResumeChanged] = useState(false);
 
   const {
+    control: aboutControl,
     register: aboutRegister,
     handleSubmit: handleAboutSubmit,
     formState: { errors: aboutErrors, isDirty: aboutIsDirty },
@@ -141,6 +142,7 @@ const EditProfilePage = () => {
   });
 
   const {
+    control: educationControl,
     register: socialProfilesRegister,
     handleSubmit: socialProfilesHandleSubmit,
     formState: { errors: socialProfilesErrors, isDirty: socialProfilesIsDirty },
@@ -152,6 +154,7 @@ const EditProfilePage = () => {
   });
 
   const {
+    control: generalControl,
     register: generalRegister,
     handleSubmit: generalHandleSubmit,
     formState: { errors: generalErrors, isDirty: generalIsDirty },
@@ -694,7 +697,8 @@ const EditProfilePage = () => {
                 name="first_name"
                 type="text"
                 label="First Name"
-                register={aboutRegister}
+                // register={aboutRegister}
+                control={aboutControl}
                 placeholder="John"
                 req={false}
                 cls={defaultPostEditFormInputCls}
@@ -706,7 +710,8 @@ const EditProfilePage = () => {
                 name="last_name"
                 type="text"
                 label="Last Name"
-                register={aboutRegister}
+                // register={aboutRegister}
+                control={aboutControl}
                 placeholder="Doe"
                 req={false}
                 cls={defaultPostEditFormInputCls}
@@ -719,7 +724,8 @@ const EditProfilePage = () => {
               name="email"
               type="email"
               label="Email"
-              register={aboutRegister}
+              // register={aboutRegister}
+              control={aboutControl}
               placeholder="example@gmail.com"
               req={false}
               cls={defaultPostEditFormInputCls}
@@ -734,7 +740,8 @@ const EditProfilePage = () => {
                     name="designation"
                     type="text"
                     label="Designation"
-                    register={aboutRegister}
+                    // register={aboutRegister}
+                    control={aboutControl}
                     placeholder="Eg: HR"
                     req={true}
                     cls={defaultPostEditFormInputCls}
@@ -870,7 +877,8 @@ const EditProfilePage = () => {
                 <span className="text-red-500 ms-1.5">*</span>
               </label>
               <textarea
-                {...aboutRegister("textarea")}
+                // {...aboutRegister("textarea")}
+                {...aboutControl.register("textarea")}
                 name="textarea"
                 id="textarea"
                 rows={6}
@@ -1246,7 +1254,8 @@ const EditProfilePage = () => {
                     name="pronouns_self_describe"
                     type="text"
                     label="Describe your pronouns"
-                    register={generalRegister}
+                    // register={generalRegister}
+                    control={generalControl}
                     placeholder=""
                     req={false}
                     cls={defaultPostEditFormInputCls}
@@ -1262,7 +1271,8 @@ const EditProfilePage = () => {
                     name="gender_self_describe"
                     type="text"
                     label="Describe your gender"
-                    register={generalRegister}
+                    // register={generalRegister}
+                    control={generalControl}
                     placeholder=""
                     req={false}
                     cls={defaultPostEditFormInputCls}

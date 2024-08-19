@@ -78,6 +78,7 @@ const SignupSeeker = () => {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<Schema>({
@@ -220,7 +221,8 @@ const SignupSeeker = () => {
                   name="first_name"
                   type="text"
                   label="First Name"
-                  register={register}
+                  // register={register}
+                  control={control}
                   placeholder="John"
                   req={true}
                   cls={defaultCls}
@@ -234,7 +236,8 @@ const SignupSeeker = () => {
                   name="last_name"
                   type="text"
                   label="Last Name"
-                  register={register}
+                  // register={register}
+                  control={control}
                   placeholder="Doe"
                   req={true}
                   cls={defaultCls}
@@ -249,7 +252,8 @@ const SignupSeeker = () => {
                 name="email"
                 type="email"
                 label="Email"
-                register={register}
+                // register={register}
+                control={control}
                 placeholder="name@personal.com"
                 req={true}
                 cls={defaultCls}
@@ -264,7 +268,8 @@ const SignupSeeker = () => {
                   name="username"
                   type="text"
                   label="Username"
-                  register={register}
+                  // register={register}
+                  control={control}
                   placeholder="username"
                   req={true}
                   cls={defaultCls}
@@ -305,7 +310,8 @@ const SignupSeeker = () => {
                     name="password"
                     type="password"
                     label="Password"
-                    register={register}
+                    // register={register}
+                    control={control}
                     placeholder="••••••••"
                     req={true}
                     cls={defaultCls}
@@ -319,7 +325,8 @@ const SignupSeeker = () => {
                     name="confirm_password"
                     type="password"
                     label="Confirm Password"
-                    register={register}
+                    // register={register}
+                    control={control}
                     placeholder="••••••••"
                     req={true}
                     cls={defaultCls}
@@ -337,7 +344,8 @@ const SignupSeeker = () => {
                     name="location"
                     type="text"
                     label="Location"
-                    register={register}
+                    // register={register}
+                    control={control}
                     placeholder="Location"
                     req={true}
                     cls={defaultCls}
@@ -351,7 +359,8 @@ const SignupSeeker = () => {
                     name="experience"
                     type="number"
                     label="Years of Experience"
-                    register={register}
+                    // register={register}
+                    control={control}
                     placeholder="Experience"
                     req={true}
                     cls={defaultCls}
@@ -379,7 +388,8 @@ const SignupSeeker = () => {
                 name="how_heard_about_codeunity"
                 type="text"
                 label="How did you hear about CodeUnity?"
-                register={register}
+                // register={register}
+                control={control}
                 placeholder="How did you hear about us"
                 req={false}
                 cls={defaultCls}

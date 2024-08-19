@@ -14,11 +14,7 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({
   name,
   onChange,
 }) => {
-  const [selectedOptions, setSelectedOptions] = useState<string[]>(selected);
-
-  // useEffect(() => {
-  //   setSelectedOptions(selected);
-  // }, [selected]);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
   const displayTagsLength = 10;
   const increament = 5;
@@ -76,6 +72,27 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({
     setSelectedOptions(newBenefitOptions);
     onChange(newBenefitOptions);
   };
+
+  const sortArrayWithSubsetPriority = (array: any, subset: any) => {
+    const subsetSet = new Set(subset);
+    return array.sort((a: any, b: any) => {
+      const aInSubset = subsetSet.has(a);
+      const bInSubset = subsetSet.has(b);
+
+      if ((aInSubset && bInSubset) || (!aInSubset && !bInSubset)) {
+        return 0;
+      }
+      return aInSubset ? -1 : 1;
+    });
+  };
+
+  useEffect(() => {
+    setSelectedOptions(selected);
+    sortArrayWithSubsetPriority(options, selected);
+  }, [selected, options]);
+
+  console.log("Selected: ", selectedOptions);
+  console.log("Options: ", displayedOptions);
 
   return (
     <div className="flex flex-wrap">

@@ -64,7 +64,7 @@ const JobForm = () => {
     formState: { errors, isDirty },
     watch,
   } = useForm<Schema>({
-    mode: "onTouched",
+    mode: "onChange",
     resolver: zodResolver(postJobSchema),
   });
 
@@ -142,14 +142,14 @@ const JobForm = () => {
     };
 
     // Validate job description
-    if (formData.desc === "") {
+    if (formData.desc === "" && (isFormDirty || isDirty)) {
       newErrors.jobDesciptionError = "This Field is Required";
     } else {
       newErrors.jobDesciptionError = "";
     }
 
     // Validate how to apply
-    if (formData.how2apply === "") {
+    if (formData.how2apply === "" && (isFormDirty || isDirty)) {
       newErrors.howToApplyError = "This Field is Required";
     } else {
       newErrors.howToApplyError = "";
@@ -167,7 +167,14 @@ const JobForm = () => {
       ...prevState,
       ...newErrors,
     }));
-  }, [formData.minSal, formData.maxSal, formData.desc, formData.how2apply]);
+  }, [
+    formData.minSal,
+    formData.maxSal,
+    formData.desc,
+    formData.how2apply,
+    isFormDirty,
+    isDirty,
+  ]);
 
   // console.log("formData", formData.benefits);
   // console.log("is dirty", isFormDirty || isDirty);
