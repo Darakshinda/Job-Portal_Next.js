@@ -8,7 +8,7 @@ export default function AuthLayout({
   return (
     <>
       <main className="min-h-screen bg-white w-full">{children}</main>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }

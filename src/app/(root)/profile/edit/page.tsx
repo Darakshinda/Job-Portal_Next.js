@@ -702,7 +702,7 @@ const EditProfilePage = () => {
                 placeholder="John"
                 req={false}
                 cls={defaultPostEditFormInputCls}
-                errors={aboutErrors.first_name}
+                error={aboutErrors.first_name}
               />
 
               <SignupFormInput
@@ -715,7 +715,7 @@ const EditProfilePage = () => {
                 placeholder="Doe"
                 req={false}
                 cls={defaultPostEditFormInputCls}
-                errors={aboutErrors.last_name}
+                error={aboutErrors.last_name}
               />
             </div>
 
@@ -729,7 +729,7 @@ const EditProfilePage = () => {
               placeholder="example@gmail.com"
               req={false}
               cls={defaultPostEditFormInputCls}
-              errors={aboutErrors.email}
+              error={aboutErrors.email}
             />
 
             <div className="flex flex-col sm:flex-row gap-x-6 gap-y-4 items-center">
@@ -745,7 +745,7 @@ const EditProfilePage = () => {
                     placeholder="Eg: HR"
                     req={true}
                     cls={defaultPostEditFormInputCls}
-                    errors={aboutErrors.designation}
+                    error={aboutErrors.designation}
                   />
                 </div>
               ) : (
@@ -1259,7 +1259,7 @@ const EditProfilePage = () => {
                     placeholder=""
                     req={false}
                     cls={defaultPostEditFormInputCls}
-                    errors={generalErrors.pronouns_self_describe}
+                    error={generalErrors.pronouns_self_describe}
                   />
                 </div>
               )}
@@ -1276,7 +1276,7 @@ const EditProfilePage = () => {
                     placeholder=""
                     req={false}
                     cls={defaultPostEditFormInputCls}
-                    errors={generalErrors.gender_self_describe}
+                    error={generalErrors.gender_self_describe}
                   />
                 </div>
               )}

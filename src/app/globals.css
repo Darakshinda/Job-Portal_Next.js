@@ -17,6 +17,20 @@
   --blue-500: #3b85f6;
 }
 
+@font-face {
+  font-family: "RadioGrotesk";
+  src: url("/assets/fonts/RadioGrotesk-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Insomatte";
+  src: url("/assets/fonts/Insomatte-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
@@ -25,7 +39,7 @@
   }
 } */
 
-body {
+/* body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,
@@ -33,7 +47,7 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
-}
+} */
 
 .scrollbar-hide {
   scrollbar-width: none;

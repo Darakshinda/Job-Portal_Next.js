@@ -164,7 +164,7 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
         <div
           className={`flex w-full gap-x-6 gap-y-2 ${usingIn !== "signup" ? (dropdownOpen ? "flex-col-reverse" : "flex-col") : "flex-row max-[500px]:flex-col-reverse"}`}
         >
-          <div className="relative flex-1 w-full" ref={dropdownRef}>
+          <div className="relative flex-1 h-fit w-full" ref={dropdownRef}>
             <input
               type="text"
               value={inputValue}
@@ -175,14 +175,14 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
             />
             {dropdownOpen && filteredTags.length > 0 && (
               <ul
-                className="absolute w-full max-h-40 overflow-y-auto border border-gray-300 bg-white z-10 rounded-md custom-scrollbar"
+                className="absolute w-full max-h-40 overflow-y-auto border border-gray-300 bg-white z-10 rounded-md custom-scrollbar snap-y snap-mandatory overscroll-contain"
                 style={{ top: "calc(100% + 0.125rem)" }} // Do not remove this, this is kept intensionally to fix the dropdown position rather than passing it as an arbitrary value which is not considered by tailwind css
               >
                 {filteredTags.map((tag, index) => (
                   <li
                     key={index}
                     onClick={() => handleTagClick(tag)}
-                    className="p-2 cursor-pointer hover:bg-gray-100 select-none"
+                    className="ml-2 p-2 cursor-pointer hover:bg-blue-50 select-none rounded-md snap-start"
                   >
                     {tag}
                   </li>
@@ -195,7 +195,7 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
               {tagsToShow.map((tag, index) => (
                 <div
                   key={index}
-                  className="flex items-center bg-gray-200 px-2 py-2 rounded-md text-sm h-fit"
+                  className="flex items-center bg-gray-200 px-2.5 py-1 rounded-full text-sm h-fit"
                 >
                   {tag}
                   <span
@@ -210,7 +210,7 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsExpanded((curr) => !curr)}
-                  className={`text-primary-500 text-sm font-semibold py-1 px-2 hover:bg-gray-200 rounded-full transition-colors duration-150 ${isExpanded && "px-3"}`}
+                  className={`text-blue-500 text-sm font-semibold py-1 px-2 hover:bg-gray-200 rounded-full transition-colors duration-150 ${isExpanded && "px-3"}`}
                 >
                   {isExpanded ? "Show less" : `+${excessTagsCount}`}
                 </button>

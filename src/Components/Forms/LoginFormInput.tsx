@@ -77,7 +77,7 @@ const FormInput: React.FC<FormInputProps> = ({
         )}
       </div>
       <span
-        className={`text-red-500 text-xs font-semibold  ${errors ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"} transition-all transform duration-300 absolute z-10 px-2 py-1`}
+        className={`text-red-500 text-xs font-semibold  ${errors ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"} transition-all transform duration-300 absolute z-10 px-1 py-1`}
       >
         {errors?.message}
       </span>

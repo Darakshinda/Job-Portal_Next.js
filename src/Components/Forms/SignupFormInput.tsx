@@ -3,7 +3,8 @@ import {
   FieldError,
   Control,
   Controller,
-  useController,
+  Merge,
+  FieldErrorsImpl,
 } from "react-hook-form";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
@@ -19,7 +20,7 @@ interface FormInputProps {
   type: string;
   name: string;
   control?: Control<any>; // Make control optional
-  errors?: FieldError;
+  error?: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined;
   handleChange?: (key: string, value: string | number) => void;
 }
 
@@ -34,7 +35,7 @@ const SignupFormInput = ({
   disabled,
   cls,
   labelcls,
-  errors,
+  error,
   handleChange,
 }: FormInputProps) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -104,9 +105,9 @@ const SignupFormInput = ({
           )}
         />
         <span
-          className={`text-red-500 text-xs font-semibold  ${errors ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full mt-1`}
+          className={`text-red-500 text-xs font-semibold  ${error ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 absolute z-10 bg-red-50 rounded-b-md top-full px-2 py-0.5`}
         >
-          {errors?.message}
+          {error?.message?.toString()}
         </span>
       </div>
     );
@@ -159,9 +160,9 @@ const SignupFormInput = ({
         </button>
       )}
       <span
-        className={`text-red-500 text-xs font-semibold  ${errors ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full mt-1`}
+        className={`text-red-500 text-xs font-semibold  ${error ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 absolute z-10 bg-white rounded-lg top-full mt-1`}
       >
-        {errors?.message}
+        {error?.message?.toString()}
       </span>
     </div>
   );
