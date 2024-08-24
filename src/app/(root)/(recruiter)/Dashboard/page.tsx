@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { CgScrollH } from "react-icons/cg";
+// This is a change
 
 export default function Page() {
   const [jobsCount, setJobsCount] = useState(0);
