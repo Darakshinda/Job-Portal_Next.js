@@ -27,6 +27,7 @@ type SignupFormProps = {
   handleChange: (key: string, value: string) => void;
   formDataErrors: {
     phone_number: string;
+    years_of_experience: string;
   };
   handleSkillChange: (skills: string[]) => void;
 };
@@ -43,9 +44,6 @@ const SignupForm = ({
   formDataErrors,
   handleSkillChange,
 }: SignupFormProps) => {
-  const defaultPostEditFormInputCls =
-    "bg-gray-100 mt-1 p-2 rounded border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic placeholder-gray-400";
-
   return (
     <div className="min-h-screen flex lg:flex-row flex-col sm:gap-y-8 gap-y-3 bg-gray-100 bg-fixed bg-signup bg-cover bg-no-repeat bg-center">
       <div className="lg:fixed lg:z-20 lg:w-[50%] h-full flex flex-col items-center justify-center max-lg:mt-12">
@@ -269,17 +267,17 @@ const SignupForm = ({
                       name="years_of_experience"
                       labelcls="text-gray-500 font-semibold relative flex items-center gap-2"
                       placeholder="Experience"
-                      cls={defaultPostEditFormInputCls}
+                      cls={defaultCls}
                       tags={ExperienceTags}
                       onSingleChange={handleChange}
                       multiple={false}
-                      req={false}
+                      req={true}
                     />
-                    {formData.years_of_experience === "" && (
-                      <span className="text-red-500 text-xs font-semibold">
-                        Years of experience is required
-                      </span>
-                    )}
+                    <span
+                      className={`text-red-500 text-xs font-semibold  ${formDataErrors.years_of_experience ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
+                    >
+                      {formDataErrors.years_of_experience || ""}
+                    </span>
                   </div>
                 </div>
               </div>

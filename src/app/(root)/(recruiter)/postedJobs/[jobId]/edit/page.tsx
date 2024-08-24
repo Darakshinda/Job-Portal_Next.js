@@ -82,6 +82,23 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
     minsalMaxsalError: "",
   });
 
+  benefitOpns.sort((a, b) => {
+    const aInSubset = formData.benefitsArray!.includes(a);
+    const bInSubset = formData.benefitsArray!.includes(b);
+
+    if (aInSubset && bInSubset) {
+      return (
+        formData.benefitsArray!.indexOf(a) - formData.benefitsArray!.indexOf(b)
+      );
+    } else if (aInSubset) {
+      return -1;
+    } else if (bInSubset) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
+
   // To Fetch data of the job post
   useEffect(() => {
     const access_token =

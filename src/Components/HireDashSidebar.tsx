@@ -214,11 +214,9 @@ const HamburgerMenu = ({ isHirer }: { isHirer: boolean }) => {
 
           <button
             className="p-1 rounded-full bg-gray-100 hover:bg-gray-200 absolute top-10 -right-3 z-10 outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
-            popoverTarget="popover"
-            // onClick={() => {
-            //   setIsOpen((curr) => !curr);
-            //   setIsPop(false);
-            // }}
+            onClick={() => {
+              setIsOpen((curr) => !curr);
+            }}
           >
             <FaChevronLeft
               size={20}
@@ -258,7 +256,7 @@ const HamburgerMenu = ({ isHirer }: { isHirer: boolean }) => {
           <div className="w-full">
             <button
               className="sm:hidden block rounded-t-md border-t-2 border-x-2 border-gray-300 p-1 mx-1 bg-gray-100 hover:bg-gray-200 outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
-              // onClick={() => setIsPop((curr) => !curr)}
+              onClick={() => setIsPop((curr) => !curr)}
             >
               <IoIosArrowUp
                 size={24}
@@ -268,8 +266,6 @@ const HamburgerMenu = ({ isHirer }: { isHirer: boolean }) => {
 
             <div
               className={`sm:hidden block h-fit transition-all duration-500 border-t-2 border-gray-300 opacity-100 max-h-40`}
-              popover="auto"
-              id="popover"
             >
               <ul className="max-[400px]:p-1 p-2 text-sm text-gray-700">
                 <li>

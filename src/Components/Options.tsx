@@ -14,17 +14,15 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({
   name,
   onChange,
 }) => {
+  console.log("Options: ", options);
+
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
   const displayTagsLength = 10;
   const increament = 5;
 
-  const [displayedOptions, setDisplayedOptions] = useState<string[]>(
-    options.slice(0, displayTagsLength)
-  );
-  let [excessTagsCount, setExcessTagsCount] = useState<number>(
-    options.length - displayTagsLength
-  );
+  const [displayedOptions, setDisplayedOptions] = useState<string[]>([]);
+  let [excessTagsCount, setExcessTagsCount] = useState<number>(0);
 
   const handleExpansion = () => {
     if (excessTagsCount > increament) {
@@ -73,22 +71,10 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({
     onChange(newBenefitOptions);
   };
 
-  const sortArrayWithSubsetPriority = (array: any, subset: any) => {
-    const subsetSet = new Set(subset);
-    return array.sort((a: any, b: any) => {
-      const aInSubset = subsetSet.has(a);
-      const bInSubset = subsetSet.has(b);
-
-      if ((aInSubset && bInSubset) || (!aInSubset && !bInSubset)) {
-        return 0;
-      }
-      return aInSubset ? -1 : 1;
-    });
-  };
-
   useEffect(() => {
     setSelectedOptions(selected);
-    sortArrayWithSubsetPriority(options, selected);
+    setDisplayedOptions(options.slice(0, displayTagsLength)); // Initialize displayed options when options change
+    setExcessTagsCount(options.length - displayTagsLength); // Initialize excess count when options change
   }, [selected, options]);
 
   console.log("Selected: ", selectedOptions);

@@ -2,19 +2,11 @@
 
 import { useState } from "react";
 import axios from "axios";
-import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
-import tagOpns from "@/constants/data/tags.json";
-import Link from "next/link";
-import Image from "next/image";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import SignupFormInput from "@/Components/Forms/SignupFormInput";
 import { seekerSignupFormSchema } from "@/lib/validator";
-import SearchSelectDropdown from "@/Components/Forms/SearchSelectDropdown";
-import PhoneInput from "react-country-phone-input";
-import "react-country-phone-input/lib/style.css";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import SignupForm from "@/Components/Forms/SignupForm";
 import { swalFailed, swalSuccess } from "@/lib/helpers/swal";
@@ -34,25 +26,48 @@ const SignupSeeker = () => {
     technical_skills: [],
     years_of_experience: "",
   });
+
   const [formDataErrors, setFormDataErrors] = useState<{
     phone_number: string;
+    years_of_experience: string;
   }>({
     phone_number: "",
+    years_of_experience: "",
   });
 
   const handleChange = (key: string, value: string) => {
-    if (key === "phone_number") {
+    if (key === "years_of_experience") {
       const val = value;
       setFormData((prevState) => ({
         ...prevState,
         [key]: val,
       }));
-      validatePhoneNumber(val);
+
+      if (val) {
+        setFormDataErrors((prevState) => ({
+          ...prevState,
+          years_of_experience: "",
+        }));
+      } else {
+        setFormDataErrors((prevState) => ({
+          ...prevState,
+          years_of_experience: "Years of experience is required",
+        }));
+      }
+    } else {
+      if (key === "phone_number") {
+        const val = value;
+        setFormData((prevState) => ({
+          ...prevState,
+          [key]: val,
+        }));
+        validatePhoneNumber(val);
+      }
+      setFormData((prevState) => ({
+        ...prevState,
+        [key]: value,
+      }));
     }
-    setFormData((prevState) => ({
-      ...prevState,
-      [key]: value,
-    }));
   };
 
   const handleSkillChange = (skills: string[]) => {
@@ -83,19 +98,14 @@ const SignupSeeker = () => {
   };
 
   const yoeStringToNumber = (yoe: string): string => {
-    // Handle the specific case for "Less than 1 year"
     if (yoe === "Less than 1 year") {
       return "0";
     }
-
-    // Extract digits from the string using a regular expression
     const match = yoe.match(/\d+/);
-
-    // If a match is found, return it; otherwise, return "1" for the specific case
     return match ? match[0] : "0";
   };
 
-  // console.log(formData);
+  console.log(formData);
 
   const {
     control,
@@ -146,55 +156,16 @@ const SignupSeeker = () => {
         }
       );
       console.log("Registration successful:", response.data);
-      // Swal.fire({
-      //   title: "Registration Successful",
-      //   text: "You have registered successfully!",
-      //   showClass: {
-      //     popup: `
-      //         animate__animated
-      //         animate__fadeInUp
-      //         animate__faster
-      //       `,
-      //   },
-      //   hideClass: {
-      //     popup: `
-      //         animate__animated
-      //         animate__fadeOutDown
-      //         animate__faster
-      //       `,
-      //   },
-      // })
       swalSuccess({
         title: "Registration Successful",
         message: "You have registered successfully!",
       });
-      // Redirect to the homepage
       router.push("/login");
 
       console.log("Signed up successfully");
-      // Optionally redirect or show success message to the user
     } catch (error: any) {
       console.error("Registration failed:", error.response.data);
-      // Swal.fire({
-      //   title: "Registration Failed",
-      //   text: "Please try again.",
-      //   showClass: {
-      //     popup: `
-      //         animate__animated
-      //         animate__fadeInUp
-      //         animate__faster
-      //       `,
-      //   },
-      //   hideClass: {
-      //     popup: `
-      //         animate__animated
-      //         animate__fadeOutDown
-      //         animate__faster
-      //       `,
-      //   },
-      // });
       swalFailed({ title: "Registration Failed", error: error });
-      // Handle error and display appropriate message to the user
     }
   };
 

@@ -2,17 +2,17 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Script from "next/script";
 import styles from "./RazorpayForm.module.css";
 
-// Define the type for the jobs prop
-interface Jobs {
+interface Job {
   name: string;
   price: number;
   img: string;
 }
 
 interface RazorpayFormProps {
-  jobs: Jobs;
+  jobs: Job;
 }
 
 interface RazorpayResponse {
@@ -23,54 +23,51 @@ interface RazorpayResponse {
 
 const RazorpayForm: React.FC<RazorpayFormProps> = ({ jobs }) => {
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    script.onload = () => console.log("Razorpay script loaded successfully");
-    script.onerror = () => console.log("Failed to load Razorpay script");
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+  const [job, setJob] = useState<Job>({
+    name: "Razorpay Integration",
+    img: "https://akaunting.com/public/assets/media/54-mark-britto/razorpay/razorpay-logo.jpg",
+    price: 350,
+  });
 
   const handleRazorpayPayment = async () => {
     try {
       console.log("Razorpay payment processing");
       const orderUrl = process.env.NEXT_PUBLIC_ORDER_URL;
-      console.log("Order URL:", orderUrl);
+      if (!orderUrl) {
+        throw new Error("Order URL is not defined in environment variables");
+      }
 
-      // Replace the orderUrl with your server endpoint
-      const { data } = await axios.post(orderUrl!, {
-        amount: jobs.price,
+      const { data } = await axios.post(orderUrl, {
+        amount: job.price,
         userId: "123456",
       });
       console.log("Order data:", data);
 
       const options = {
-        key: "rzp_test_DL8XNF5TE9MW4P", // Your Razorpay key ID
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY || "rzp_test_DL8XNF5TE9MW4P", // Razorpay key from env variable
         amount: data.data.amount,
         currency: data.data.currency,
-        name: jobs.name,
+        name: job.name,
         description: "Test Transaction",
-        image: jobs.img,
+        image: job.img,
         order_id: data.data.id,
         handler: async (response: RazorpayResponse) => {
           try {
             const verifyUrl = process.env.NEXT_PUBLIC_VERIFY_URL;
-            console.log("Verify URL:", verifyUrl);
+            if (!verifyUrl) {
+              throw new Error(
+                "Verify URL is not defined in environment variables"
+              );
+            }
 
-            // Replace the URL with your server endpoint
-            const { data } = await axios.post(verifyUrl!, response);
+            const { data } = await axios.post(verifyUrl, response);
             console.log("Verification data:", data);
           } catch (error: any) {
             console.log(
               "Verification error:",
               error.response?.data || error.message
             );
+            setError("Verification failed. Please try again.");
           }
         },
         theme: {
@@ -86,22 +83,22 @@ const RazorpayForm: React.FC<RazorpayFormProps> = ({ jobs }) => {
         "Error processing payment:",
         error.response?.data || error.message
       );
-      setError("Error processing payment with Razorpay");
+      setError("Error processing payment with Razorpay. Please try again.");
     }
   };
 
-  const [job, setJob] = useState<Jobs>({
-    name: "Razorpay Integration",
-    img: "https://akaunting.com/public/assets/media/54-mark-britto/razorpay/razorpay-logo.jpg",
-    price: 350,
-  });
-
   return (
     <div>
+      <Script
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        strategy="lazyOnload"
+        onLoad={() => console.log("Razorpay script loaded successfully")}
+        onError={() => console.log("Failed to load Razorpay script")}
+      />
       {error && <div className={styles.error}>{error}</div>}
       <button
         onClick={handleRazorpayPayment}
-        disabled={jobs.price <= 0}
+        // disabled={job.price <= 0}
         className={styles.button}
       >
         Pay <span>&#x20B9; {job.price}</span> with Razorpay

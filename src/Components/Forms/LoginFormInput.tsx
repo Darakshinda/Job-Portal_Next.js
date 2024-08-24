@@ -57,7 +57,7 @@ const FormInput: React.FC<FormInputProps> = ({
           placeholder={placeholder}
           required={req}
         />
-        <div className="absolute top-10 start-0 flex items-center pointer-events-none ps-4 peer-disabled:opacity-50 peer-disabled:pointer-events-none">
+        <div className="absolute top-10 start-0 pointer-events-none ps-4 pt-0.5 peer-disabled:opacity-50 peer-disabled:pointer-events-none">
           {icon}
         </div>
         {type === "password" && (

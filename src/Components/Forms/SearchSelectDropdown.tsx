@@ -47,6 +47,7 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [error, setError] = useState<string>("");
 
   const tagsToShow = isExpanded
     ? selectedTags
@@ -71,13 +72,17 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const value = e.target.value;
     setInputValue(value);
-    setFilteredTags(
-      techTags.filter(
-        (tag) =>
-          tag.toLowerCase().includes(value.toLowerCase()) &&
-          !selectedTags.includes(tag)
-      )
+    const newFilteredTags = techTags.filter(
+      (tag) =>
+        tag.toLowerCase().includes(value.toLowerCase()) &&
+        !selectedTags.includes(tag)
     );
+    setFilteredTags(newFilteredTags);
+    if (newFilteredTags.length === 0) {
+      setError("No tags with such a value found");
+    } else {
+      setError("");
+    }
     setDropdownOpen(true);
   };
 
@@ -175,27 +180,33 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
             />
             {dropdownOpen && filteredTags.length > 0 && (
               <ul
-                className="absolute w-full max-h-40 overflow-y-auto border border-gray-300 bg-white z-10 rounded-md custom-scrollbar snap-y snap-mandatory overscroll-contain"
+                className="absolute w-full max-h-40 overflow-y-auto border border-gray-300 bg-white z-10 rounded-md custom-scrollbar snap-y snap-mandatory overscroll-contain text-gray-500"
                 style={{ top: "calc(100% + 0.125rem)" }} // Do not remove this, this is kept intensionally to fix the dropdown position rather than passing it as an arbitrary value which is not considered by tailwind css
               >
                 {filteredTags.map((tag, index) => (
                   <li
                     key={index}
                     onClick={() => handleTagClick(tag)}
-                    className="ml-2 p-2 cursor-pointer hover:bg-blue-50 select-none rounded-md snap-start"
+                    className="py-2 px-4 cursor-pointer hover:bg-blue-50 select-none rounded-md snap-start"
                   >
                     {tag}
                   </li>
                 ))}
               </ul>
             )}
+            <span
+              className={`text-red-500 text-xs font-semibold  ${error ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 absolute z-10 bg-red-50 rounded-b-md top-full left-0 px-2 py-0.5 whitespace-nowrap`}
+            >
+              {error}
+            </span>
           </div>
+
           {multiple && (
             <div className="flex flex-1 flex-wrap gap-1">
               {tagsToShow.map((tag, index) => (
                 <div
                   key={index}
-                  className="flex items-center bg-gray-200 px-2.5 py-1 rounded-full text-sm h-fit"
+                  className="flex items-center bg-gray-200 text-gray-600 px-2.5 py-1 rounded-full text-sm h-fit"
                 >
                   {tag}
                   <span
