@@ -216,7 +216,6 @@ const HamburgerMenu = ({ isHirer }: { isHirer: boolean }) => {
             className="p-1 rounded-full bg-gray-100 hover:bg-gray-200 absolute top-10 -right-3 z-10 outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
             onClick={() => {
               setIsOpen((curr) => !curr);
-              setIsPop(false);
             }}
           >
             <FaChevronLeft
@@ -266,7 +265,7 @@ const HamburgerMenu = ({ isHirer }: { isHirer: boolean }) => {
             </button>
 
             <div
-              className={`sm:hidden block h-fit transition-all duration-500 ${isPop ? "border-t-2 border-gray-300 opacity-100 max-h-40" : "opacity-0 max-h-0"}`}
+              className={`sm:hidden block h-fit transition-all duration-500 border-t-2 border-gray-300 opacity-100 max-h-40`}
             >
               <ul className="max-[400px]:p-1 p-2 text-sm text-gray-700">
                 <li>

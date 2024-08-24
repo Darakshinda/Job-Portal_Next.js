@@ -10,6 +10,8 @@ const publicRoutes = [
   "/signup-seeker",
   "/reset-password",
   "/reset-password/:path*",
+  "/seeker-dashboard",
+  "/seeker-dashboard/:jobId/path*",
 ];
 
 const hirerRoutes = [
@@ -22,11 +24,7 @@ const hirerRoutes = [
   "/razorpay",
 ];
 
-const seekerRoutes = [
-  "/seeker-dashboard",
-  "/appliedJobs",
-  "/seeker-dashboard/:jobId/path*",
-];
+const seekerRoutes = ["/appliedJobs"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = new URL(request.url);

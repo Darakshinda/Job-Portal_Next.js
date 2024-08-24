@@ -14,21 +14,15 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({
   name,
   onChange,
 }) => {
-  const [selectedOptions, setSelectedOptions] = useState<string[]>(selected);
+  console.log("Options: ", options);
 
-  // useEffect(() => {
-  //   setSelectedOptions(selected);
-  // }, [selected]);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
   const displayTagsLength = 10;
   const increament = 5;
 
-  const [displayedOptions, setDisplayedOptions] = useState<string[]>(
-    options.slice(0, displayTagsLength)
-  );
-  let [excessTagsCount, setExcessTagsCount] = useState<number>(
-    options.length - displayTagsLength
-  );
+  const [displayedOptions, setDisplayedOptions] = useState<string[]>([]);
+  let [excessTagsCount, setExcessTagsCount] = useState<number>(0);
 
   const handleExpansion = () => {
     if (excessTagsCount > increament) {
@@ -76,6 +70,15 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({
     setSelectedOptions(newBenefitOptions);
     onChange(newBenefitOptions);
   };
+
+  useEffect(() => {
+    setSelectedOptions(selected);
+    setDisplayedOptions(options.slice(0, displayTagsLength)); // Initialize displayed options when options change
+    setExcessTagsCount(options.length - displayTagsLength); // Initialize excess count when options change
+  }, [selected, options]);
+
+  console.log("Selected: ", selectedOptions);
+  console.log("Options: ", displayedOptions);
 
   return (
     <div className="flex flex-wrap">

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { TextInput } from "@/stories/TextInput";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -22,10 +21,25 @@ const Login = () => {
   const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
   const Router = useRouter();
 
+  const signupLinks = [
+    {
+      title: "Explore Jobs",
+      subtitle: "Signup as a Talent",
+      href: "signup-seeker",
+      icon: <MdPersonSearch size={24} className="text-indigo-600 inline" />,
+    },
+    {
+      title: "Hire Talent",
+      subtitle: "Signup as a Recruiter",
+      href: "signup-recruiter",
+      icon: <TbBriefcaseFilled size={22} className="text-indigo-600 inline" />,
+    },
+  ];
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<Schema>({
     mode: "onChange",
     resolver: zodResolver(loginFormSchema),
@@ -96,115 +110,103 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-white md:flex-row flex-col">
-      {/* Left side with background image */}
-      <div className="flex-1 bg-login bg-cover bg-center ">
-        <div className="flex items-center justify-center bg-black bg-opacity-30 text-white p-0 h-full">
-          <div className="flex flex-col items-center justify-center w-full max-md:my-16">
-            <h1 className="xl:text-6xl lg:text-5xl md:text-4xl text-3xl font-bold px-4 text-center">
-              Tech hiring done <span className="text-[#c900af]">right</span>
-            </h1>
+    <div className="min-h-screen grid bg-login bg-cover bg-no-repeat bg-center md:py-8 md:px-12 sm:py-4 sm:px-6">
+      <div className="flex-1 grid md:grid-flow-col md:grid-cols-[55%,45%] max-[400px]:border-2 border-[10px] border-white sm:rounded-[2rem] bg-transparent">
+        {/* Left side with transparent background */}
+        <div className="w-full h-full rounded-3xl overflow-hidden">
+          <div className="h-full grid place-items-center bg-black bg-opacity-35 rounded-3xl overflow-hidden">
+            <div className="flex flex-col sm:gap-10 gap-6 items-center justify-center w-full max-md:my-16 text-white font-Insomatte">
+              <h1 className="xl:text-6xl lg:text-5xl md:text-4xl text-3xl px-4 text-center">
+                Tech hiring done <span className="text-[#c900af]">right</span>
+              </h1>
 
-            <div className="xl:text-3xl lg:text-2xl md:text-xl text-center mt-12 w-full space-y-4 px-6">
-              Dream talent. Top companies. Building tomorrow.
-              {/* <p className="text-left">
-                Dream talent
-              </p>
-              <p className="text-center">
-                Top companies
-              </p>
-              <p className="text-right">
-                Build tomorrow
-              </p> */}
+              <div className="xl:text-3xl lg:text-2xl md:text-xl text-center w-full space-y-4 px-6">
+                Dream talent. Top companies. Building tomorrow.
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Right side with login form */}
-      <div className="flex-1 flex flex-col items-center justify-center sm:p-4 md:p-8 p-3">
-        <h1 className="md:text-5xl text-3xl font-bold md:mb-12 max-md:my-6 text-center">
-          Login
-        </h1>
+        {/* Right side with login form */}
+        <div className="flex flex-col items-center justify-center lg:p-8 md:p-5 sm:p-4 p-3 bg-white">
+          <h1 className="md:text-4xl text-3xl font-bold md:mb-2 max-md:my-6 font-Insomatte text-center capitalize text-gray-800 whitespace-nowrap">
+            Welcome Back
+          </h1>
+          <p className="sm:text-sm text-xs md:mb-10 mb-6 text-gray-400">
+            Enter your credentials to access your account
+          </p>
 
-        {/* Login form */}
-        <form
-          className="w-full max-w-md space-y-6"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <LoginFormInput
-            id="username"
-            label="Username"
-            type="text"
-            register={register}
-            errors={errors.username}
-            name="username"
-            placeholder="John Doe"
-            icon={<FaUserAstronaut />}
-            req={true}
-            cls="peer py-3 px-4 ps-11 block w-full bg-gray-200 rounded-lg outline-none focus:outline-primary-500 focus:ring-primary-500 disabled:opacity-50 disabled:pointer-events-none placeholder:text-gray-400"
-          />
-
-          <LoginFormInput
-            id="password"
-            label="Password"
-            type="password"
-            register={register}
-            errors={errors.password}
-            name="password"
-            placeholder="••••••••"
-            icon={<RiLockPasswordLine />}
-            req={true}
-            cls="peer py-3 px-4 ps-11 block w-full bg-gray-200 rounded-lg outline-none focus:outline-primary-500 focus:ring-primary-500 disabled:opacity-50 disabled:pointer-events-none placeholder:text-gray-400"
-          />
-
-          <div className="my-4 block text-right">
-            <Link
-              href="/reset-password"
-              className="text-primary-500 cursor-pointer hover:underline hover:text-primary-700 outline-none focus:outline-none focus-visible:underline focus-visible:text-primary-700 text-sm"
-            >
-              Forgot Password?
-            </Link>
-          </div>
-          <div className="justify-center text-center">
-            <button
-              className="w-full bg-primary-700/85 text-white text-lg py-2 active:scale-90 hover:bg-primary-700 rounded-lg transition duration-300 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-opacity-75 focus-visible:scale-95"
-              type="submit"
-            >
-              Login
-            </button>
-          </div>
-        </form>
-
-        <h2 className="mt-8 text-primary-500 font-semibold">
-          Don&apos;t have an account?
-        </h2>
-        <div className="flex flex-col mt-6 gap-4">
-          <Link
-            href="/signup-seeker"
-            className="py-3 px-4 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 group w-60 relative h-12 whitespace-nowrap overflow-hidden max-w-fit"
+          {/* Login form */}
+          <form
+            className="w-full max-w-lg space-y-5 xl:px-10 px-2"
+            onSubmit={handleSubmit(onSubmit)}
           >
-            <MdPersonSearch size={24} className="text-indigo-600 inline" />
-            <span className="inline-block w-full text-center text-base transform group-hover:-translate-y-8 group-hover:opacity-0 transition-all duration-300">
-              Explore Jobs
-            </span>
-            <span className="inline-block w-full text-center text-base opacity-0 transform -translate-x-full translate-y-full group-hover:text-sm group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
-              Signup as a Talent
-            </span>
-          </Link>
+            <LoginFormInput
+              id="username"
+              label="Username"
+              type="text"
+              register={register}
+              errors={errors.username}
+              name="username"
+              placeholder="John Doe"
+              icon={<FaUserAstronaut />}
+              req={true}
+              cls="peer py-3 px-4 ps-11 block w-full bg-gray-200 rounded-lg outline-none focus:outline-primary-500 focus:ring-primary-500 disabled:opacity-50 disabled:pointer-events-none placeholder:text-gray-400"
+            />
 
-          <Link
-            href="/signup-recruiter"
-            className="py-3 px-4 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 group w-60 relative h-12 whitespace-nowrap overflow-hidden max-w-fit"
-          >
-            <TbBriefcaseFilled size={22} className="text-indigo-600 inline" />
-            <span className="inline-block w-full text-center text-base group-hover:-translate-y-8 group-hover:opacity-0 transition-all duration-300">
-              Hire Talent
-            </span>
-            <span className="inline-block w-full text-center text-base opacity-0 -translate-x-full translate-y-full group-hover:text-sm group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
-              Signup as Recruiter
-            </span>
-          </Link>
+            <LoginFormInput
+              id="password"
+              label="Password"
+              type="password"
+              register={register}
+              errors={errors.password}
+              name="password"
+              placeholder="••••••••"
+              icon={<RiLockPasswordLine />}
+              req={true}
+              cls="peer py-3 px-4 ps-11 block w-full bg-gray-200 rounded-lg outline-none focus:outline-primary-500 focus:ring-primary-500 disabled:opacity-50 disabled:pointer-events-none placeholder:text-gray-400"
+            />
+
+            <div className="mt-2 block text-right">
+              <Link
+                href="/reset-password"
+                className="text-primary-500 cursor-pointer hover:underline hover:text-primary-700 outline-none focus:outline-none focus-visible:underline focus-visible:text-primary-700 text-sm"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+            <div className="justify-center text-center">
+              <button
+                className="w-full bg-primary-700/85 font-RadioGrotesk tracking-wide text-white text-lg py-2 active:scale-90 hover:bg-primary-700 rounded-lg transition duration-150 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-opacity-75 focus-visible:scale-95"
+                type="submit"
+              >
+                {isSubmitting ? "Logging in..." : "Login"}
+              </button>
+            </div>
+          </form>
+
+          <h2 className="mt-8 text-primary-500 font-semibold">
+            Don&apos;t have an account?
+          </h2>
+          <div className="flex flex-wrap justify-center items-center mt-4 gap-4">
+            {signupLinks.map((link) => {
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="py-3 px-4 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 group  relative w-52 h-12 whitespace-nowrap overflow-hidden"
+                >
+                  {link.icon}
+                  <span className="inline-block w-full text-center text-base transform group-hover:-translate-y-8 group-hover:opacity-0 transition-all duration-300">
+                    {link.title}
+                  </span>
+                  <span className="inline-block w-full text-center text-base opacity-0 transform -translate-x-full translate-y-full group-hover:text-sm group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
+                    {link.subtitle}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

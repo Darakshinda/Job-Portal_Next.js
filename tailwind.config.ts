@@ -1,6 +1,8 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  mode: "jit",
+  purge: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -21,9 +23,11 @@ const config: Config = {
       },
       fontFamily: {
         Nunito: ["Nunito", "Inter", "sans-serif"],
+        RadioGrotesk: ["RadioGrotesk", "Inter", "sans-serif"],
+        Insomatte: ["Insomatte", "Inter", "sans-serif"],
       },
       backgroundImage: {
-        login: "url('/assets/images/login.webp')",
+        login: "url('/assets/images/login.jpeg')",
         signup: "url('/assets/images/signup.webp')",
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":

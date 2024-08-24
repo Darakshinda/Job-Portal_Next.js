@@ -57,7 +57,7 @@ const FormInput: React.FC<FormInputProps> = ({
           placeholder={placeholder}
           required={req}
         />
-        <div className="absolute top-10 start-0 flex items-center pointer-events-none ps-4 peer-disabled:opacity-50 peer-disabled:pointer-events-none">
+        <div className="absolute top-10 start-0 pointer-events-none ps-4 pt-0.5 peer-disabled:opacity-50 peer-disabled:pointer-events-none">
           {icon}
         </div>
         {type === "password" && (
@@ -77,7 +77,7 @@ const FormInput: React.FC<FormInputProps> = ({
         )}
       </div>
       <span
-        className={`text-red-500 text-xs font-semibold  ${errors ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"} transition-all transform duration-300 absolute z-10 px-2 py-1`}
+        className={`text-red-500 text-xs font-semibold  ${errors ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"} transition-all transform duration-300 absolute z-10 px-1 py-1`}
       >
         {errors?.message}
       </span>

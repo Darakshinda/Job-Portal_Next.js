@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Code Unity",
+  title: { default: "CodeUnity", template: "CodeUnity | %s" },
   description: "Job board for developers",
 };
 

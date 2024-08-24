@@ -40,12 +40,13 @@ const ExperienceForm = ({
 }: ExperienceFormProps) => {
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
     setValue,
   } = useForm<ExperienceSchema>({
     resolver: zodResolver(experienceSchema),
-    mode: "onBlur",
+    mode: "onChange",
   });
 
   const [experienceFormData, setExperienceFormData] = useState<Experience>({
@@ -151,7 +152,8 @@ const ExperienceForm = ({
               name="title"
               type="text"
               label="Title"
-              register={register}
+              // register={register}
+              control={control}
               placeholder="Eg: FrontEnd Developer"
               req={true}
               cls={defaultPostEditFormInputCls}

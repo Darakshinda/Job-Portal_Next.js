@@ -1,7 +1,11 @@
-"use client";
-
 import { useState } from "react";
-import { FieldError, UseFormRegister } from "react-hook-form";
+import {
+  FieldError,
+  Control,
+  Controller,
+  Merge,
+  FieldErrorsImpl,
+} from "react-hook-form";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
 interface FormInputProps {
@@ -14,9 +18,9 @@ interface FormInputProps {
   id: string;
   label?: string;
   type: string;
-  register?: UseFormRegister<any>;
-  errors?: FieldError;
   name: string;
+  control?: Control<any>; // Make control optional
+  error?: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined;
   handleChange?: (key: string, value: string | number) => void;
 }
 
@@ -25,17 +29,91 @@ const SignupFormInput = ({
   name,
   type,
   label,
-  register,
+  control,
   placeholder,
   req,
   disabled,
   cls,
   labelcls,
-  errors,
+  error,
   handleChange,
 }: FormInputProps) => {
-  const [showPassword, setShowPassword] = useState<boolean>();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
+  // Use Controller if control is provided
+  if (control) {
+    return (
+      <div className="relative flex flex-col w-full">
+        <label
+          className={`text-gray-500 font-semibold ${labelcls}`}
+          htmlFor={name}
+        >
+          {label}
+          <span
+            title="Required"
+            className={`text-red-500 ${req && label ? "ms-1.5 inline-block" : "hidden"}`}
+          >
+            *
+          </span>
+        </label>
+        <Controller
+          name={name}
+          control={control}
+          render={({ field }) => (
+            <div className="relative w-full">
+              <input
+                {...field}
+                id={id}
+                type={
+                  type === "password"
+                    ? showPassword
+                      ? "text"
+                      : "password"
+                    : type
+                }
+                required={req}
+                onPaste={(e) => {
+                  if (type === "password") {
+                    e.preventDefault();
+                    return false;
+                  }
+                }}
+                className={cls + " w-full"}
+                placeholder={placeholder}
+                disabled={disabled}
+                onChange={(e) => {
+                  field.onChange(e); // Update React Hook Form state
+                  handleChange && handleChange(name, e.target.value);
+                }}
+              />
+              {type === "password" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPassword((prev) => !prev);
+                  }}
+                  className={`absolute top-3 right-1.5 p-1 flex items-center text-sm h-fit outline-none focus-visible:ring-2 ring-gray-400 rounded-lg`} // Apply icon color class
+                >
+                  {showPassword ? (
+                    <FaRegEye size={20} className="text-gray-500" />
+                  ) : (
+                    <FaRegEyeSlash size={20} className="text-gray-500" />
+                  )}
+                </button>
+              )}
+            </div>
+          )}
+        />
+        <span
+          className={`text-red-500 text-xs font-semibold  ${error ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 absolute z-10 bg-red-50 rounded-b-md top-full px-2 py-0.5`}
+        >
+          {error?.message?.toString()}
+        </span>
+      </div>
+    );
+  }
+
+  // Fallback to a regular input if control is not provided
   return (
     <div className="relative flex flex-col w-full">
       <label
@@ -51,7 +129,6 @@ const SignupFormInput = ({
         </span>
       </label>
       <input
-        {...(register && register(name))}
         id={id}
         name={name}
         type={type === "password" ? (showPassword ? "text" : "password") : type}
@@ -62,7 +139,7 @@ const SignupFormInput = ({
             return false;
           }
         }}
-        className={cls}
+        className={cls + " w-full"}
         placeholder={placeholder}
         disabled={disabled}
         onChange={(e) => handleChange && handleChange(name, e.target.value)}
@@ -73,7 +150,7 @@ const SignupFormInput = ({
           onClick={() => {
             setShowPassword((prev) => !prev);
           }}
-          className={`absolute top-9 right-1.5 p-1 flex items-center text-sm h-fit outline-none focus-visible:ring-2 ring-gray-400 rounded-lg`} // Apply icon color class
+          className={`absolute top-3 right-1.5 p-1 flex items-center text-sm h-fit outline-none focus-visible:ring-2 ring-gray-400 rounded-lg`} // Apply icon color class
         >
           {showPassword ? (
             <FaRegEye size={20} className="text-gray-500" />
@@ -83,9 +160,9 @@ const SignupFormInput = ({
         </button>
       )}
       <span
-        className={`text-red-500 text-xs font-semibold  ${errors ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full mt-1`}
+        className={`text-red-500 text-xs font-semibold  ${error ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 absolute z-10 bg-white rounded-lg top-full mt-1`}
       >
-        {errors?.message}
+        {error?.message?.toString()}
       </span>
     </div>
   );

@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import JobCard from "./JobCard";
-import ApplyPopup from "./ApplyPopup";
 import Skeleton from "@/app/(root)/(recruiter)/postedJobs/skeleton";
 import Image from "next/image";
 import Link from "next/link";

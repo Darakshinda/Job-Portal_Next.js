@@ -84,7 +84,7 @@ const seekerSignupFormSchema = z
         "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one symbol."
       ),
     confirm_password: z.string(),
-    location: z.string(),
+    location: z.string().min(1, { message: "Location is required" }),
     experience: z.coerce
       .number()
       .gte(0, { message: "Experience must be a non-negative number" })
