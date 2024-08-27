@@ -9,7 +9,7 @@ type SearchSelectDropdownProps = {
   label?: string;
   tags: string[];
   cls?: string;
-  labelcls?: string;
+  labelCls?: string;
   onChange?: (tags: string[]) => void;
   onSingleChange?: (key: string, tag: string) => void;
   multiple?: boolean;
@@ -27,7 +27,7 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
   label,
   tags,
   cls,
-  labelcls,
+  labelCls,
   name,
   onChange,
   onSingleChange,
@@ -140,11 +140,20 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
     }
   };
 
+  const handleBlur = (
+    e: React.FocusEvent<HTMLInputElement | HTMLDivElement>
+  ) => {
+    // If the blur event does not involve the dropdown or input, close it
+    if (!dropdownRef.current?.contains(e.relatedTarget as Node)) {
+      setDropdownOpen(false);
+    }
+  };
+
   return (
     <>
       {label && (
         <label
-          className={`text-gray-500 font-semibold relative flex gap-1.5 items-center ${labelcls}`}
+          className={`text-gray-500 font-semibold relative flex gap-1.5 items-center ${labelCls}`}
           htmlFor="technical_skills"
         >
           {label}
@@ -157,7 +166,7 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
                 ?
               </button>
               {/* <div className="absolute left-20 transform bottom-0 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-gray-900 opacity-0 peer-hover:opacity-100 transition-opacity"></div> */}
-              <div className="absolute -z-10 left-0 transform top-full translate-y-full mb-2 max-w-sm bg-gray-900 text-white text-xs font-medium px-2 py-1 rounded opacity-0 peer-hover:opacity-100 peer-hover:translate-y-0 peer-hover:z-10 transition-all duration-300 ease-in-out">
+              <div className="absolute z-10 left-0 transform top-full translate-y-8 mb-2 max-w-sm bg-blue-100 text-gray-500 text-xs font-medium px-2 py-1 rounded opacity-0 peer-hover:opacity-100 peer-hover:translate-y-0 peer-hover:z-10 transition-all duration-300 ease-in-out pointer-events-none">
                 {description}
               </div>
             </>
@@ -169,7 +178,11 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
         <div
           className={`flex w-full gap-x-6 gap-y-2 ${usingIn !== "signup" ? (dropdownOpen ? "flex-col-reverse" : "flex-col") : "flex-row max-[500px]:flex-col-reverse"}`}
         >
-          <div className="relative flex-1 h-fit w-full" ref={dropdownRef}>
+          <div
+            className="relative flex-1 h-fit w-full"
+            ref={dropdownRef}
+            onBlur={handleBlur}
+          >
             <input
               type="text"
               value={inputValue}
@@ -181,7 +194,8 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
             {dropdownOpen && filteredTags.length > 0 && (
               <ul
                 className="absolute w-full max-h-40 overflow-y-auto border border-gray-300 bg-white z-10 rounded-md custom-scrollbar snap-y snap-mandatory overscroll-contain text-gray-500"
-                style={{ top: "calc(100% + 0.125rem)" }} // Do not remove this, this is kept intensionally to fix the dropdown position rather than passing it as an arbitrary value which is not considered by tailwind css
+                style={{ top: "calc(100% + 0.125rem)" }} // Do not remove this, this is kept intentionally to fix the dropdown position rather than passing it as an arbitrary value which is not considered by tailwind css
+                onMouseDown={(e) => e.preventDefault()}
               >
                 {filteredTags.map((tag, index) => (
                   <li

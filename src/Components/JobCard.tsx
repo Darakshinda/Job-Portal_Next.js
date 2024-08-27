@@ -38,9 +38,9 @@ const JobCard = ({
   };
 
   return (
-    <section className="w-full max-w-4xl space-y-4 bg-white">
+    <section className="w-full max-w-4xl space-y-4 bg-white rounded-3xl">
       <article className="rounded-3xl border border-gray-100 shadow-md transition-all duration-300 hover:shadow-lg py-4 px-6 relative">
-        <div className="flex items-center gap-2 w-full">
+        <div className="flex items-center gap-3 w-full">
           <Image
             src={job.logo || "/assets/images/default-profile.webp"}
             alt="profile"
@@ -48,8 +48,8 @@ const JobCard = ({
             height={200}
             className="w-20 h-20 object-contain rounded-full"
           />
-          <div className="flex-1 flex-col items-start w-full">
-            <p className="text-gray-600 text-xl font-bold mb-2 w-[94%] truncate">
+          <div className="flex flex-col items-start gap-2 w-full">
+            <p className="text-gray-600 text-xl font-bold w-[calc(100%-2rem)] truncate shrink">
               {job.position} at {job.company_name}, {job.emptype} Opportunity
             </p>
             <span className="flex gap-2 items-center">

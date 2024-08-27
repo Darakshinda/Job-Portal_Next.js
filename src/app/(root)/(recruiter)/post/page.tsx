@@ -311,7 +311,7 @@ const JobForm = () => {
             <SearchSelectDropdown
               label="Employment type"
               name="emptype"
-              labelcls="text-gray-700 text-base font-semibold relative flex items-center gap-2"
+              labelCls="text-gray-700 text-base font-semibold relative flex items-center gap-2"
               placeholder="Select Employment type"
               cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
               tags={EmployementTags}
@@ -324,7 +324,7 @@ const JobForm = () => {
             <SearchSelectDropdown
               label="Field of Work"
               name="primtg"
-              labelcls="text-gray-700 text-base font-semibold relative flex items-center gap-2"
+              labelCls="text-gray-700 text-base font-semibold relative flex items-center gap-2"
               placeholder="Work Field"
               cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
               tags={primaryTag}
@@ -336,7 +336,7 @@ const JobForm = () => {
           <div className="flex flex-col justify-center w-full self-end">
             <SearchSelectDropdown
               label="Skills Required"
-              labelcls="text-gray-700 text-base font-semibold relative flex items-center gap-2"
+              labelCls="text-gray-700 text-base font-semibold relative flex items-center gap-2"
               cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
               tags={SkillTags}
               onChange={handleSkillChange}
@@ -348,7 +348,7 @@ const JobForm = () => {
             <SearchSelectDropdown
               label="Restricted to Locations"
               name="locns"
-              labelcls="text-gray-700 text-base font-semibold relative flex items-center gap-2"
+              labelCls="text-gray-700 text-base font-semibold relative flex items-center gap-2"
               placeholder="Work Location"
               cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
               tags={LocationTags}
@@ -470,7 +470,7 @@ const JobForm = () => {
               <div className="flex w-full justify-between relative items-center gap-2.5">
                 <SearchSelectDropdown
                   placeholder="Min Salary"
-                  labelcls="text-gray-800 text-lg font-semibold relative flex items-center gap-2"
+                  labelCls="text-gray-800 text-lg font-semibold relative flex items-center gap-2"
                   cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
                   name="minSal"
                   tags={minSal}
@@ -480,7 +480,7 @@ const JobForm = () => {
                 <span className="text-lg italic"> to </span>
                 <SearchSelectDropdown
                   placeholder="Max Salary"
-                  labelcls="text-gray-800 text-lg font-semibold relative flex items-center gap-2"
+                  labelCls="text-gray-800 text-lg font-semibold relative flex items-center gap-2"
                   cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
                   name="maxSal"
                   tags={maxSal}

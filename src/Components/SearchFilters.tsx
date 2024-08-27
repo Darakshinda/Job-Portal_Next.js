@@ -15,10 +15,11 @@ interface SearchFiltersProps {
     skillTags: string[];
     location: string;
     jobType: string;
-    minSalary: number;
-    maxSalary: number;
+    minSalary: string;
+    maxSalary: string;
+    currencyType: string;
   };
-  handleChange: (name: string, value: string | number) => void;
+  handleChange: (name: string, value: string) => void;
   handleSkillChange: (skills: string[]) => void;
 }
 
@@ -48,7 +49,7 @@ const SearchFilters = ({
           type="text"
           label="Search"
           placeholder="Search ..."
-          labelcls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
+          labelCls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
           cls={defaultFieldStylesCls}
           handleChange={handleChange}
         />
@@ -56,7 +57,7 @@ const SearchFilters = ({
           <SearchSelectDropdown
             req={false}
             label="Skills"
-            labelcls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
+            labelCls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
             cls={defaultFieldStylesCls}
             tags={SkillTags}
             onChange={handleSkillChange}
@@ -70,7 +71,7 @@ const SearchFilters = ({
             req={false}
             label="Location"
             name="location"
-            labelcls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
+            labelCls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
             placeholder="Eg: London"
             cls={defaultFieldStylesCls}
             tags={LocationTags}
@@ -85,7 +86,7 @@ const SearchFilters = ({
             req={false}
             label="Employment Type"
             name="emptype"
-            labelcls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
+            labelCls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
             placeholder="Eg: Full-Time"
             cls={defaultFieldStylesCls}
             tags={empOpns}
@@ -96,11 +97,12 @@ const SearchFilters = ({
         </div>
 
         <div>
-          <p className="text-gray-500 text-sm mb-2">Desired salary (₹ LPA)</p>
+          <p className="text-gray-500 text-sm mb-2">Desired salary</p>
           <RangeSliderMinMax
-            minSal={searchParams.minSalary}
-            maxSal={searchParams.maxSalary}
+            minSalary={searchParams.minSalary}
+            maxSalary={searchParams.maxSalary}
             handleChange={handleChange}
+            currencyType={searchParams.currencyType}
           />
         </div>
       </form>

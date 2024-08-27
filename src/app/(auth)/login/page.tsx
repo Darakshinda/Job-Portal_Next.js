@@ -14,6 +14,7 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { TbBriefcaseFilled } from "react-icons/tb";
 import { MdPersonSearch } from "react-icons/md";
 import Cookies from "js-cookie";
+import { swalSuccess, swalFailed } from "@/lib/helpers/swal";
 
 type Schema = z.infer<typeof loginFormSchema>;
 
@@ -63,17 +64,7 @@ const Login = () => {
       localStorage.setItem("access_token", access);
       localStorage.setItem("refresh_token", refresh);
 
-      // Show success message
-      Swal.fire({
-        title: "Login Successful",
-        icon: "success",
-        toast: true,
-        timer: 3000,
-        position: "top-right",
-        timerProgressBar: true,
-        showConfirmButton: false,
-      });
-      // Redirect to the appropriate dashboard
+      // save the account_type in the local storage and cookies
       const axiosInstance = axios.create({
         baseURL: baseurl,
         headers: {
@@ -95,6 +86,13 @@ const Login = () => {
             sameSite: "strict",
             httpOnly: false,
           });
+
+          swalSuccess({
+            title: "Login Successful",
+            type: "toast",
+          });
+
+          // Redirect the user to appropriate dashboard
           if (response.data.account_type === "job_seeker") {
             Router.push("/seeker-dashboard");
           } else {
@@ -102,19 +100,30 @@ const Login = () => {
           }
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
+          swalFailed({
+            title: "Server Error",
+            type: "Toast",
+          });
         });
     } catch (error: any) {
-      console.error("Login error:", error);
+      swalFailed({
+        title: "Invalid Credentials",
+        type: "toast",
+      });
+      return;
     }
   };
 
+  const loginFormCls =
+    "peer py-3 px-4 ps-11 block w-full bg-gray-200 rounded-lg outline-none focus:outline-primary-500 focus:ring-primary-500 disabled:opacity-50 disabled:pointer-events-none placeholder:text-gray-400";
+
   return (
     <div className="min-h-screen grid bg-login bg-cover bg-no-repeat bg-center md:py-8 md:px-12 sm:py-4 sm:px-6">
-      <div className="flex-1 grid md:grid-flow-col md:grid-cols-[55%,45%] max-[400px]:border-2 border-[10px] border-white sm:rounded-[2rem] bg-transparent">
+      <div className="flex-1 grid md:grid-flow-col md:grid-cols-[55%,45%] max-[400px]:border-2 border-[10px] border-white sm:rounded-[2rem]">
         {/* Left side with transparent background */}
-        <div className="w-full h-full rounded-3xl overflow-hidden">
-          <div className="h-full grid place-items-center bg-black bg-opacity-35 rounded-3xl overflow-hidden">
+        <div className="w-full h-full rounded-3xl">
+          <div className="h-full grid place-items-center bg-black bg-opacity-35 brightness-125  rounded-3xl">
             <div className="flex flex-col sm:gap-10 gap-6 items-center justify-center w-full max-md:my-16 text-white font-Insomatte">
               <h1 className="xl:text-6xl lg:text-5xl md:text-4xl text-3xl px-4 text-center">
                 Tech hiring done <span className="text-[#c900af]">right</span>
@@ -151,7 +160,7 @@ const Login = () => {
               placeholder="John Doe"
               icon={<FaUserAstronaut />}
               req={true}
-              cls="peer py-3 px-4 ps-11 block w-full bg-gray-200 rounded-lg outline-none focus:outline-primary-500 focus:ring-primary-500 disabled:opacity-50 disabled:pointer-events-none placeholder:text-gray-400"
+              cls={loginFormCls}
             />
 
             <LoginFormInput
@@ -164,7 +173,7 @@ const Login = () => {
               placeholder="••••••••"
               icon={<RiLockPasswordLine />}
               req={true}
-              cls="peer py-3 px-4 ps-11 block w-full bg-gray-200 rounded-lg outline-none focus:outline-primary-500 focus:ring-primary-500 disabled:opacity-50 disabled:pointer-events-none placeholder:text-gray-400"
+              cls={loginFormCls}
             />
 
             <div className="mt-2 block text-right">

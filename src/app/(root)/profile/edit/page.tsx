@@ -13,7 +13,7 @@ import {
 } from "@/lib/validator";
 import { FaGithub, FaLinkedin, FaTelegram, FaGlobe } from "react-icons/fa";
 import locOpns from "@/constants/data/location.json";
-import ExperienceTags from "@/constants/data/expirence.json";
+import ExperienceTags from "@/constants/data/experience.json";
 import companyType from "@/constants/data/companytype.json";
 import SkillTags from "@/constants/data/tags.json";
 import ethinicity from "@/constants/data/ethinicity.json";
@@ -754,7 +754,7 @@ const EditProfilePage = () => {
                     selected={aboutFormData.location}
                     label="Location"
                     name="location"
-                    labelcls="text-gray-500 font-semibold relative flex items-center gap-2"
+                    labelCls="text-gray-500 font-semibold relative flex items-center gap-2"
                     placeholder="Location"
                     cls={defaultPostEditFormInputCls}
                     tags={LocationTags}
@@ -789,7 +789,7 @@ const EditProfilePage = () => {
                     selected={aboutFormData.years_of_experience}
                     label="Years of Experience"
                     name="years_of_experience"
-                    labelcls="text-gray-500 font-semibold relative flex items-center gap-2"
+                    labelCls="text-gray-500 font-semibold relative flex items-center gap-2"
                     placeholder="Experience"
                     cls={defaultPostEditFormInputCls}
                     tags={ExperienceTags}
@@ -811,7 +811,7 @@ const EditProfilePage = () => {
                 existingTags={aboutFormData.skillsArray}
                 label={isHirer ? "Looking for" : "Skills"}
                 name={isHirer ? "looking_for" : "skills"}
-                labelcls="text-gray-500 font-semibold relative flex items-center gap-2"
+                labelCls="text-gray-500 font-semibold relative flex items-center gap-2"
                 placeholder={isHirer ? "Looking for" : "Skills"}
                 cls={defaultPostEditFormInputCls}
                 tags={SkillTags}
@@ -833,7 +833,7 @@ const EditProfilePage = () => {
                     selected={aboutFormData.product_service}
                     label="Product/Service based"
                     name="product_service"
-                    labelcls="text-gray-500 font-semibold relative flex items-center gap-2"
+                    labelCls="text-gray-500 font-semibold relative flex items-center gap-2"
                     placeholder="Eg: Product based"
                     cls={defaultPostEditFormInputCls}
                     tags={["Product based", "Service based", "Hybrid"]}
@@ -852,7 +852,7 @@ const EditProfilePage = () => {
                     selected={aboutFormData.company_stage}
                     label="Company Stage"
                     name="company_stage"
-                    labelcls="text-gray-500 font-semibold relative flex items-center gap-2"
+                    labelCls="text-gray-500 font-semibold relative flex items-center gap-2"
                     placeholder="Eg: Startup"
                     cls={defaultPostEditFormInputCls}
                     tags={companyType}
@@ -1205,7 +1205,7 @@ const EditProfilePage = () => {
                 <SearchSelectDropdown
                   label="Pronouns"
                   name="pronouns"
-                  labelcls="text-gray-500 text-base font-semibold relative flex items-center gap-2"
+                  labelCls="text-gray-500 text-base font-semibold relative flex items-center gap-2"
                   placeholder="Pronouns"
                   cls={defaultPostEditFormInputCls}
                   tags={["He/Him", "She/Her", "They/Them", "Self-describe"]}
@@ -1224,7 +1224,7 @@ const EditProfilePage = () => {
                 <SearchSelectDropdown
                   label="Gender"
                   name="gender"
-                  labelcls="text-gray-500 text-base font-semibold relative flex items-center gap-2"
+                  labelCls="text-gray-500 text-base font-semibold relative flex items-center gap-2"
                   placeholder="Eg: Male"
                   cls={defaultPostEditFormInputCls}
                   tags={[

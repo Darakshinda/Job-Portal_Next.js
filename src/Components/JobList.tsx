@@ -32,8 +32,9 @@ interface SearchParams {
     skillTags: string[];
     location: string;
     jobType: string;
-    minSalary: number;
-    maxSalary: number;
+    minSalary: string;
+    maxSalary: string;
+    currencyType: string;
   };
   appliedJobs?: boolean;
 }
@@ -87,7 +88,7 @@ const JobList = ({ searchParams, postedJobs, appliedJobs }: SearchParams) => {
       params.append("limit", fetchCount.toString()); // no.of entries to fetch
       params.append("offset", ((page - 1) * fetchCount).toString()); // no.of entries to skip
 
-      console.log("Params:", params.toString());
+      // console.log("Params:", params.toString());
 
       const url = `${baseurl}/${postedJobs ? "posted-jobs" : appliedJobs ? "applied-jobs" : "jobs"}/?${params.toString()}`;
       const token = localStorage.getItem("access_token");
@@ -99,7 +100,7 @@ const JobList = ({ searchParams, postedJobs, appliedJobs }: SearchParams) => {
       const response = await axios.get(url, config);
 
       // console.log("Params:", params.toString());
-      console.log("URL:", url);
+      // console.log("URL:", url);
       // console.log("Token: ", token);
       // console.log("Fetched jobs:", response.data.results);
       setJobs(response.data.results); // Replace new jobs to existing jobs

@@ -44,7 +44,7 @@ const ExperienceCard = ({
   const [isEditing, setIsEditing] = useState(false);
   // const buttonbg = "rgb(30, 7, 94)",
   //   buttondiv = "flex space-x-4",
-  //   labelcls = "block text-sm font-medium text-[16px] font-bold";
+  //   labelCls = "block text-sm font-medium text-[16px] font-bold";
 
   // const handle = (
   //   key: string,

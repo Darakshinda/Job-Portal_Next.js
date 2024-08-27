@@ -19,19 +19,19 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
   const displayTagsLength = 10;
-  const increament = 5;
+  const increment = 5;
 
   const [displayedOptions, setDisplayedOptions] = useState<string[]>([]);
   let [excessTagsCount, setExcessTagsCount] = useState<number>(0);
 
   const handleExpansion = () => {
-    if (excessTagsCount > increament) {
+    if (excessTagsCount > increment) {
       setDisplayedOptions(
-        options.slice(0, displayedOptions.length + increament)
+        options.slice(0, displayedOptions.length + increment)
       );
-      excessTagsCount -= increament;
+      excessTagsCount -= increment;
       setExcessTagsCount(excessTagsCount);
-    } else if (excessTagsCount < increament && excessTagsCount > 0) {
+    } else if (excessTagsCount < increment && excessTagsCount > 0) {
       setDisplayedOptions(
         options.slice(0, displayedOptions.length + excessTagsCount)
       );
@@ -72,14 +72,12 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({
   };
 
   useEffect(() => {
-    if (selected) {
-      setSelectedOptions(selected);
-    }
+    if (selected) setSelectedOptions(selected);
     setDisplayedOptions(options.slice(0, displayTagsLength)); // Initialize displayed options when options change
     setExcessTagsCount(options.length - displayTagsLength); // Initialize excess count when options change
   }, [selected, options]);
 
-  console.log("Selected: ", selectedOptions);
+  // console.log("Selected: ", selectedOptions);
   // console.log("Options: ", displayedOptions);
 
   return (

@@ -57,10 +57,16 @@ const recruiterSignupFormSchema = z
     confirm_password: z.string(),
     how_heard_about_codeunity: z.string(),
   })
-  .refine((data) => data.password === data.confirm_password, {
-    message: "Passwords do not match",
-    path: ["confirm_password"],
-  });
+  .refine(
+    (data) => {
+      // console.log(data.password, data.confirm_password);
+      return data.password === data.confirm_password;
+    },
+    {
+      message: "Passwords do not match",
+      path: ["confirm_password"],
+    }
+  );
 
 const seekerSignupFormSchema = z
   .object({
@@ -85,10 +91,10 @@ const seekerSignupFormSchema = z
       ),
     confirm_password: z.string(),
     location: z.string().min(1, { message: "Location is required" }),
-    experience: z.coerce
-      .number()
-      .gte(0, { message: "Experience must be a non-negative number" })
-      .lte(50, { message: "Experience must be at most 50 years" }),
+    // experience: z.coerce
+    //   .number()
+    //   .gte(0, { message: "Experience must be a non-negative number" })
+    //   .lte(50, { message: "Experience must be at most 50 years" }),
     how_heard_about_codeunity: z.string(),
   })
   .refine((data) => data.password === data.confirm_password, {

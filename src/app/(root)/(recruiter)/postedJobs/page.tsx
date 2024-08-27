@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/Components/Navbar";
@@ -14,8 +14,9 @@ interface SearchParams {
   skillTags: string[];
   location: string;
   jobType: string;
-  minSalary: number;
-  maxSalary: number;
+  minSalary: string;
+  maxSalary: string;
+  currencyType: string;
 }
 
 const PostedJobs = () => {
@@ -24,13 +25,14 @@ const PostedJobs = () => {
     skillTags: [],
     location: "",
     jobType: "",
-    minSalary: 0,
-    maxSalary: 75,
+    minSalary: "1000",
+    maxSalary: "50000",
+    currencyType: "USD",
   });
 
   const memoizedSearchParams = useMemo(() => searchParams, [searchParams]);
 
-  const handleChange = (name: string, value: string | number) => {
+  const handleChange = (name: string, value: string) => {
     // console.log(name, value);
     setSearchParams((prevState) => ({
       ...prevState,
@@ -45,7 +47,9 @@ const PostedJobs = () => {
     }));
   };
 
-  // console.log(searchParams);
+  useEffect(() => {
+    console.log(searchParams);
+  }, [searchParams]);
 
   return (
     <div className="bg-[#FAFAFA] flex-1 px-6 flex flex-col max-h-screen">
