@@ -2,16 +2,20 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // List of public routes
-const publicRoutes = [
-  "/",
+const publicRoutes = ["/"];
+
+const seekerDashboardRoutes = [
+  "/seeker-dashboard",
+  "/seeker-dashboard/:jobId/path*",
+];
+
+const loginRoutes = [
   "/login",
   "/signup",
   "/signup-recruiter",
   "/signup-seeker",
   "/reset-password",
   "/reset-password/:path*",
-  "/seeker-dashboard",
-  "/seeker-dashboard/:jobId/path*",
 ];
 
 const hirerRoutes = [
@@ -39,6 +43,24 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  if (loginRoutes.includes(pathname) && !token) {
+    return NextResponse.next();
+  }
+
+  if (loginRoutes.includes(pathname) && token) {
+    console.log("Already logged in, Redirecting to /dashboard");
+    if (accountType === "job_hirer") {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+    return NextResponse.redirect(new URL("/seeker-dashboard", request.url));
+  }
+
+  //Allow seeker dashboard public
+
+  if (seekerDashboardRoutes.includes(pathname) && accountType !== "job_hirer") {
+    return NextResponse.next();
+  }
+
   // Check if the token is present
   if (!token) {
     console.log("Auth required, Redirecting to /login");
@@ -59,11 +81,16 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/seeker-dashboard", request.url));
   }
 
-  if (seekerRoutes.includes(pathname) && accountType === "job_hirer") {
+  if (
+    (seekerRoutes.includes(pathname) ||
+      seekerDashboardRoutes.includes(pathname)) &&
+    accountType === "job_hirer"
+  ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   // If no conditions match, redirect to login
+  return NextResponse.redirect(new URL("/login", request.url));
 }
 
 export const config = {
