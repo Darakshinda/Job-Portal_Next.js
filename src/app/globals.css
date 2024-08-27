@@ -39,15 +39,15 @@
   }
 } */
 
-/* body {
+body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
+  /* background: linear-gradient(
       to bottom,
       transparent,
       rgb(var(--background-end-rgb))
     )
-    rgb(var(--background-start-rgb));
-} */
+    rgb(var(--background-start-rgb)); */
+}
 
 .scrollbar-hide {
   scrollbar-width: none;
@@ -393,27 +393,26 @@ input[type="tel"] {
 
 /* ======================================= SCROLLBAR STYLES */
 
-body::-webkit-scrollbar {
+/* body::-webkit-scrollbar {
   width: 1rem !important;
-}
+} */
 
 /* .react-datepicker__time-list::-webkit-scrollbar, */
 .textarea::-webkit-scrollbar {
   width: 0.75rem !important;
 }
-
+/* 
 body::-webkit-scrollbar-thumb,
-/* .react-datepicker__time-list::-webkit-scrollbar-thumb, */
 .textarea::-webkit-scrollbar-thumb {
   background-color: var(--blue-500) !important;
   border-radius: 5rem !important;
   border: 0.15rem solid transparent;
   background-clip: content-box;
-}
+} */
 
-body::-webkit-scrollbar-track {
+/* body::-webkit-scrollbar-track {
   background-color: white !important;
-}
+} */
 
 /* .react-datepicker__time-list::-webkit-scrollbar-track, */
 .textarea::-webkit-scrollbar-track {

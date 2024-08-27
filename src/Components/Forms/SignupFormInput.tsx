@@ -11,7 +11,7 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 interface FormInputProps {
   key?: string;
   cls?: string;
-  labelcls?: string;
+  labelCls?: string;
   placeholder?: string;
   req?: boolean;
   disabled?: boolean;
@@ -21,7 +21,7 @@ interface FormInputProps {
   name: string;
   control?: Control<any>; // Make control optional
   error?: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined;
-  handleChange?: (key: string, value: string | number) => void;
+  handleChange?: (key: string, value: string) => void;
 }
 
 const SignupFormInput = ({
@@ -34,7 +34,7 @@ const SignupFormInput = ({
   req,
   disabled,
   cls,
-  labelcls,
+  labelCls,
   error,
   handleChange,
 }: FormInputProps) => {
@@ -45,7 +45,7 @@ const SignupFormInput = ({
     return (
       <div className="relative flex flex-col w-full">
         <label
-          className={`text-gray-500 font-semibold ${labelcls}`}
+          className={`text-gray-500 font-semibold inline-block w-fit ${labelCls}`}
           htmlFor={name}
         >
           {label}
@@ -56,6 +56,7 @@ const SignupFormInput = ({
             *
           </span>
         </label>
+
         <Controller
           name={name}
           control={control}
@@ -71,7 +72,6 @@ const SignupFormInput = ({
                       : "password"
                     : type
                 }
-                required={req}
                 onPaste={(e) => {
                   if (type === "password") {
                     e.preventDefault();
@@ -80,6 +80,7 @@ const SignupFormInput = ({
                 }}
                 className={cls + " w-full"}
                 placeholder={placeholder}
+                required={req}
                 disabled={disabled}
                 onChange={(e) => {
                   field.onChange(e); // Update React Hook Form state
@@ -117,7 +118,7 @@ const SignupFormInput = ({
   return (
     <div className="relative flex flex-col w-full">
       <label
-        className={`text-gray-500 font-semibold ${labelcls}`}
+        className={`text-gray-500 font-semibold ${labelCls}`}
         htmlFor={name}
       >
         {label}

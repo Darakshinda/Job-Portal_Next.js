@@ -325,7 +325,7 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
             <SearchSelectDropdown
               req={false}
               label="Skills"
-              labelcls="text-gray-700 font-semibold relative flex items-center gap-2 mb-2"
+              labelCls="text-gray-700 font-semibold relative flex items-center gap-2 mb-2"
               cls="relative w-full -mt-2 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
               tags={SkillTags}
               onChange={handleSkillChange}

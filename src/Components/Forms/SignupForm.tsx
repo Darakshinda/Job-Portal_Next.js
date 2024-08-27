@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import SignupFormInput from "./SignupFormInput";
 import Link from "next/link";
@@ -7,7 +9,7 @@ import { FaRegClock } from "react-icons/fa";
 import { IoBriefcaseOutline } from "react-icons/io5";
 import SearchSelectDropdown from "./SearchSelectDropdown";
 import tagOpns from "@/constants/data/tags.json";
-import ExperienceTags from "@/constants/data/expirence.json";
+import ExperienceTags from "@/constants/data/experience.json";
 import { Control, FieldErrors } from "react-hook-form";
 
 type SignupFormProps = {
@@ -19,10 +21,10 @@ type SignupFormProps = {
   errors: FieldErrors;
   formData: {
     phone_number: string;
-    looking_for?: string;
-    hiring_skills?: string[];
-    techincal_skills?: string[];
-    years_of_experience?: string;
+    looking_for?: string; // hirer
+    hiring_skills?: string[]; // hirer
+    technical_skills?: string[]; // seeker
+    years_of_experience?: string; // seeker
   };
   handleChange: (key: string, value: string) => void;
   formDataErrors: {
@@ -67,7 +69,7 @@ const SignupForm = ({
         </div>
       </div>
 
-      <div className="lg:ml-[50%] mt-4 mb-8 lg:mr-6 max-lg:px-2 h-fit flex-1">
+      <div className="lg:ml-[50%] mt-4 mb-8 lg:mr-6 max-lg:px-2 flex-1">
         <div className="h-full">
           <form
             id="signup-form"
@@ -78,67 +80,59 @@ const SignupForm = ({
               Connect with Top Engineers
             </div>
             <div className="flex gap-x-6 gap-y-4 max-[500px]:flex-col flex-row">
-              <div className="flex flex-col flex-1">
-                <SignupFormInput
-                  id="first_name"
-                  name="first_name"
-                  type="text"
-                  label="First Name"
-                  control={control}
-                  placeholder="John"
-                  req={true}
-                  cls={defaultCls}
-                  error={errors.first_name}
-                />
-              </div>
-
-              <div className="flex flex-col flex-1">
-                <SignupFormInput
-                  id="last_name"
-                  name="last_name"
-                  type="text"
-                  label="Last Name"
-                  control={control}
-                  placeholder="Doe"
-                  req={true}
-                  cls={defaultCls}
-                  error={errors.last_name}
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-col flex-1">
               <SignupFormInput
-                id="email"
-                name="email"
-                type="email"
-                label="Email"
+                id="first_name"
+                name="first_name"
+                type="text"
+                label="First Name"
                 control={control}
-                placeholder="name@personal.com"
+                placeholder="John"
                 req={true}
                 cls={defaultCls}
-                error={errors.email}
+                error={errors.first_name}
+              />
+
+              <SignupFormInput
+                id="last_name"
+                name="last_name"
+                type="text"
+                label="Last Name"
+                control={control}
+                placeholder="Doe"
+                req={true}
+                cls={defaultCls}
+                error={errors.last_name}
               />
             </div>
 
+            <SignupFormInput
+              id="email"
+              name="email"
+              type="email"
+              label="Email"
+              control={control}
+              placeholder="name@personal.com"
+              req={true}
+              cls={defaultCls}
+              error={errors.email}
+            />
+
             {type === "Recruiter" && (
-              <div className="flex flex-col flex-1">
-                <SignupFormInput
-                  id="working_email"
-                  name="working_email"
-                  type="email"
-                  label="Work Email"
-                  control={control}
-                  placeholder="name@work.com"
-                  req={true}
-                  cls={defaultCls}
-                  error={errors.working_email}
-                />
-              </div>
+              <SignupFormInput
+                id="working_email"
+                name="working_email"
+                type="email"
+                label="Work Email"
+                control={control}
+                placeholder="name@work.com"
+                req={true}
+                cls={defaultCls}
+                error={errors.working_email}
+              />
             )}
 
             <div className="flex gap-x-6 gap-y-4 max-[500px]:flex-col flex-row">
-              <div className="flex flex-col flex-1">
+              <div className="flex-1">
                 <SignupFormInput
                   id="username"
                   name="username"
@@ -152,7 +146,7 @@ const SignupForm = ({
                 />
               </div>
 
-              <div className="flex flex-col flex-1">
+              <div className="flex flex-col flex-1 relative">
                 <label
                   className="text-gray-500 font-semibold mb-1"
                   htmlFor="phoneNumber"
@@ -170,44 +164,44 @@ const SignupForm = ({
                   onChange={(value) => handleChange("phone_number", value!)}
                 />
                 <span
-                  className={`text-red-500 text-xs font-semibold  ${formDataErrors.phone_number ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
+                  className={`text-red-500 text-xs font-semibold  ${formDataErrors.phone_number ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 z-10 absolute bg-red-50 rounded-b-md top-full px-2 py-0.5`}
                 >
                   {formDataErrors.phone_number || ""}
                 </span>
               </div>
             </div>
 
-            <div className="flex flex-col flex-1">
-              <div className="flex gap-x-6 gap-y-4 max-[500px]:flex-col flex-row">
-                <div className="flex flex-col flex-1">
-                  <SignupFormInput
-                    id="password"
-                    name="password"
-                    type="password"
-                    label="Password"
-                    control={control}
-                    placeholder="••••••••"
-                    req={true}
-                    cls={defaultCls}
-                    error={errors.password}
-                  />
-                </div>
+            {/* <div className="flex flex-col flex-1"> */}
+            <div className="flex gap-x-6 gap-y-4 max-[500px]:flex-col flex-row">
+              {/* <div className="flex flex-col flex-1"> */}
+              <SignupFormInput
+                id="password"
+                name="password"
+                type="password"
+                label="Password"
+                control={control}
+                placeholder="••••••••"
+                req={true}
+                cls={defaultCls}
+                error={errors.password}
+              />
+              {/* </div> */}
 
-                <div className="flex flex-col flex-1">
-                  <SignupFormInput
-                    id="confirm_password"
-                    name="confirm_password"
-                    type="password"
-                    label="Confirm Password"
-                    control={control}
-                    placeholder="••••••••"
-                    req={true}
-                    cls={defaultCls}
-                    error={errors.confirm_password}
-                  />
-                </div>
-              </div>
+              {/* <div className="flex flex-col flex-1"> */}
+              <SignupFormInput
+                id="confirm_password"
+                name="confirm_password"
+                type="password"
+                label="Confirm Password"
+                control={control}
+                placeholder="••••••••"
+                req={true}
+                cls={defaultCls}
+                error={errors.confirm_password}
+              />
+              {/* </div> */}
             </div>
+            {/* </div> */}
 
             {type === "Recruiter" ? (
               <div className="flex flex-col">
@@ -216,7 +210,7 @@ const SignupForm = ({
                   <span className="text-red-500">*</span>
                 </label>
 
-                <div className="flex gap-x-6 gap-y-4 lg:flex-row flex-col mt-1">
+                <div className="flex gap-x-6 gap-y-4 sm:flex-row flex-col mt-1">
                   <button
                     type="button"
                     className={`flex flex-1 items-center text-white rounded-xl border-2 px-4 py-3 cursor-pointer outline-none focus-visible:border-primary-700 ${formData.looking_for === "freelance" ? "border-primary-50 bg-primary-500" : "border-transparent bg-gray-400"}`}
@@ -225,7 +219,7 @@ const SignupForm = ({
                     }}
                   >
                     <FaRegClock size={20} />
-                    <div className="ml-2 text-gray-200 font-medium">
+                    <div className="ml-2 font-medium whitespace-nowrap">
                       Freelance Contractor
                     </div>
                   </button>
@@ -237,48 +231,46 @@ const SignupForm = ({
                     }}
                   >
                     <IoBriefcaseOutline size={20} />
-                    <div className="ml-2 text-gray-200 font-medium">
+                    <div className="ml-2 font-medium whitespace-nowrap">
                       Full Time Employee
                     </div>
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col flex-1">
-                <div className="flex gap-x-6 gap-y-4 max-[500px]:flex-col flex-row">
-                  <div className="flex flex-col flex-1">
-                    <SignupFormInput
-                      id="location"
-                      name="location"
-                      type="text"
-                      label="Location"
-                      control={control}
-                      placeholder="Location"
-                      req={true}
-                      cls={defaultCls}
-                      error={errors.location}
-                    />
-                  </div>
+              <div className="flex gap-x-6 gap-y-4 max-[500px]:flex-col flex-row">
+                <div className="flex-1">
+                  <SignupFormInput
+                    id="location"
+                    name="location"
+                    type="text"
+                    label="Location"
+                    control={control}
+                    placeholder="Location"
+                    req={true}
+                    cls={defaultCls}
+                    error={errors.location}
+                  />
+                </div>
 
-                  <div className="flex flex-col flex-1">
-                    <SearchSelectDropdown
-                      selected={formData.years_of_experience}
-                      label="Years of Experience"
-                      name="years_of_experience"
-                      labelcls="text-gray-500 font-semibold relative flex items-center gap-2"
-                      placeholder="Experience"
-                      cls={defaultCls}
-                      tags={ExperienceTags}
-                      onSingleChange={handleChange}
-                      multiple={false}
-                      req={true}
-                    />
-                    <span
-                      className={`text-red-500 text-xs font-semibold  ${formDataErrors.years_of_experience ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
-                    >
-                      {formDataErrors.years_of_experience || ""}
-                    </span>
-                  </div>
+                <div className="flex flex-col flex-1">
+                  <SearchSelectDropdown
+                    selected={formData.years_of_experience}
+                    label="Years of Experience"
+                    name="years_of_experience"
+                    labelCls="text-gray-500 font-semibold relative flex items-center gap-2"
+                    placeholder="Experience"
+                    cls={defaultCls}
+                    tags={ExperienceTags}
+                    onSingleChange={handleChange}
+                    multiple={false}
+                    req={true}
+                  />
+                  <span
+                    className={`text-red-500 text-xs font-semibold  ${formDataErrors.years_of_experience ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
+                  >
+                    {formDataErrors.years_of_experience || ""}
+                  </span>
                 </div>
               </div>
             )}
@@ -294,24 +286,22 @@ const SignupForm = ({
                 onChange={handleSkillChange}
                 tags={tagOpns}
                 cls={
-                  "relative p-2 bg-gray-200 text-primary-700 rounded-lg border border-gray-300 outline-none focus:border-primary-500"
+                  "relative p-2 bg-gray-200 text-primary-700 rounded-lg border border-gray-300 outline-none focus:border-primary-500 mt-1"
                 }
               />
             </div>
 
-            <div className="flex flex-col">
-              <SignupFormInput
-                id="how_heard_about_codeunity"
-                name="how_heard_about_codeunity"
-                type="text"
-                label="How did you hear about CodeUnity?"
-                control={control}
-                placeholder="How did you hear about us"
-                req={false}
-                cls={defaultCls}
-                error={errors.how_heard_about_codeunity}
-              />
-            </div>
+            <SignupFormInput
+              id="how_heard_about_codeunity"
+              name="how_heard_about_codeunity"
+              type="text"
+              label="How did you hear about CodeUnity?"
+              control={control}
+              placeholder="How did you hear about us"
+              req={false}
+              cls={defaultCls}
+              error={errors.how_heard_about_codeunity}
+            />
 
             <button
               type="submit"
@@ -333,7 +323,7 @@ const SignupForm = ({
             and
             <a
               href="https://s3.us-east-2.amazonaws.com/flexiple-marketing/pdf/privacy-policy.pdf"
-              className="italic font-semibold text-sm text-[#9737bd] hover:underline outline-none focus-visible:underline focus-visible:text ml-1"
+              className="italic font-semibold text-sm text-[#9737bd] hover:underline outline-none focus-visible:underline focus-visible:text ml-1 inline-block"
               target="_blank"
             >
               Privacy Policy
