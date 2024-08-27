@@ -9,12 +9,12 @@ interface SelectedOptionsProps {
 }
 
 const SelectedOptions: React.FC<SelectedOptionsProps> = ({
-  selected = [],
+  selected,
   options,
   name,
   onChange,
 }) => {
-  console.log("Options: ", options);
+  // console.log("Options: ", options);
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
@@ -72,13 +72,15 @@ const SelectedOptions: React.FC<SelectedOptionsProps> = ({
   };
 
   useEffect(() => {
-    setSelectedOptions(selected);
+    if (selected) {
+      setSelectedOptions(selected);
+    }
     setDisplayedOptions(options.slice(0, displayTagsLength)); // Initialize displayed options when options change
     setExcessTagsCount(options.length - displayTagsLength); // Initialize excess count when options change
   }, [selected, options]);
 
   console.log("Selected: ", selectedOptions);
-  console.log("Options: ", displayedOptions);
+  // console.log("Options: ", displayedOptions);
 
   return (
     <div className="flex flex-wrap">

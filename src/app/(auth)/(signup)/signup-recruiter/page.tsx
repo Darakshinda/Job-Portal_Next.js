@@ -39,8 +39,10 @@ const Signup = () => {
 
   const [formDataErrors, setFormDataErrors] = useState<{
     phone_number: string;
+    years_of_experience: string;
   }>({
     phone_number: "",
+    years_of_experience: "",
   });
 
   const handleChange = (key: string, value: string) => {

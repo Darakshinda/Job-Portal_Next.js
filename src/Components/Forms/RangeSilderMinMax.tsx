@@ -67,9 +67,11 @@ type Props = {
   currencyList: string[];
 };
 
-const Home: React.FC<Props> = ({ currencyRates, currencyList }) => {
-  const defaultCurrencyRates = currencyRates || { USD: 1 };
-  const defaultCurrencyList = currencyList || ["USD"];
+const Home: React.FC<Props> = () => {
+  const [defaultCurrencyRates, setDefaultCurrencyRates] = useState({ USD: 1 });
+  const [defaultCurrencyList, setDefaultCurrencyList] = useState<string[]>([
+    "USD",
+  ]);
 
   const [range, setRange] = useState<number[]>([42000, 253000]);
   const [currency, setCurrency] = useState<string>("USD");
@@ -77,9 +79,26 @@ const Home: React.FC<Props> = ({ currencyRates, currencyList }) => {
     defaultCurrencyRates[currency]
   );
 
+  const getVals = async () => {
+    const apiKey = "6bec93c77b543a360c7e8995";
+    const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/USD`;
+
+    try {
+      const response = await axios.get(apiUrl);
+      const currencyRates = response.data.conversion_rates;
+      const currencyList = Object.keys(currencyRates);
+      console.log("Fetched currency rates:", currencyRates);
+
+      setDefaultCurrencyList(currencyList);
+      setDefaultCurrencyRates(currencyRates);
+    } catch (error) {
+      console.error("Failed to fetch currency rates:", error);
+    }
+  };
+
   useEffect(() => {
-    setConversionRate(defaultCurrencyRates[currency]);
-  }, [currency, defaultCurrencyRates]);
+    getVals();
+  }, []);
 
   const handleSliderChange = (values: number[]) => {
     setRange(values);
@@ -96,7 +115,7 @@ const Home: React.FC<Props> = ({ currencyRates, currencyList }) => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
+    <div className="flex justify-center items-center bg-gray-100">
       <div className="p-4 bg-blue-50 border border-blue-300 rounded-md w-full max-w-md">
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-lg font-semibold">Salary</h3>
@@ -110,7 +129,7 @@ const Home: React.FC<Props> = ({ currencyRates, currencyList }) => {
             Clear
           </button>
         </div>
-        <div className="mb-4 text-gray-600">
+        <div className="mb-2 text-gray-600">
           {formatCurrency(range[0])} - {formatCurrency(range[1])}
         </div>
         <Range
@@ -158,33 +177,6 @@ const Home: React.FC<Props> = ({ currencyRates, currencyList }) => {
       </div>
     </div>
   );
-};
-
-// Fetch currency rates and list on the server-side
-export const getServerSideProps: GetServerSideProps = async () => {
-  const apiKey = "YOUR_EXCHANGE_RATE_API_KEY";
-  const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/USD`;
-
-  try {
-    const response = await axios.get(apiUrl);
-    const currencyRates = response.data.conversion_rates;
-    const currencyList = Object.keys(currencyRates);
-
-    return {
-      props: {
-        currencyRates,
-        currencyList,
-      },
-    };
-  } catch (error) {
-    console.error("Failed to fetch currency rates:", error);
-    return {
-      props: {
-        currencyRates: { USD: 1 }, // Default to USD if the API fails
-        currencyList: ["USD"], // Ensure at least USD is available
-      },
-    };
-  }
 };
 
 export default Home;
