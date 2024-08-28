@@ -19,6 +19,8 @@ type SearchSelectDropdownProps = {
   displayTagsLength?: number;
   selected?: string;
   existingTags?: string[];
+  resetflg?: boolean;
+  setResetFlg?: (val: boolean) => void;
 };
 
 const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
@@ -37,6 +39,8 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
   displayTagsLength = 10,
   selected,
   existingTags,
+  resetflg,
+  setResetFlg,
 }) => {
   const techTags = tags;
   const [inputValue, setInputValue] = useState<string>(selected || "");
@@ -61,6 +65,15 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
       setInputValue(""); // Clear input if selected is empty
     }
   }, [selected]);
+
+  useEffect(() => {
+    if (resetflg) {
+      setSelectedTags([]);
+      setInputValue("");
+      setFilteredTags(techTags);
+      setResetFlg && setResetFlg(false);
+    }
+  }, [resetflg, setResetFlg]);
 
   useEffect(() => {
     // console.log("existing Tags:", existingTags);

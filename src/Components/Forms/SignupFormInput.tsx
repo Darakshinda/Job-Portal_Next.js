@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FieldError,
   Control,
@@ -22,6 +22,9 @@ interface FormInputProps {
   control?: Control<any>; // Make control optional
   error?: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined;
   handleChange?: (key: string, value: string) => void;
+  resetflg?: boolean;
+  setResetFlg?: (val: boolean) => void;
+  value?: string;
 }
 
 const SignupFormInput = ({
@@ -37,8 +40,25 @@ const SignupFormInput = ({
   labelCls,
   error,
   handleChange,
+  resetflg,
+  setResetFlg,
+  value,
 }: FormInputProps) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [inputValue, setInputValue] = useState<string>("");
+
+  useEffect(() => {
+    if (resetflg) {
+      setInputValue("");
+      setResetFlg && setResetFlg(false);
+    }
+  }, [resetflg, setResetFlg]);
+
+  useEffect(() => {
+    if (value !== undefined) {
+      setInputValue(value);
+    }
+  }, [value]);
 
   // Use Controller if control is provided
   if (control) {
@@ -143,7 +163,11 @@ const SignupFormInput = ({
         className={cls + " w-full"}
         placeholder={placeholder}
         disabled={disabled}
-        onChange={(e) => handleChange && handleChange(name, e.target.value)}
+        value={inputValue}
+        onChange={(e) => {
+          setInputValue(e.target.value);
+          handleChange && handleChange(name, e.target.value);
+        }}
       />
       {type === "password" && (
         <button

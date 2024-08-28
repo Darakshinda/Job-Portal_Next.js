@@ -86,19 +86,19 @@ const DoubleThumbSlider = ({
         <div ref={sliderRef} className="relative h-2">
           <div className="absolute z-10 left-0 right-0 bottom-0 top-0 rounded-md bg-gray-200"></div>
           <div
-            className="absolute z-20 top-0 bottom-0 rounded-md bg-green-300"
+            className="absolute z-20 top-0 bottom-0 rounded-md bg-blue-400"
             style={{
               left: `${minPercentage}%`,
               right: `${100 - maxPercentage}%`,
             }}
           ></div>
           <div
-            className="absolute z-40 w-6 h-6 top-0 bg-green-300 rounded-full -mt-2 -ml-3 cursor-pointer"
+            className="absolute z-40 w-6 h-6 top-0 bg-blue-500 rounded-full -mt-2 -ml-3 cursor-pointer"
             style={{ left: `${minPercentage}%` }}
             onMouseDown={handleMouseDown("min")}
           ></div>
           <div
-            className="absolute z-40 w-6 h-6 top-0 bg-green-300 rounded-full -mt-2 -mr-3 cursor-pointer"
+            className="absolute z-40 w-6 h-6 top-0 bg-blue-500 rounded-full -mt-2 -mr-3 cursor-pointer"
             style={{ left: `${maxPercentage}%` }}
             onMouseDown={handleMouseDown("max")}
           ></div>

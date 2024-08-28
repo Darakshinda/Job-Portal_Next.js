@@ -49,6 +49,8 @@ const PostedJobs: React.FC = () => {
     currencyType: "USD",
   });
 
+  const [resetflg, setResetFlg] = useState<boolean>(false);
+
   const handleChange = (name: string, value: string) => {
     setTempParams((prevState) => ({
       ...prevState,
@@ -68,6 +70,7 @@ const PostedJobs: React.FC = () => {
   };
 
   const handleReset = () => {
+    setResetFlg(true);
     setTempParams({
       query: "",
       skillTags: [],
@@ -130,6 +133,8 @@ const PostedJobs: React.FC = () => {
               labelCls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
               cls={defaultFieldStylesCls}
               handleChange={handleChange}
+              resetflg={resetflg}
+              setResetFlg={setResetFlg}
             />
 
             <div className="grid grid-rows-[min(fit_content, fit_content)] gap-x-6 items-start">
@@ -142,6 +147,8 @@ const PostedJobs: React.FC = () => {
                 onChange={handleSkillChange}
                 placeholder="Eg: Software Developer"
                 description="Short tags like industry and tech stack are preferred. Only the first 3 or 4 tags are displayed on the site, but all tags ensure the job appears on relevant tag-specific pages. Additional tags may be auto-generated after posting/editing to supplement."
+                resetflg={resetflg}
+                setResetFlg={setResetFlg}
               />
             </div>
 
@@ -157,6 +164,8 @@ const PostedJobs: React.FC = () => {
                 onSingleChange={handleChange}
                 description="Only fill if you'd only like to hire people from a specific location or timezone this job is restricted to. If not restricted, please leave it as worldwide."
                 multiple={false}
+                resetflg={resetflg}
+                setResetFlg={setResetFlg}
               />
             </div>
 
@@ -172,6 +181,8 @@ const PostedJobs: React.FC = () => {
                 onSingleChange={handleChange}
                 description="Select the type of employment you would like to filter with."
                 multiple={false}
+                resetflg={resetflg}
+                setResetFlg={setResetFlg}
               />
             </div>
 

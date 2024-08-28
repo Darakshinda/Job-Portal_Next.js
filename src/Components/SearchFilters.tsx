@@ -102,7 +102,9 @@ const SearchFilters = ({
         </div>
 
         <div>
-          <p className="text-gray-500 text-sm mb-2">Desired salary</p>
+          <p className="text-gray-500 font-semibold text-md mb-2">
+            Desired salary
+          </p>
           <RangeSliderMinMax
             minSalary={searchParams.minSalary}
             maxSalary={searchParams.maxSalary}

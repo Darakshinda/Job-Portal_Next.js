@@ -34,6 +34,7 @@ interface SearchParams {
     jobType: string;
     minSalary: number;
     maxSalary: number;
+    currencyType: string;
   };
   appliedJobs?: boolean;
 }
