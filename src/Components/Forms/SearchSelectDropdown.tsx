@@ -193,7 +193,7 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
             />
             {dropdownOpen && filteredTags.length > 0 && (
               <ul
-                className="absolute w-full max-h-40 overflow-y-auto border border-gray-300 bg-white z-10 rounded-md custom-scrollbar snap-y snap-mandatory overscroll-contain text-gray-500"
+                className="absolute w-full z-50 max-h-40 overflow-y-auto border border-gray-300 bg-white rounded-md custom-scrollbar snap-y snap-mandatory overscroll-contain text-gray-500"
                 style={{ top: "calc(100% + 0.125rem)" }} // Do not remove this, this is kept intentionally to fix the dropdown position rather than passing it as an arbitrary value which is not considered by tailwind css
                 onMouseDown={(e) => e.preventDefault()}
               >

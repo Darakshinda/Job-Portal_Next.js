@@ -29,7 +29,7 @@ const CompanySelect = ({ handle, val, reset }: Props) => {
 
   useEffect(() => {
     if (reset) {
-      setSelectedOption({ value: "", label: "" });
+      setSelectedOption({ value: val, label: "" });
     }
   }, [reset]);
 

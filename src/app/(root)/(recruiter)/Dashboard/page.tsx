@@ -77,6 +77,10 @@ export default function Page() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    console.log(jobsCount, applicationsCount);
+  }, [jobsCount, applicationsCount]);
+
   return (
     <main className="h-screen w-full overflow-x-auto bg-[#FAFAFA] flex-1">
       <div className="px-4 pt-6 py-4 sm:px-8 lg:px-14 lg:pt-10 lg:pb-2 mx-auto">

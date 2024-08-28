@@ -90,7 +90,7 @@ export function middleware(request: NextRequest) {
   }
 
   // If no conditions match, redirect to login
-  return NextResponse.redirect(new URL("/login", request.url));
+  return NextResponse.next();
 }
 
 export const config = {

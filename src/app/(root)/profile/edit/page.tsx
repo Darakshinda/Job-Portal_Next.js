@@ -236,6 +236,13 @@ const EditProfilePage = () => {
       resume: null,
       resume_url: "",
     });
+    aboutFieldReset({
+      first_name: "",
+      last_name: "",
+      email: "",
+      designation: "",
+      textarea: "",
+    });
     console.log(aboutFormData);
   };
 
