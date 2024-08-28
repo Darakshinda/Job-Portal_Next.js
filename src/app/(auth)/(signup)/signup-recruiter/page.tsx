@@ -77,7 +77,7 @@ const Signup = () => {
     const parsedNumber = parsePhoneNumberFromString("+" + fullNumber);
 
     if (parsedNumber && parsedNumber.isValid()) {
-      console.log("Valid number:", parsedNumber.formatInternational());
+      // console.log("Valid number:", parsedNumber.formatInternational());
       setFormDataErrors((prevState) => ({
         ...prevState,
         phone_number: "",

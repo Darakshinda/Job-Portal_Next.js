@@ -7,7 +7,7 @@ import { IoTimerOutline } from "react-icons/io5";
 import { FiDelete, FiUsers } from "react-icons/fi";
 import axios from "axios";
 import SkillTags from "@/constants/data/tags.json";
-import ApplicantCard from "@/Components/Forms/ApplicantCard";
+import ApplicantCard from "@/Components/ApplicantCard";
 import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
 import Swal from "sweetalert2";
 import DeleteConfirmation from "@/Components/DeleteConfirmation";

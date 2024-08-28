@@ -14,6 +14,7 @@ export const swalFailed = ({
   return type === "modal"
     ? Swal.fire({
         title: title,
+        icon: "error",
         text: error?.response?.data?.username[0] || "An error occurred",
         showClass: {
           popup: `
@@ -55,8 +56,8 @@ export const swalSuccess = ({
   return type === "modal"
     ? Swal.fire({
         title: title,
-        text: message,
         icon: "success",
+        text: message,
         showClass: {
           popup: `
             animate__animated

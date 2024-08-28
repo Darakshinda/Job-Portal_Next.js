@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import LoginFormInput from "@/Components/Forms/LoginFormInput";
 import {
   aboutSchema,
@@ -16,7 +16,7 @@ import locOpns from "@/constants/data/location.json";
 import ExperienceTags from "@/constants/data/experience.json";
 import companyType from "@/constants/data/companytype.json";
 import SkillTags from "@/constants/data/tags.json";
-import ethinicity from "@/constants/data/ethinicity.json";
+import ethnicity from "@/constants/data/ethinicity.json";
 import SignupFormInput from "@/Components/Forms/SignupFormInput";
 import SearchSelectDropdown from "@/Components/Forms/SearchSelectDropdown";
 import Image from "next/image";
@@ -40,7 +40,6 @@ import PdfUploadForm from "@/Components/Forms/ResumeUpload";
 const LocationTags = locOpns.countries;
 type AboutSchema = z.infer<typeof aboutSchema>;
 type SocialProfilesSchema = z.infer<typeof socialProfilesSchema>;
-// type ExperienceSchema = z.infer<typeof experienceSchema>;
 type EducationSchema = z.infer<typeof educationSchema>;
 
 type GeneralSchema = z.infer<typeof generalSchema>;
@@ -85,13 +84,32 @@ type Education = {
 type General = {
   achievements?: string;
   pronouns?: string;
-  pronounsSelfdescribe?: string;
+  pronounsSelfDescribe?: string;
   gender?: string;
-  genderSelfdescribe?: string;
+  genderSelfDescribe?: string;
   race_ethnicity?: string[];
 };
 
 const EditProfilePage = () => {
+  const [initialAboutFormData, setInitialAboutFormData] = useState<About>({
+    profile_picture: null,
+    location: "",
+    years_of_experience: "",
+    profile_picture_url: "",
+    company_name: "",
+    skillsArray: [],
+    product_service: "",
+    company_stage: "",
+    resume: null,
+    resume_url: "",
+  });
+  const [zodAboutFormData, setZodAboutFormData] = useState<AboutSchema>({
+    first_name: "",
+    last_name: "",
+    email: "",
+    designation: "",
+    textarea: "",
+  });
   const [aboutFormData, setAboutFormData] = useState<About>({
     profile_picture: null,
     location: "",
@@ -105,12 +123,26 @@ const EditProfilePage = () => {
     resume_url: "",
   });
 
+  const [zodSocialProfilesFormData, setZodSocialProfilesFormData] =
+    useState<SocialProfilesSchema>({
+      linkedin: "",
+      github: "",
+      website: "",
+      telegram: "",
+    });
+
+  const [initialGeneralFormData, setInitialGeneralFormData] = useState<General>(
+    {
+      // achievements: "",
+      pronouns: "",
+      gender: "",
+    }
+  );
+
   const [generalFormData, setGeneralFormData] = useState<General>({
     achievements: "",
     gender: "",
     pronouns: "",
-    // pronounsSelfdescribe: "",
-    // genderSelfdescribe: "",
     race_ethnicity: [],
   });
 
@@ -131,10 +163,8 @@ const EditProfilePage = () => {
 
   const {
     control: aboutControl,
-    register: aboutRegister,
     handleSubmit: handleAboutSubmit,
     formState: { errors: aboutErrors, isDirty: aboutIsDirty },
-    setValue: setAboutValue,
     reset: aboutFieldReset,
   } = useForm<AboutSchema>({
     mode: "onChange",
@@ -142,11 +172,9 @@ const EditProfilePage = () => {
   });
 
   const {
-    control: educationControl,
     register: socialProfilesRegister,
     handleSubmit: socialProfilesHandleSubmit,
     formState: { errors: socialProfilesErrors, isDirty: socialProfilesIsDirty },
-    setValue,
     reset: socialProfilesReset,
   } = useForm<SocialProfilesSchema>({
     mode: "onChange",
@@ -155,10 +183,10 @@ const EditProfilePage = () => {
 
   const {
     control: generalControl,
-    register: generalRegister,
+    // register: generalRegister,
     handleSubmit: generalHandleSubmit,
     formState: { errors: generalErrors, isDirty: generalIsDirty },
-    watch,
+    // watch,
   } = useForm<GeneralSchema>({
     mode: "onChange",
     resolver: zodResolver(generalSchema),
@@ -219,41 +247,25 @@ const EditProfilePage = () => {
     onSubmit(newFormData);
   };
 
-  console.log("about form errors: ", aboutErrors);
+  // console.log("about form errors: ", aboutErrors);
 
   const handleAboutFormReset = () => {
     setAboutReset(true);
     console.log("resetting about form");
-    setAboutFormData({
-      profile_picture: null,
-      location: "",
-      years_of_experience: "",
-      company_name: "",
-      skillsArray: [],
-      product_service: "",
-      company_stage: "",
-      profile_picture_url: "",
-      resume: null,
-      resume_url: "",
-    });
-    aboutFieldReset({
-      first_name: "",
-      last_name: "",
-      email: "",
-      designation: "",
-      textarea: "",
-    });
+    setAboutFormData(initialAboutFormData);
+    aboutFieldReset(zodAboutFormData);
     console.log(aboutFormData);
   };
 
-  const socialProfilesFormSubmit = (data: SocialProfilesSchema) => {
+  const handleSocialProfilesFormSubmit = (data: SocialProfilesSchema) => {
     console.log("submitting social profiles form");
     console.log(data); //To add to backend
     onSubmit(data);
   };
 
-  const socialProfilesFormReset = () => {
+  const handleSocialProfilesFormReset = () => {
     console.log("resetting social profiles form");
+    socialProfilesReset(zodSocialProfilesFormData);
   };
 
   const handleGeneralFormSubmit = (data: GeneralSchema) => {
@@ -269,56 +281,8 @@ const EditProfilePage = () => {
 
   const handleGeneralFormReset = () => {
     console.log("resetting general form");
-    setGeneralFormData({
-      pronouns: "",
-      pronounsSelfdescribe: "",
-      gender: "",
-      genderSelfdescribe: "",
-    });
+    setGeneralFormData(initialGeneralFormData);
   };
-
-  // const onSubmit = async (data: any) => {
-  //   // console.log(data);
-  //   const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
-  //   const access_token = localStorage.getItem("access_token");
-  //   try {
-  //     const response = await axios.put(
-  //       `${baseurl}/accounts/profile/`,
-  //       isHirer
-  //         ? {
-  //             ...data,
-  //             account_type: isHirer ? "job_hirer" : "job_seeker",
-  //             company_description: data.textarea,
-  //           }
-  //         : {
-  //             ...data,
-  //             account_type: isHirer ? "job_hirer" : "job_seeker",
-  //             bio: data.textarea,
-  //             work_experience_details: workExperienceArray,
-  //             // education_details: educationArray,
-  //           },
-  //       {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",
-  //           Authorization: `Bearer ${access_token}`,
-  //         },
-  //       }
-  //     );
-  //     console.log(response.data);
-  //     Swal.fire({
-  //       icon: "success",
-  //       title: "Profile updated successfully",
-  //       text: "Your profile has been updated successfully.",
-  //     });
-  //   } catch (error: any) {
-  //     console.log(error.response.data || error);
-  //     Swal.fire({
-  //       icon: "error",
-  //       title: "Cannot update profile",
-  //       text: error.response.data || "Please try again.",
-  //     });
-  //   }
-  // };
 
   const yoeStringToNumber = (yoe: string): string => {
     // Handle the specific case for "Less than 1 year"
@@ -333,14 +297,14 @@ const EditProfilePage = () => {
     return match ? match[0] : "0";
   };
 
-  console.log("yoe: ", aboutFormData.years_of_experience);
+  // console.log("yoe: ", aboutFormData.years_of_experience);
 
   const onSubmitArrays = async () => {
     if (!isLoading) {
       const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
       const access_token = localStorage.getItem("access_token");
       try {
-        const responsethree = await axios.put(
+        const response = await axios.put(
           `${baseurl}/accounts/profile/`,
           {
             work_experience_details: workExperienceArray,
@@ -353,7 +317,7 @@ const EditProfilePage = () => {
             },
           }
         );
-        console.log(responsethree.data);
+        // console.log(response.data);
         if (Swal.isVisible()) return;
         Swal.fire({
           title: "Profile update successful",
@@ -499,37 +463,6 @@ const EditProfilePage = () => {
     }
   };
 
-  // const experienceFormSubmit = (data: any) => {
-  //   console.log("submitting experience form");
-  //   console.log(educationFormData);
-  // };
-
-  // const experienceFormReset = () => {
-  //   console.log("resetting experience form");
-  //   setWorkExperienceFormData({
-  //     company: "",
-  //     title: "",
-  //     start_date: "",
-  //     end_date: "",
-  //     is_working: false,
-  //     description: "",
-  //   });
-  // };
-
-  // const urlToFile = async (url: string, fileName: string): Promise<File> => {
-  //   const response = await fetch(url, {
-  //     mode: "cors",
-  //   });
-  //   const blob = await response.blob();
-
-  //   // Extract the file extension from the URL or response
-  //   const fileExtension = url.split(".").pop() || "jpg"; // Default to 'jpg'
-  //   const fileType = blob.type || `image/${fileExtension}`;
-
-  //   // Create a File object from the Blob
-  //   return new File([blob], `${fileName}.${fileExtension}`, { type: fileType });
-  // };
-
   const defaultPostEditFormInputCls =
     "bg-gray-100 mt-1 p-2 rounded border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic placeholder-gray-400";
   const socialProfilesCls =
@@ -574,7 +507,8 @@ const EditProfilePage = () => {
           },
         });
         setIsHirer(response.data.account_type === "job_hirer");
-        setAboutFormData({
+
+        const loadedAboutFormData = {
           profile_picture: null,
           location: response.data.location,
           years_of_experience: !isHirer
@@ -591,25 +525,11 @@ const EditProfilePage = () => {
           profile_picture_url: response.data.profile_picture,
           resume: null, //update this
           resume_url: response.data.resume,
-        });
-        console.log("Profile Picture URL: ", response.data.profile_picture);
-
-        setGeneralFormData({
-          achievements: response.data.achievements, //doesn't exist for hirer
-          pronouns: response.data.pronouns,
-          gender: response.data.gender,
-          race_ethnicity: response.data.race_ethnicity,
-        });
-        setWorkExperienceArray(response.data.work_experience_details);
-        setEducationArray(response.data.education_details);
-        const sociallinks = {
-          website: response.data.website,
-          linkedin: response.data.linkedin,
-          github: response.data.github,
-          telegram: response.data.telegram,
         };
-        socialProfilesReset(sociallinks);
-        const aboutdetails = {
+        setAboutFormData(loadedAboutFormData);
+        setInitialAboutFormData(loadedAboutFormData);
+        // console.log("Profile Picture URL: ", response.data.profile_picture);
+        const aboutDetails = {
           first_name: response.data.first_name,
           last_name: response.data.last_name,
           email: response.data.email,
@@ -622,30 +542,33 @@ const EditProfilePage = () => {
               ? response.data.company_description
               : response.data.bio,
         };
-        aboutFieldReset(aboutdetails);
-        // setValue("website", response.data.website, { shouldDirty: false });
-        // setValue("linkedin", response.data.linkedin, { shouldDirty: false });
-        // setValue("github", response.data.github, { shouldDirty: false });
-        // setValue("telegram", response.data.telegram, { shouldDirty: false });
-        // setAboutValue("first_name", response.data.first_name, {
-        //   shouldDirty: false,
-        // });
-        // setAboutValue("last_name", response.data.last_name, {
-        //   shouldDirty: false,
-        // });
-        // setAboutValue("email", response.data.email, { shouldDirty: false });
-        // if (response.data.account_type === "job_hirer") {
-        //   setAboutValue("designation", response.data.designation, {
-        //     shouldDirty: false,
-        //   });
-        // }
-        // if (response.data.account_type === "job_hirer") {
-        //   setAboutValue("textarea", response.data.company_description, {
-        //     shouldDirty: false,
-        //   });
-        // } else {
-        //   setAboutValue("textarea", response.data.bio, { shouldDirty: false });
-        // }
+        aboutFieldReset(aboutDetails);
+        setZodAboutFormData(aboutDetails);
+
+        const socialLinks = {
+          website: response.data.website,
+          linkedin: response.data.linkedin,
+          github: response.data.github,
+          telegram: response.data.telegram,
+        };
+        socialProfilesReset(socialLinks);
+        setZodSocialProfilesFormData(socialLinks);
+
+        const generalDetails = {
+          achievements: response.data.achievements, //doesn't exist for hirer
+          pronouns: response.data.pronouns,
+          gender: response.data.gender,
+          race_ethnicity: response.data.race_ethnicity,
+        };
+        setGeneralFormData(generalDetails);
+        setInitialGeneralFormData({
+          pronouns: generalDetails.pronouns,
+          gender: generalDetails.gender,
+        });
+
+        setWorkExperienceArray(response.data.work_experience_details);
+        setEducationArray(response.data.education_details);
+
         setIsLoading(false);
       } catch (error: any) {
         console.log(error.response?.data || error);
@@ -675,8 +598,8 @@ const EditProfilePage = () => {
                 About
               </h1>
               <p className="text-sm">
-                Tell us more about youself so we could bring relevant
-                inforamtion to you
+                Tell us more about yourself so we could bring relevant
+                information to you
               </p>
             </div>
 
@@ -687,13 +610,6 @@ const EditProfilePage = () => {
                 val={aboutFormData.profile_picture_url}
                 setflg={setProfilePicChanged} //changes when profile pic is changed
               />
-              {/* <Image
-                  src="/assets/images/default-profile.webp"
-                  alt="Profile Image"
-                  width={100}
-                  height={100}
-                  className="rounded-full w-32 h-32 object-contain mx-auto"
-                /> */}
             </div>
           </div>
 
@@ -704,7 +620,6 @@ const EditProfilePage = () => {
                 name="first_name"
                 type="text"
                 label="First Name"
-                // register={aboutRegister}
                 control={aboutControl}
                 placeholder="John"
                 req={false}
@@ -717,7 +632,6 @@ const EditProfilePage = () => {
                 name="last_name"
                 type="text"
                 label="Last Name"
-                // register={aboutRegister}
                 control={aboutControl}
                 placeholder="Doe"
                 req={false}
@@ -731,7 +645,6 @@ const EditProfilePage = () => {
               name="email"
               type="email"
               label="Email"
-              // register={aboutRegister}
               control={aboutControl}
               placeholder="example@gmail.com"
               req={false}
@@ -747,7 +660,6 @@ const EditProfilePage = () => {
                     name="designation"
                     type="text"
                     label="Designation"
-                    // register={aboutRegister}
                     control={aboutControl}
                     placeholder="Eg: HR"
                     req={true}
@@ -883,18 +795,24 @@ const EditProfilePage = () => {
                 {isHirer ? "Company Description" : "Bio"}
                 <span className="text-red-500 ms-1.5">*</span>
               </label>
-              <textarea
-                // {...aboutRegister("textarea")}
-                {...aboutControl.register("textarea")}
+              <Controller
                 name="textarea"
-                id="textarea"
-                rows={6}
-                className="textarea bg-gray-100 border border-gray-300 text-gray-800 rounded w-full placeholder:text-sm px-4 py-3 min-h-28 max-h-60 placeholder:italic placeholder-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
-                placeholder={
-                  isHirer
-                    ? "Tell us about your company"
-                    : "Tell us about yourself"
-                }
+                control={aboutControl}
+                render={({ field }) => (
+                  <textarea
+                    // {...aboutControl.register("textarea")}
+                    {...field}
+                    name="textarea"
+                    id="textarea"
+                    rows={6}
+                    className="textarea bg-gray-100 border border-gray-300 text-gray-800 rounded w-full placeholder:text-sm px-4 py-3 min-h-28 max-h-60 placeholder:italic placeholder-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+                    placeholder={
+                      isHirer
+                        ? "Tell us about your company"
+                        : "Tell us about yourself"
+                    }
+                  />
+                )}
               />
               <span
                 className={`text-red-500 text-xs font-semibold  ${aboutErrors.textarea ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
@@ -904,21 +822,6 @@ const EditProfilePage = () => {
             </div>
 
             <div className="flex flex-col justify-center w-full gap-1.5">
-              {/* <label
-                htmlFor="file-input"
-                className="text-gray-500 font-semibold"
-              >
-                Resume
-              </label>
-              <input
-                type="file"
-                name="resume"
-                id="resume"
-                accept=".pdf"
-                multiple={false}
-                onChange={(e) => setAboutFormData((prevState) => ({ ...prevState, resume: e.target.files![0] }))}
-                className="block w-full border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none file:bg-gray-500 file:border-0 file:me-4 file:py-3 file:px-4 placeholder:text-gray-400"
-              /> */}
               {!isHirer && (
                 <PdfUploadForm
                   setFormData={handleAboutChange}
@@ -945,8 +848,8 @@ const EditProfilePage = () => {
               </button>
 
               <button
-                className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
                 type="reset"
+                className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
                 onClick={handleAboutFormReset}
               >
                 Reset
@@ -957,7 +860,7 @@ const EditProfilePage = () => {
 
         <form
           className="grid md:grid-cols-[30%,1fr] grid-cols-1 gap-x-6 gap-y-4"
-          onSubmit={socialProfilesHandleSubmit(socialProfilesFormSubmit)}
+          onSubmit={socialProfilesHandleSubmit(handleSocialProfilesFormSubmit)}
         >
           <h1>Social Profiles</h1>
 
@@ -1042,8 +945,8 @@ const EditProfilePage = () => {
               </button>
 
               <button
-                type="reset"
-                onClick={socialProfilesFormReset}
+                type="button"
+                onClick={handleSocialProfilesFormReset}
                 className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
               >
                 Reset
@@ -1261,7 +1164,6 @@ const EditProfilePage = () => {
                     name="pronouns_self_describe"
                     type="text"
                     label="Describe your pronouns"
-                    // register={generalRegister}
                     control={generalControl}
                     placeholder=""
                     req={false}
@@ -1278,7 +1180,6 @@ const EditProfilePage = () => {
                     name="gender_self_describe"
                     type="text"
                     label="Describe your gender"
-                    // register={generalRegister}
                     control={generalControl}
                     placeholder=""
                     req={false}
@@ -1290,7 +1191,7 @@ const EditProfilePage = () => {
             </div>
 
             <MultiSelect
-              options={ethinicity}
+              options={ethnicity}
               onSelectionChange={(val: string[]) => {
                 handleGeneralChange("race_ethnicity", val);
               }}

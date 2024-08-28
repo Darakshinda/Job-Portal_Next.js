@@ -7,7 +7,7 @@ import axios from "axios";
 import locOpns from "@/constants/data/location.json";
 import SkillTags from "@/constants/data/tags.json";
 import benefitOpns from "@/constants/data/benefits.json";
-import EmployementTags from "@/constants/data/emptype.json";
+import EmploymentTags from "@/constants/data/emptype.json";
 import primaryTag from "@/constants/data/primTag.json";
 import minSal from "@/constants/data/minsalary.json";
 import maxSal from "@/constants/data/maxsalary.json";
@@ -53,7 +53,7 @@ const JobForm = () => {
   const [isFormDirty, setIsFormDirty] = useState(false);
 
   const [handleError, setHandleError] = useState({
-    jobDesciptionError: "",
+    jobDescriptionError: "",
     howToApplyError: "",
     minsalMaxsalError: "",
   });
@@ -132,20 +132,20 @@ const JobForm = () => {
   useEffect(() => {
     // Initialize error state
     let newErrors: {
-      jobDesciptionError: string;
+      jobDescriptionError: string;
       howToApplyError: string;
       minsalMaxsalError: string;
     } = {
-      jobDesciptionError: "",
+      jobDescriptionError: "",
       howToApplyError: "",
       minsalMaxsalError: "",
     };
 
     // Validate job description
     if (formData.desc === "" && (isFormDirty || isDirty)) {
-      newErrors.jobDesciptionError = "This Field is Required";
+      newErrors.jobDescriptionError = "This Field is Required";
     } else {
-      newErrors.jobDesciptionError = "";
+      newErrors.jobDescriptionError = "";
     }
 
     // Validate how to apply
@@ -189,7 +189,7 @@ const JobForm = () => {
   const onSubmit = async (data: Schema) => {
     if (
       handleError.minsalMaxsalError ||
-      handleError.jobDesciptionError ||
+      handleError.jobDescriptionError ||
       handleError.howToApplyError
     ) {
       return;
@@ -314,7 +314,7 @@ const JobForm = () => {
               labelCls="text-gray-700 text-base font-semibold relative flex items-center gap-2"
               placeholder="Select Employment type"
               cls="relative w-full mt-1 p-2 bg-gray-100 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
-              tags={EmployementTags}
+              tags={EmploymentTags}
               onSingleChange={handleChange}
               multiple={false}
             />
@@ -382,9 +382,9 @@ const JobForm = () => {
                   onChange={handleChange}
                 />
                 <span
-                  className={`text-red-500 text-xs mt-1 font-semibold absolute ${handleError.jobDesciptionError ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
+                  className={`text-red-500 text-xs mt-1 font-semibold absolute ${handleError.jobDescriptionError ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
                 >
-                  {handleError.jobDesciptionError}
+                  {handleError.jobDescriptionError}
                 </span>
               </div>
             </div>

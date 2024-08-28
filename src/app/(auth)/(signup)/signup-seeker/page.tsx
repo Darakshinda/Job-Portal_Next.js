@@ -37,7 +37,7 @@ const SignupSeeker = () => {
 
   const handleChange = (key: string, value: string) => {
     if (key === "years_of_experience") {
-      console.log("handling change");
+      // console.log("handling change");
       setFormData((prevState) => ({
         ...prevState,
         [key]: value,
@@ -165,16 +165,16 @@ const SignupSeeker = () => {
           skills,
         }
       );
-      console.log("Registration successful:", response.data);
+      // console.log("Registration successful:", response.data);
       swalSuccess({
         title: "Registration Successful",
         message: "You have registered successfully!",
       });
       router.push("/login");
 
-      console.log("Signed up successfully");
+      // console.log("Signed up successfully");
     } catch (error: any) {
-      console.error("Registration failed:", error.response.data);
+      // console.error("Registration failed:", error.response.data);
       swalFailed({ title: "Registration Failed", error: error });
     }
   };

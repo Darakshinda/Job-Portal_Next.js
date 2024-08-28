@@ -20,7 +20,7 @@ interface Profile {
   profile_picture: string;
 }
 
-const HamburgerMenu = ({ isHirer }: { isHirer: boolean }) => {
+const Sidebar = ({ isHirer }: { isHirer: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPop, setIsPop] = useState(false);
   const [profile, setProfile] = useState<Profile>({
@@ -183,24 +183,14 @@ const HamburgerMenu = ({ isHirer }: { isHirer: boolean }) => {
             </button>
 
             <div
-              className={`sm:hidden block h-fit transition-all duration-500 border-t-2 border-gray-300 opacity-100 max-h-40`}
+              className={`sm:hidden block h-fit transition-all duration-500 ${isPop ? "border-t-2 border-gray-300 opacity-100 max-h-40" : "opacity-0 max-h-0"} `}
             >
               <ul className="max-[400px]:p-1 p-2 text-sm text-gray-700">
-                <li>
-                  <Link
-                    href="/profile"
-                    className="block text-center sm:px-4 px-2 py-2 hover:bg-gray-200 rounded-lg font-semibold"
-                  >
-                    Profile
-                  </Link>
+                <li className="block text-xs text-center sm:px-4 px-2 py-2 hover:bg-gray-200 rounded-lg font-semibold">
+                  <Link href="/profile">Profile</Link>
                 </li>
-                <li>
-                  <button
-                    onClick={handleLogOut}
-                    className="block text-center w-full sm:px-4 px-2 py-2 hover:bg-gray-200 rounded-lg font-semibold"
-                  >
-                    Logout
-                  </button>
+                <li className="block text-xs text-center w-full sm:px-4 px-2 py-2 hover:bg-gray-200 rounded-lg font-semibold">
+                  <button onClick={handleLogOut}>Logout</button>
                 </li>
               </ul>
             </div>
@@ -237,7 +227,7 @@ const HamburgerMenu = ({ isHirer }: { isHirer: boolean }) => {
             >
               <div className="w-full pl-2 flex justify-between items-center">
                 <h3 className="flex-1 min-w-0">
-                  <p className="font-semibold md:text-base text-sm whitespace-nowrap">
+                  <p className="font-semibold md:text-base text-sm whitespace-nowrap truncate">
                     {profile.first_name}
                   </p>
                   <span className="text-xs text-gray-600 truncate block">
@@ -250,7 +240,7 @@ const HamburgerMenu = ({ isHirer }: { isHirer: boolean }) => {
                 >
                   <HiDotsVertical
                     size={20}
-                    className="hover:bg-gray-200 rounded-full cursor-pointer p-0.5"
+                    className="hidden sm:block hover:bg-gray-200 rounded-full cursor-pointer p-0.5"
                   />
                 </button>
               </div>
@@ -289,4 +279,4 @@ const HamburgerMenu = ({ isHirer }: { isHirer: boolean }) => {
   );
 };
 
-export default HamburgerMenu;
+export default Sidebar;
