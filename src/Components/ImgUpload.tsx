@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import React, { useRef, useState, useEffect } from "react";
+import { MdCancel } from "react-icons/md";
 
 interface ImgProps {
   keyy: string;
@@ -34,6 +35,12 @@ const UploadButton: React.FC<ImgProps> = ({ onChange, keyy, setflg, val }) => {
       onChange(keyy, file); // Handle file upload logic
       setflg && setflg(true);
     }
+  };
+
+  const handleFileRemove = () => {
+    setBackgroundImg(null); // Remove background image
+    onChange(keyy, null); // Handle file remove logic
+    setflg && setflg(true);
   };
 
   useEffect(() => {
@@ -77,6 +84,15 @@ const UploadButton: React.FC<ImgProps> = ({ onChange, keyy, setflg, val }) => {
         className="hidden"
         onChange={handleFileChange}
       />
+      <button
+        onClick={(e) => {
+          handleFileRemove();
+          e.stopPropagation();
+        }}
+        className="absolute right-0 bottom-1"
+      >
+        <MdCancel size={24} className="text-red-500 bg-white rounded-full" />
+      </button>
     </div>
   );
 };

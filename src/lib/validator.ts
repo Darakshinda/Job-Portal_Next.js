@@ -120,15 +120,15 @@ const aboutSchema = z.object({
     .string()
     .email()
     .max(50, { message: "Email must be at most 50 characters long" }),
-  textarea: z
-    .string()
-    .min(1, { message: "Description is required" })
-    .max(1000, { message: "Description must be at most 500 characters long" }),
   designation: z
     .string()
     .min(1, { message: "Your designation is required" })
     .max(50, { message: "Designation must be at most 50 characters long" })
     .optional(),
+  textarea: z
+    .string()
+    .min(1, { message: "Description is required" })
+    .max(1000, { message: "Description must be at most 500 characters long" }),
 });
 
 const socialProfilesSchema = z.object({

@@ -1,7 +1,7 @@
 "use client";
 
 import ProfileCard from "@/Components/ProfileCard";
-import Sidebar from "@/Components/HireDashSidebar";
+// import Sidebar from "@/Components/HireDashSidebar";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -10,42 +10,6 @@ import { CgScrollH } from "react-icons/cg";
 export default function Page() {
   const [jobsCount, setJobsCount] = useState(0);
   const [applicationsCount, setApplicationsCount] = useState(0);
-  // const [username, setUserName] = useState("");
-  // const router = useRouter();
-
-  // const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-
-  // const getUserName = () => {
-  //   const access_token = localStorage.getItem("access_token");
-  //   if (access_token) {
-  //     const axiosInstance = axios.create({
-  //       baseURL: baseUrl,
-  //       headers: {
-  //         Authorization: `Bearer ${access_token}`,
-  //       },
-  //     });
-  //     axiosInstance
-  //       .get("/accounts/profile")
-  //       .then((response) => {
-  //         setUserName(response.data.first_name.split(" ")[0]);
-  //       })
-  //       .catch((error) => {
-  //         console.log(error);
-  //       });
-  //   }
-  // };
-
-  // const checkLogIn = () => {
-  //   const access_token = localStorage.getItem("access_token");
-  //   if (!access_token) {
-  //     router.push("/login");
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   checkLogIn();
-  //   getUserName();
-  // }, []);
 
   const fetchData = async () => {
     const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -78,7 +42,7 @@ export default function Page() {
   }, []);
 
   return (
-    <main className="h-screen w-full overflow-x-auto bg-[#FAFAFA] flex-1">
+    <main className="min-h-screen w-full overflow-x-auto bg-[#FAFAFA] flex-1">
       <div className="px-4 pt-6 py-4 sm:px-8 lg:px-14 lg:pt-10 lg:pb-2 mx-auto">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4 xl:gap-12 lg:gap-6">
           <div className="flex-none lg:flex-1">

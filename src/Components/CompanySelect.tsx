@@ -29,7 +29,7 @@ const CompanySelect = ({ handle, val, reset }: Props) => {
 
   useEffect(() => {
     if (reset) {
-      setSelectedOption({ value: "", label: "" });
+      setSelectedOption({ value: val, label: "" });
     }
   }, [reset]);
 
@@ -123,6 +123,7 @@ const CompanySelect = ({ handle, val, reset }: Props) => {
           options={options}
           value={selectedOption}
           instanceId={1}
+          inputValue={val}
           classNamePrefix="react-select"
           onInputChange={handleInputChange}
           onChange={handleChange}

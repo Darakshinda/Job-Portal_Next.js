@@ -1,11 +1,11 @@
 import Footer from "@/Components/Footer";
-import Sidebar from "@/Components/HireDashSidebar";
+import Sidebar from "@/Components/Sidebar";
 import { cookies } from "next/headers";
 
-const getIsHirer = () => {
+const getAccountType = () => {
   const account_type = cookies().get("account_type")?.value;
   console.log(account_type);
-  return account_type === "job_hirer";
+  return account_type;
 };
 
 export default function RootLayout({
@@ -13,11 +13,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const account_type = getAccountType();
+
   return (
     <>
       <main className="min-h-screen w-full bg-white">
         <div className="flex">
-          <Sidebar isHirer={getIsHirer()} />
+          {account_type && <Sidebar isHirer={account_type === "job_hirer"} />}
           {children}
         </div>
       </main>

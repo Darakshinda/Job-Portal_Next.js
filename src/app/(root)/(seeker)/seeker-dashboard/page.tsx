@@ -8,7 +8,7 @@ import JobList from "@/Components/JobList";
 import { Tags2 } from "@/stories/Tags2";
 import locationOptions from "@/constants/data/location.json";
 import tagOptions from "@/constants/data/tags.json";
-import Sidebar from "@/Components/HireDashSidebar";
+// import Sidebar from "@/Components/HireDashSidebar";
 import SearchFilters from "@/Components/SearchFilters";
 import Skeleton from "@/app/(root)/(recruiter)/postedJobs/skeleton";
 
