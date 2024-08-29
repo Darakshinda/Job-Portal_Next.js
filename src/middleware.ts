@@ -35,6 +35,11 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
   const accountType = request.cookies.get("account_type")?.value;
 
+  const seekerDashboardRegex = /^\/seeker-dashboard\/[^\/]+(\/.*)?$/;
+  const hirerPostedJobsRegex = /^\/postedJobs\/[^\/]+(\/.*)?$/;
+  const hirerEditJobRegex = /^\/postedJobs\/[^\/]+\/edit(\/.*)?$/;
+  const resetPasswordRegex = /^\/reset-password\/(.*)?$/;
+
   // Check if the pathname is in the list of public routes
   if (
     publicRoutes.includes(pathname) ||
@@ -57,7 +62,7 @@ export function middleware(request: NextRequest) {
 
   //Allow seeker dashboard public
 
-  if (seekerDashboardRoutes.includes(pathname) && accountType !== "job_hirer") {
+  if (seekerDashboardRegex.test(pathname) && accountType !== "job_hirer") {
     return NextResponse.next();
   }
 
@@ -68,12 +73,15 @@ export function middleware(request: NextRequest) {
   }
 
   // Check access for hirer routes
-  if (hirerRoutes.includes(pathname) && accountType === "job_hirer") {
+  if (hirerEditJobRegex.test(pathname) && accountType === "job_hirer") {
     return NextResponse.next();
   }
 
   // Check access for seeker routes
-  if (seekerRoutes.includes(pathname) && accountType === "job_seeker") {
+  if (
+    (seekerRoutes.includes(pathname) || seekerDashboardRegex.test(pathname)) &&
+    accountType === "job_seeker"
+  ) {
     return NextResponse.next();
   }
 
