@@ -103,7 +103,7 @@ const Sidebar = ({ isHirer }: { isHirer: boolean }) => {
         className={`h-screen fixed z-50 transition-all duration-500 ${
           isOpen
             ? "sm:min-w-72 sm:max-w-72 min-w-52 max-w-52"
-            : "min-w-[4.5rem] max-w-[4.5rem]"
+            : "min-w-[4.5rem] max-w-[4.5rem] max-[450px]:min-w-0 max-[450px]:max-w-0"
         }`}
       >
         <nav
@@ -122,7 +122,11 @@ const Sidebar = ({ isHirer }: { isHirer: boolean }) => {
                 className="w-24 sm:w-32 sm:h-10 h-8 object-contain mx-4"
               />
             ) : (
-              <p className="font-bold text-black my-2">&lt;/&gt;</p>
+              <p
+                className={`font-bold text-black my-2 transition-all duration-300 ${isOpen ? "-translate-x-0 opacity-100" : "max-[450px]:-translate-x-14 max-[450px]:opacity-0 translate-x-0"}`}
+              >
+                &lt;/&gt;
+              </p>
             )}
           </Link>
 
@@ -130,7 +134,7 @@ const Sidebar = ({ isHirer }: { isHirer: boolean }) => {
           <div className="w-[95%] border border-gray-300 my-1.5 ms-1"></div>
 
           <button
-            className="p-1 rounded-full bg-gray-100 hover:bg-gray-200 absolute top-10 -right-3 z-10 outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
+            className="p-1 rounded-full bg-gray-100 max-[450px]:outline-2 max-[450px]:outline-blue-500 outline-offset-0 hover:bg-gray-200 absolute top-10 max-[450px]:-right-8 max-[450px]:top-1 -right-3 z-10 outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
             onClick={() => {
               setIsOpen((curr) => !curr);
               setIsPop(false);
@@ -147,14 +151,18 @@ const Sidebar = ({ isHirer }: { isHirer: boolean }) => {
               <li key={index}>
                 <Link
                   href={link.href}
-                  className={`group relative flex items-center p-2 mx-2 gap-2 font-medium rounded-md text-nowrap cursor-pointer transition-colors outline-none focus-visible:ring-2 focus-visible:ring-gray-500
-            ${
-              pathname === link.href
-                ? "bg-gray-200 text-gray-700"
-                : "text-gray-600 hover:bg-gray-200/40"
-            }`}
+                  className={`group relative flex items-center max-[450px]:px-0 px-2 py-2 mx-2 gap-2 font-medium rounded-md text-nowrap cursor-pointer transition-colors outline-none focus-visible:ring-2 focus-visible:ring-gray-500 
+                  ${
+                    pathname === link.href
+                      ? "bg-gray-200 text-gray-700"
+                      : "text-gray-600 hover:bg-gray-200/40"
+                  }`}
                 >
-                  <div className="p-1">{link.icon}</div>
+                  <div
+                    className={`p-1 transition-all duration-300 ${isOpen ? "-translate-x-0 opacity-100" : "max-[450px]:-translate-x-14 max-[450px]:opacity-0 translate-x-0"} `}
+                  >
+                    {link.icon}
+                  </div>
                   <span
                     className={`overflow-hidden px-1 transition-all duration-500 
               ${!isOpen && "opacity-0 overflow-hidden translate-x-14"}`}
@@ -162,7 +170,7 @@ const Sidebar = ({ isHirer }: { isHirer: boolean }) => {
                     {link.name}
                   </span>
                   {!isOpen && (
-                    <span className="absolute left-full rounded-md px-2 py-1 ml-6 bg-gray-200/90 text-gray-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0">
+                    <span className="max-[450px]:hidden block absolute left-full rounded-md px-2 py-1 ml-6 bg-gray-200/90 text-gray-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0">
                       {link.name}
                     </span>
                   )}
@@ -173,7 +181,7 @@ const Sidebar = ({ isHirer }: { isHirer: boolean }) => {
 
           <div className="w-full">
             <button
-              className="sm:hidden block rounded-t-md border-t-2 border-x-2 border-gray-300 p-1 mx-1 bg-gray-100 hover:bg-gray-200 outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
+              className={`sm:hidden block rounded-t-md border-t-2 border-x-2 border-gray-300 p-1 mx-1 bg-gray-100 hover:bg-gray-200 outline-none focus-visible:ring-2 focus-visible:ring-gray-500 transition-all duration-300  ${isOpen ? "-translate-x-0 opacity-100" : "max-[450px]:-translate-x-14 max-[450px]:opacity-0 translate-x-0"}`}
               onClick={() => setIsPop((curr) => !curr)}
             >
               <IoIosArrowUp
@@ -197,7 +205,7 @@ const Sidebar = ({ isHirer }: { isHirer: boolean }) => {
           </div>
 
           <div
-            className={`border-t-2 border-gray-300 px-3 pt-3.5 pb-3 flex gap-x-1 items-center relative`}
+            className={`border-t-2 border-gray-300 px-3 pt-3.5 pb-3 flex gap-x-1 items-center relative transition-all duration-300 ${isOpen ? "-translate-x-0 opacity-100" : "max-[450px]:-translate-x-14 max-[450px]:opacity-0 translate-x-0"}`}
           >
             <div
               className="p-1 relative w-10 h-10 rounded-full shrink-0"

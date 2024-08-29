@@ -1,52 +1,24 @@
-"use client";
-
 import ProfileCard from "@/Components/ProfileCard";
-// import Sidebar from "@/Components/HireDashSidebar";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import axios from "axios";
 import { CgScrollH } from "react-icons/cg";
+import { dashboardDetails } from "@/lib/actions/recruiter.actions";
 
-export default function Page() {
-  const [jobsCount, setJobsCount] = useState(0);
-  const [applicationsCount, setApplicationsCount] = useState(0);
+export const metadata = {
+  title: "Dashboard",
+  description: "Dashboard to view posted jobs and applications received.",
+};
 
-  const fetchData = async () => {
-    const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
-    const access_token = localStorage.getItem("access_token");
-    try {
-      const response = await axios.get(`${baseurl}/posted-jobs/`, {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-      });
-      console.log(response.data.results.length);
-      setJobsCount(response.data.results.length);
-    } catch (error: any) {
-      console.log(error.response.data || error);
-    }
-    try {
-      const response_applications = await axios.get(`${baseurl}/applications`, {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-      });
-      setApplicationsCount(response_applications.data.length);
-    } catch (error: any) {
-      console.log(error.response.data || error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+const Dashboard = async () => {
+  const {
+    jobsCount,
+    applicationsCount,
+  }: { jobsCount: number; applicationsCount: number } =
+    await dashboardDetails();
 
   return (
     <main className="min-h-screen w-full overflow-x-auto bg-[#FAFAFA] flex-1">
-      <div className="px-4 pt-6 py-4 sm:px-8 lg:px-14 lg:pt-10 lg:pb-2 mx-auto">
+      <div className="px-4 pt-8 py-4 sm:px-8 lg:px-14 lg:pt-10 lg:pb-2 mx-auto">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4 xl:gap-12 lg:gap-6">
           <div className="flex-none lg:flex-1">
-            {/* <div className="lg:pr-6 xl:pr-12"> */}
             <p className="xl:text-6xl md:text-5xl text-4xl  font-bold leading-10 text-blue-600">
               70%
               <span className="ms-1 inline-flex items-center gap-x-1 bg-gray-200 font-medium text-gray-800 text-xs leading-4 rounded-full py-0.5 px-2">
@@ -66,7 +38,6 @@ export default function Page() {
             <p className="mt-2 sm:mt-3 text-gray-500 truncate w-full">
               of Recruiters hire top talent from the software industry
             </p>
-            {/* </div> */}
           </div>
 
           <div className="flex lg:justify-center gap-4 lg:flex-1 lg:border-l xl:pl-12 lg:pl-6 lg:border-gray-300">
@@ -116,10 +87,10 @@ export default function Page() {
           <ProfileCard />
         </div>
 
-        <div className="text-blue-500 me-16 mt-2 cursor-default">
+        <div className="text-blue-500 sm:me-16 mt-2 cursor-default">
           <span
             title="Press Shift + Scroll"
-            className="italic text-sm font-semibold flex items-center justify-end gap-2"
+            className="italic text-sm font-semibold flex items-center sm:justify-end justify-center gap-2"
           >
             Scroll
             <CgScrollH size={24} className="inline-block" />
@@ -128,4 +99,6 @@ export default function Page() {
       </section>
     </main>
   );
-}
+};
+
+export default Dashboard;

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import { FaArrowRightLong } from "react-icons/fa6";
 
 const Navbar = () => {
   const [accountType, setAccountType] = useState<string | null>(null);
@@ -64,13 +65,23 @@ const Navbar = () => {
             </button>
           </>
         ) : (
-          <Link
-            href={"/login"}
-            className="font-medium font-Nunito box-content px-4 sm:py-2 py-1 sm:rounded-xl rounded-full outline outline-2 outline-primary-700 focus-visible:ring-2 ring-primary-300 focus-visible:ring-offset-2 whitespace-nowrap"
-          >
-            Login
-            <span className="sr-only">Login</span>
-          </Link>
+          <>
+            <Link
+              href={"/seeker-dashboard"}
+              className="font-medium font-Nunito box-content px-4 sm:py-2 py-1 sm:rounded-xl rounded-full focus-visible:ring-2 ring-primary-300 focus-visible:ring-offset-2 whitespace-nowrap inline-flex items-center gap-3 bg-primary-500/80 hover:bg-primary-500 text-white"
+            >
+              Find Jobs <FaArrowRightLong className="inline-block" />
+              <span className="sr-only">Find Jobs </span>
+            </Link>
+
+            <Link
+              href={"/login"}
+              className="font-medium font-Nunito box-content px-4 sm:py-2 py-1 sm:rounded-xl rounded-full outline outline-2 outline-primary-700 focus-visible:ring-2 ring-primary-300 focus-visible:ring-offset-2 whitespace-nowrap"
+            >
+              Login
+              <span className="sr-only">Login</span>
+            </Link>
+          </>
         )}
       </div>
     </nav>

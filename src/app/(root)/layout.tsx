@@ -23,7 +23,7 @@ export default function RootLayout({
           {children}
         </div>
       </main>
-      <footer className="ps-[4.5rem]">
+      <footer className="ps-[4.5rem] max-[450px]:ps-0">
         <Footer />
       </footer>
     </>
