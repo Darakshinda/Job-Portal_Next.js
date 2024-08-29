@@ -32,8 +32,8 @@ interface SearchParams {
     skillTags: string[];
     location: string;
     jobType: string;
-    minSalary: string;
-    maxSalary: string;
+    minSalary: number;
+    maxSalary: number;
     currencyType: string;
   };
   appliedJobs?: boolean;

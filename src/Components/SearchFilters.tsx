@@ -3,10 +3,10 @@
 import { useState } from "react";
 import locOpns from "@/constants/data/location.json";
 import SkillTags from "@/constants/data/tags.json";
+import empOpns from "@/constants/data/emptype.json";
 import { LuFilter } from "react-icons/lu";
 import SearchSelectDropdown from "./Forms/SearchSelectDropdown";
-import empOpns from "@/constants/data/emptype.json";
-import RangeSliderMinMax from "./Forms/RangeSilderMinMax";
+import RangeSliderMinMax from "./Forms/RangeSliderMinMax";
 import SignupFormInput from "./Forms/SignupFormInput";
 
 interface SearchFiltersProps {
@@ -21,12 +21,16 @@ interface SearchFiltersProps {
   };
   handleChange: (name: string, value: string) => void;
   handleSkillChange: (skills: string[]) => void;
+  handleSubmit: () => void;
+  handleReset: () => void;
 }
 
 const SearchFilters = ({
   searchParams,
   handleChange,
   handleSkillChange,
+  handleSubmit,
+  handleReset,
 }: SearchFiltersProps) => {
   const LocationTags = locOpns.countries;
 
@@ -42,7 +46,7 @@ const SearchFilters = ({
         Search Filters
       </h2>
 
-      <form action="" className="space-y-2 px-2">
+      <form className="space-y-2 px-2">
         <SignupFormInput
           id="search"
           name="query"
@@ -53,6 +57,7 @@ const SearchFilters = ({
           cls={defaultFieldStylesCls}
           handleChange={handleChange}
         />
+
         <div className="grid grid-rows-[min(fit_content, fit_content)] gap-x-6 items-start">
           <SearchSelectDropdown
             req={false}
@@ -97,13 +102,33 @@ const SearchFilters = ({
         </div>
 
         <div>
-          <p className="text-gray-500 text-sm mb-2">Desired salary</p>
+          <p className="text-gray-500 font-semibold text-md mb-2">
+            Desired salary
+          </p>
           <RangeSliderMinMax
             minSalary={searchParams.minSalary}
             maxSalary={searchParams.maxSalary}
             handleChange={handleChange}
             currencyType={searchParams.currencyType}
           />
+        </div>
+
+        <div className="flex gap-3 items-center flex-nowrap">
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="flex-1 bg-blue-500 text-white py-1.5 rounded-md transition-colors duration-150 hover:bg-blue-600"
+          >
+            Search
+          </button>
+
+          <button
+            type="button"
+            className="w-1/4 bg-red-500 text-white py-1.5 rounded-md transition-colors duration-150 hover:bg-red-600"
+            onClick={handleReset}
+          >
+            Reset
+          </button>
         </div>
       </form>
     </section>

@@ -19,6 +19,8 @@ type SearchSelectDropdownProps = {
   displayTagsLength?: number;
   selected?: string;
   existingTags?: string[];
+  resetflg?: boolean;
+  setResetFlg?: (val: boolean) => void;
 };
 
 const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
@@ -37,6 +39,8 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
   displayTagsLength = 10,
   selected,
   existingTags,
+  resetflg,
+  setResetFlg,
 }) => {
   const techTags = tags;
   const [inputValue, setInputValue] = useState<string>(selected || "");
@@ -61,6 +65,15 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
       setInputValue(""); // Clear input if selected is empty
     }
   }, [selected]);
+
+  useEffect(() => {
+    if (resetflg) {
+      setSelectedTags([]);
+      setInputValue("");
+      setFilteredTags(techTags);
+      setResetFlg && setResetFlg(false);
+    }
+  }, [resetflg, setResetFlg]);
 
   useEffect(() => {
     // console.log("existing Tags:", existingTags);
@@ -193,7 +206,7 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
             />
             {dropdownOpen && filteredTags.length > 0 && (
               <ul
-                className="absolute w-full max-h-40 overflow-y-auto border border-gray-300 bg-white z-10 rounded-md custom-scrollbar snap-y snap-mandatory overscroll-contain text-gray-500"
+                className="absolute w-full z-50 max-h-40 overflow-y-auto border border-gray-300 bg-white rounded-md custom-scrollbar snap-y snap-mandatory overscroll-contain text-gray-500"
                 style={{ top: "calc(100% + 0.125rem)" }} // Do not remove this, this is kept intentionally to fix the dropdown position rather than passing it as an arbitrary value which is not considered by tailwind css
                 onMouseDown={(e) => e.preventDefault()}
               >
