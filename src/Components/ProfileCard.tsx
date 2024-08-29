@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const ProfileCard = () => {
   return (
-    <div className="w-[300px] bg-gray-200 rounded-xl snap-start">
+    <div className="w-[300px] max-[450px]:w-[250px] bg-gray-200 rounded-xl snap-start">
       <div className="p-4 flex flex-col items-center gap-2">
         <div className="relative w-24 h-24 rounded-full overflow-hidden border-4">
           <Image

@@ -101,7 +101,7 @@ const PostedJobs: React.FC = () => {
   return (
     <div className="bg-[#FAFAFA] flex-1 px-6 flex flex-col max-h-screen">
       <div className="w-full text-left">
-        <h1 className="text-4xl my-4 ms-2 text-blue-500 font-semibold ps-14">
+        <h1 className="text-4xl my-4 ms-2 text-blue-500 font-semibold">
           Posted Jobs
         </h1>
       </div>
