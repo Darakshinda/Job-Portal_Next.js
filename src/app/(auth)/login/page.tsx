@@ -186,7 +186,7 @@ const Login = () => {
             </div>
             <div className="justify-center text-center">
               <button
-                className="w-full bg-primary-700/85 font-RadioGrotesk tracking-wide text-white text-lg py-2 active:scale-90 hover:bg-primary-700 rounded-lg transition duration-150 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-opacity-75 focus-visible:scale-95"
+                className="w-full bg-primary-700/85 tracking-wide text-white text-lg py-2 active:scale-90 hover:bg-primary-700 rounded-lg transition duration-150 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-opacity-75 focus-visible:scale-95"
                 type="submit"
               >
                 {isSubmitting ? "Logging in..." : "Login"}
