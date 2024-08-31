@@ -4,10 +4,7 @@ import type { NextRequest } from "next/server";
 // List of public routes
 const publicRoutes = ["/"];
 
-const seekerDashboardRoutes = [
-  "/seeker-dashboard",
-  "/seeker-dashboard/:jobId/path*",
-];
+const seekerDashboardRoutes = ["/seeker-dashboard", "/seeker-dashboard/:jobId"];
 
 const loginRoutes = [
   "/login",

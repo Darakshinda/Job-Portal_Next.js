@@ -22,8 +22,8 @@ interface FormInputProps {
   control?: Control<any>; // Make control optional
   error?: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined;
   handleChange?: (key: string, value: string) => void;
-  resetflg?: boolean;
-  setResetFlg?: (val: boolean) => void;
+  resetFlag?: boolean;
+  setResetFlag?: (val: boolean) => void;
   value?: string;
 }
 
@@ -40,19 +40,19 @@ const SignupFormInput = ({
   labelCls,
   error,
   handleChange,
-  resetflg,
-  setResetFlg,
+  resetFlag,
+  setResetFlag,
   value,
 }: FormInputProps) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
 
   useEffect(() => {
-    if (resetflg) {
+    if (resetFlag) {
       setInputValue("");
-      setResetFlg && setResetFlg(false);
+      setResetFlag && setResetFlag(false);
     }
-  }, [resetflg, setResetFlg]);
+  }, [resetFlag, setResetFlag]);
 
   useEffect(() => {
     if (value !== undefined) {

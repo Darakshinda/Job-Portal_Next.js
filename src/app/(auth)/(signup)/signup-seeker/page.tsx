@@ -179,16 +179,13 @@ const SignupSeeker = () => {
     }
   };
 
-  const SignupFormCls =
-    "relative mt-1 p-2 bg-gray-200 text-primary-700 rounded-lg border border-gray-300 outline-none focus:border-primary-500";
-
   return (
     <SignupForm
       type="Seeker"
       handleSubmit={handleSubmit}
       onSubmit={onSubmit}
       control={control}
-      defaultCls={SignupFormCls}
+      // defaultCls={SignupFormCls}
       errors={errors}
       handleChange={handleChange}
       formData={formData}

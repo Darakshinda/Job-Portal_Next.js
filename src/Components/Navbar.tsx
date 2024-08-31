@@ -1,64 +1,50 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
 import { FaArrowRightLong } from "react-icons/fa6";
 
-const Navbar = () => {
-  const [accountType, setAccountType] = useState<string | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+interface NavbarProps {
+  isAuthenticated: boolean;
+  accountType: string;
+  handleLogout: () => void;
+}
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedAccountType = localStorage.getItem("account_type");
-      const accessToken = localStorage.getItem("access_token");
-
-      setAccountType(storedAccountType);
-      setIsAuthenticated(!!accessToken);
-    }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("account_type");
-    Cookies.remove("token");
-    Cookies.remove("account_type");
-    setIsAuthenticated(false);
-  };
-
+const Navbar = ({
+  isAuthenticated,
+  accountType,
+  handleLogout,
+}: NavbarProps) => {
   return (
-    <nav className="flex bg-slate-100 sm:h-20 h-16 text-black border-b-2 border-neutral-200 justify-between items-center w-full sm:px-10 px-4 py-2">
+    <nav className="w-full bg-white sm:h-16 h-14 flex justify-between items-center sm:px-10 px-4 mt-1">
       <Link
         href={"/"}
-        className="outline-none focus-visible:ring-2 ring-primary-300 rounded-2xl sm:px-4 px-2"
+        className="outline-none rounded-full sm:px-4 px-2"
+        tabIndex={-1}
       >
         <Image
           src="/assets/icons/logo.svg"
           alt="logo"
-          width={600}
-          height={90}
-          className=" min-w-28 w-28 sm:min-w-40 sm:w-40 sm:h-12 h-8 object-contain"
+          width={415}
+          height={60}
+          className=" min-w-32 w-32 max-[400px]:min-w-36 sm:min-w-48 sm:w-48 sm:h-12 object-contain"
         />
         <span className="sr-only">Code Unity Logo</span>
       </Link>
 
-      <div className="flex items-center gap-4 sm:px-5 px-2 sm:text-xl">
+      <div className="flex items-center sm:gap-4 gap-2 sm:px-5 px-2 sm:text-xl">
         {isAuthenticated ? (
           <>
             <Link
               href={`${accountType === "job_seeker" ? "/seeker-dashboard" : "/dashboard"}`}
-              className="py-2 px-4 rounded-xl transform transition-all ease-in-out duration-300 text-white
-              hover:-translate-y-1 focus-visible:-translate-y-1 hover:scale-110 focus-visible:scale-110 bg-primary-500/80 hover:bg-primary-500 outline-none focus-visible:ring-2 ring-primary-300 focus-visible:ring-offset-2 whitespace-nowrap"
+              className="sm:py-2 py-1 px-4 max-[400px]:hidden rounded-full transform transition-all ease-in-out duration-300 text-white
+              hover:-translate-y-1 focus-visible:-translate-y-1 hover:scale-110 focus-visible:scale-110 bg-blue-500/90 border-2 border-blue-500/90 hover:bg-blue-500 hover:border-blue-500 outline-none focus-visible:ring-2 ring-blue-300 focus-visible:ring-offset-2"
             >
               Dashboard
-              <span className="sr-only">Post a Job</span>
+              <span className="sr-only">Dashboard</span>
             </Link>
 
             <button
               onClick={handleLogout}
-              className="font-medium font-Nunito box-content px-4 sm:py-2 py-1 sm:rounded-xl rounded-full outline outline-2 outline-primary-700 focus-visible:ring-2 ring-primary-300 focus-visible:ring-offset-2 whitespace-nowrap"
+              className="font-medium px-4 sm:py-2 py-1 rounded-full border-2 border-gray-400 text-gray-600 outline-none focus-visible:ring-2 ring-blue-300 focus-visible:ring-offset-2"
             >
               Logout
               <span className="sr-only">Login</span>
@@ -68,15 +54,16 @@ const Navbar = () => {
           <>
             <Link
               href={"/seeker-dashboard"}
-              className="font-medium font-Nunito box-content px-4 sm:py-2 py-1 sm:rounded-xl rounded-full focus-visible:ring-2 ring-primary-300 focus-visible:ring-offset-2 whitespace-nowrap inline-flex items-center gap-3 bg-primary-500/80 hover:bg-primary-500 text-white"
+              className="sm:py-2 py-1 px-4 max-[400px]:hidden rounded-full transform transition-all ease-in-out duration-300 text-white
+              hover:-translate-y-1 focus-visible:-translate-y-1 hover:scale-110 focus-visible:scale-110 bg-blue-500/90 border-2 border-blue-500/5 hover:bg-blue-500 hover:border-blue-500  outline-none focus-visible:ring-2 ring-blue-300 focus-visible:ring-offset-2 whitespace-nowrap"
             >
               Find Jobs <FaArrowRightLong className="inline-block" />
-              <span className="sr-only">Find Jobs </span>
+              <span className="sr-only">Find Jobs</span>
             </Link>
 
             <Link
               href={"/login"}
-              className="font-medium font-Nunito box-content px-4 sm:py-2 py-1 sm:rounded-xl rounded-full outline outline-2 outline-primary-700 focus-visible:ring-2 ring-primary-300 focus-visible:ring-offset-2 whitespace-nowrap"
+              className="font-medium px-4 sm:py-2 py-1 rounded-full border-2 border-gray-400 text-gray-600 outline-none focus-visible:ring-2 ring-blue-300 focus-visible:ring-offset-2"
             >
               Login
               <span className="sr-only">Login</span>

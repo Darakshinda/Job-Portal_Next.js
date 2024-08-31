@@ -76,7 +76,7 @@ const Login = () => {
         .get("/accounts/profile")
         .then((response) => {
           localStorage.setItem("account_type", response.data.account_type);
-          Cookies.set("token", access, {
+          Cookies.set("access_token", access, {
             expires: expires,
             sameSite: "strict",
             httpOnly: false,
@@ -116,17 +116,20 @@ const Login = () => {
   };
 
   const loginFormCls =
-    "peer py-3 px-4 ps-11 block w-full bg-gray-200 rounded-lg outline-none focus:outline-primary-500 focus:ring-primary-500 disabled:opacity-50 disabled:pointer-events-none placeholder:text-gray-400";
+    "peer py-3 px-4 ps-11 block w-full bg-gray-50 rounded-lg outline-none focus-visible:ring-blue-300 focus-visible:ring-2 placeholder:text-gray-400 border";
 
   return (
     <div className="min-h-screen grid bg-login bg-cover bg-no-repeat bg-center md:py-8 md:px-12 sm:py-4 sm:px-6">
       <div className="flex-1 grid md:grid-flow-col md:grid-cols-[55%,45%] max-[400px]:border-2 border-[10px] border-white sm:rounded-[2rem]">
         {/* Left side with transparent background */}
         <div className="w-full h-full rounded-3xl">
-          <div className="h-full grid place-items-center bg-black bg-opacity-35 brightness-125  rounded-3xl">
+          <div className="h-full grid place-items-center brightness-125  rounded-3xl">
             <div className="flex flex-col sm:gap-10 gap-6 items-center justify-center w-full max-md:my-16 text-white font-Insomatte">
               <h1 className="xl:text-6xl lg:text-5xl md:text-4xl text-3xl px-4 text-center">
-                Tech hiring done <span className="text-[#c900af]">right</span>
+                Tech hiring done{" "}
+                <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                  right
+                </span>
               </h1>
 
               <div className="xl:text-3xl lg:text-2xl md:text-xl text-center w-full space-y-4 px-6">
@@ -137,8 +140,8 @@ const Login = () => {
         </div>
 
         {/* Right side with login form */}
-        <div className="flex flex-col items-center justify-center lg:p-8 md:p-5 sm:p-4 p-3 bg-white">
-          <h1 className="md:text-4xl text-3xl font-bold md:mb-2 max-md:my-6 font-Insomatte text-center capitalize text-gray-800 whitespace-nowrap">
+        <div className="flex flex-col items-center justify-center lg:p-8 md:p-5 sm:p-4 p-3 bg-white md:rounded-r-[1.25rem]">
+          <h1 className="md:text-4xl text-3xl font-bold mb-2 max-md:mt-4 font-Insomatte text-center capitalize text-gray-800 whitespace-nowrap">
             Welcome Back
           </h1>
           <p className="sm:text-sm text-xs md:mb-10 mb-6 text-gray-400">
@@ -186,7 +189,7 @@ const Login = () => {
             </div>
             <div className="justify-center text-center">
               <button
-                className="w-full bg-primary-700/85 font-RadioGrotesk tracking-wide text-white text-lg py-2 active:scale-90 hover:bg-primary-700 rounded-lg transition duration-150 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-opacity-75 focus-visible:scale-95"
+                className="w-full bg-primary-700/85 text-white text-lg py-2 active:scale-90 hover:bg-primary-700 rounded-lg transition duration-150 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-opacity-75 focus-visible:scale-95"
                 type="submit"
               >
                 {isSubmitting ? "Logging in..." : "Login"}
@@ -194,8 +197,8 @@ const Login = () => {
             </div>
           </form>
 
-          <h2 className="mt-8 text-primary-500 font-semibold">
-            Don&apos;t have an account?
+          <h2 className="mt-8 text-gray-600 font-Insomatte font-semibold">
+            Want to join the Community?
           </h2>
           <div className="flex flex-wrap justify-center items-center mt-4 gap-4">
             {signupLinks.map((link) => {
@@ -203,18 +206,28 @@ const Login = () => {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="py-3 px-4 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 group  relative w-52 h-12 whitespace-nowrap overflow-hidden"
+                  className="text-sm font-medium rounded-full border border-gray-200 bg-white text-gray-800 shadow-sm outline-none focus-visible:bg-gray-200 group relative w-52 h-fit whitespace-nowrap overflow-hidden"
                 >
-                  {link.icon}
-                  <span className="inline-block w-full text-center text-base transform group-hover:-translate-y-8 group-hover:opacity-0 transition-all duration-300">
-                    {link.title}
-                  </span>
-                  <span className="inline-block w-full text-center text-base opacity-0 transform -translate-x-full translate-y-full group-hover:text-sm group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
-                    {link.subtitle}
-                  </span>
+                  <div className="p-0.5 rounded-full bg-gradient-to-r hover:from-indigo-500 hover:via-purple-500 hover:to-pink-500 transition-colors duration-300">
+                    <div className="bg-white rounded-full py-2 px-4">
+                      {/* Hover to See the Gradient Border Animation */}
+                      {link.icon}
+                      <span className="inline-block w-full text-center -translate-x-2 text-base transform group-hover:-translate-y-8 group-hover:opacity-0 transition-all duration-[400ms]">
+                        {link.title}
+                      </span>
+                      <span className="inline-block w-full text-center text-base opacity-0 transform -translate-x-full translate-y-full group-hover:text-sm group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-[400ms] pointer-events-none">
+                        {link.subtitle}
+                      </span>
+                    </div>
+                  </div>
                 </Link>
               );
             })}
+            {/* <div className=" p-1 rounded-lg bg-gradient-to-r from-blue-200 via-blue-300 to-blue-500">
+              <div className="bg-white rounded-md p-6">
+                Hover to See the Gradient Border Animation
+              </div>
+            </div> */}
           </div>
         </div>
       </div>

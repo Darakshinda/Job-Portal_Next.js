@@ -19,8 +19,8 @@ type SearchSelectDropdownProps = {
   displayTagsLength?: number;
   selected?: string;
   existingTags?: string[];
-  resetflg?: boolean;
-  setResetFlg?: (val: boolean) => void;
+  resetFlag?: boolean;
+  setResetFlag?: (val: boolean) => void;
 };
 
 const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
@@ -39,8 +39,8 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
   displayTagsLength = 10,
   selected,
   existingTags,
-  resetflg,
-  setResetFlg,
+  resetFlag,
+  setResetFlag,
 }) => {
   const techTags = tags;
   const [inputValue, setInputValue] = useState<string>(selected || "");
@@ -67,13 +67,13 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
   }, [selected]);
 
   useEffect(() => {
-    if (resetflg) {
+    if (resetFlag) {
       setSelectedTags([]);
       setInputValue("");
       setFilteredTags(techTags);
-      setResetFlg && setResetFlg(false);
+      setResetFlag && setResetFlag(false);
     }
-  }, [resetflg, setResetFlg]);
+  }, [resetFlag, setResetFlag]);
 
   useEffect(() => {
     // console.log("existing Tags:", existingTags);
@@ -178,7 +178,6 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
               >
                 ?
               </button>
-              {/* <div className="absolute left-20 transform bottom-0 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-gray-900 opacity-0 peer-hover:opacity-100 transition-opacity"></div> */}
               <div className="absolute z-10 left-0 transform top-full translate-y-8 mb-2 max-w-sm bg-blue-100 text-gray-500 text-xs font-medium px-2 py-1 rounded opacity-0 peer-hover:opacity-100 peer-hover:translate-y-0 peer-hover:z-10 transition-all duration-300 ease-in-out pointer-events-none">
                 {description}
               </div>
@@ -229,7 +228,7 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
           </div>
 
           {multiple && (
-            <div className="flex flex-1 flex-wrap gap-1">
+            <div className="flex flex-1 flex-wrap gap-1 max-w-md">
               {tagsToShow.map((tag, index) => (
                 <div
                   key={index}

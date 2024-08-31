@@ -14,9 +14,9 @@ const Dashboard = async () => {
   }: { jobsCount: number; applicationsCount: number } =
     await dashboardDetails();
 
-  useEffect(() => {
-    console.log(jobsCount, applicationsCount);
-  }, [jobsCount, applicationsCount]);
+  // useEffect(() => {
+  //   console.log(jobsCount, applicationsCount);
+  // }, [jobsCount, applicationsCount]);
 
   return (
     <main className="min-h-screen w-full overflow-x-auto bg-[#FAFAFA] flex-1">

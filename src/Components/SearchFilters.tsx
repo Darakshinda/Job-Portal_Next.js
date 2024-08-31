@@ -23,6 +23,8 @@ interface SearchFiltersProps {
   handleSkillChange: (skills: string[]) => void;
   handleSubmit: () => void;
   handleReset: () => void;
+  resetFlag?: boolean;
+  setResetFlag?: (flag: boolean) => void;
 }
 
 const SearchFilters = ({
@@ -31,6 +33,8 @@ const SearchFilters = ({
   handleSkillChange,
   handleSubmit,
   handleReset,
+  resetFlag,
+  setResetFlag,
 }: SearchFiltersProps) => {
   const LocationTags = locOpns.countries;
 
@@ -56,6 +60,8 @@ const SearchFilters = ({
           labelCls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
           cls={defaultFieldStylesCls}
           handleChange={handleChange}
+          resetFlag={resetFlag}
+          setResetFlag={setResetFlag}
         />
 
         <div className="grid grid-rows-[min(fit_content, fit_content)] gap-x-6 items-start">
@@ -68,6 +74,8 @@ const SearchFilters = ({
             onChange={handleSkillChange}
             placeholder="Eg: Software Developer"
             description="Short tags like industry and tech stack are preferred. Only the first 3 or 4 tags are displayed on the site, but all tags ensure the job appears on relevant tag-specific pages. Additional tags may be auto-generated after posting/editing to supplement."
+            resetFlag={resetFlag}
+            setResetFlag={setResetFlag}
           />
         </div>
 
@@ -83,6 +91,8 @@ const SearchFilters = ({
             onSingleChange={handleChange}
             description="Only fill if you'd only like to hire people from a specific location or timezone this job is restricted to. If not restricted, please leave it as worldwide."
             multiple={false}
+            resetFlag={resetFlag}
+            setResetFlag={setResetFlag}
           />
         </div>
 
@@ -98,13 +108,13 @@ const SearchFilters = ({
             onSingleChange={handleChange}
             description="Select the type of employment you would like to filter with."
             multiple={false}
+            resetFlag={resetFlag}
+            setResetFlag={setResetFlag}
           />
         </div>
 
         <div>
-          <p className="text-gray-500 font-semibold text-md mb-2">
-            Desired salary
-          </p>
+          <p className="text-gray-500 text-sm mb-2">Desired salary</p>
           <RangeSliderMinMax
             minSalary={searchParams.minSalary}
             maxSalary={searchParams.maxSalary}

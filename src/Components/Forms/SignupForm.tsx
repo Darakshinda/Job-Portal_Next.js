@@ -5,8 +5,8 @@ import SignupFormInput from "./SignupFormInput";
 import Link from "next/link";
 import PhoneInput from "react-country-phone-input";
 import "react-country-phone-input/lib/style.css";
-import { FaRegClock } from "react-icons/fa";
-import { IoBriefcaseOutline } from "react-icons/io5";
+import { FaClock } from "react-icons/fa6";
+import { IoBriefcase } from "react-icons/io5";
 import SearchSelectDropdown from "./SearchSelectDropdown";
 import tagOpns from "@/constants/data/tags.json";
 import ExperienceTags from "@/constants/data/experience.json";
@@ -17,7 +17,6 @@ type SignupFormProps = {
   handleSubmit: Function;
   onSubmit: Function;
   control: Control<any>;
-  defaultCls: string;
   errors: FieldErrors;
   formData: {
     phone_number: string;
@@ -39,16 +38,18 @@ const SignupForm = ({
   handleSubmit,
   onSubmit,
   control,
-  defaultCls,
   errors,
   formData,
   handleChange,
   formDataErrors,
   handleSkillChange,
 }: SignupFormProps) => {
+  const SignupFormCls =
+    "relative mt-1 p-2 bg-gray-50 text-gray-800 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300";
+
   return (
-    <div className="min-h-screen flex lg:flex-row flex-col sm:gap-y-8 gap-y-3 bg-gray-100 bg-fixed bg-signup bg-cover bg-no-repeat bg-center">
-      <div className="lg:fixed lg:z-20 lg:w-[50%] h-full flex flex-col items-center justify-center max-lg:mt-12">
+    <div className="lg:h-screen min-h-screen flex flex-col lg:flex-row sm:gap-y-8 gap-y-3 bg-gray-100 bg-fixed bg-signup bg-cover bg-no-repeat bg-center">
+      <div className="flex-1 flex flex-col items-center justify-center max-lg:mt-12">
         <div className="text-center lg:space-y-12 md:space-y-10 sm:space-y-8 space-y-6 px-10">
           <Image
             src="/assets/icons/logo.svg"
@@ -56,27 +57,63 @@ const SignupForm = ({
             width={400}
             height={400}
             priority
-            className="mx-auto lg:max-h-[400px] lg:max-w-[400px] object-contain"
+            className="mx-auto max-h-[250px] max-w-[250px] object-contain"
           />
 
-          <div className="xl:text-5xl lg:text-4xl md:text-3xl sm:text-2xl text-xl text-primary-700 leading-relaxed">
-            <p className="font-bold">
-              Get the <span className="text-[#9737bd]">best engineering </span>
-              <span className="text-[#9737bd]">minds </span>
-              to bring your product vision to life.
-            </p>
+          <div className="font-Insomatte tracking-wide xl:text-4xl lg:text-3xl md:text-2xl sm:text-xl text-xl text-gray-800 leading-loose">
+            <div className="font-bold">
+              {type === "Recruiter" ? (
+                <p>
+                  Assemble{" "}
+                  <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                    top engineering
+                  </span>{" "}
+                  talent to <br className="sm:block hidden" /> turn your product
+                  vision into reality.
+                </p>
+              ) : (
+                <p>
+                  Unlock{" "}
+                  <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                    top opportunities
+                  </span>{" "}
+                  and <br />
+                  accelerate your career.
+                </p>
+              )}
+
+              {type === "Recruiter" ? (
+                <Image
+                  src="/assets/images/recruiter.svg"
+                  alt="logo"
+                  width={400}
+                  height={400}
+                  priority
+                  className="mx-auto max-[400px]:hidden lg:max-h-[400px] lg:max-w-[400px] object-contain"
+                />
+              ) : (
+                <Image
+                  src="/assets/images/seeker.svg"
+                  alt="logo"
+                  width={400}
+                  height={400}
+                  priority
+                  className="mx-auto max-[400px]:hidden lg:max-h-[400px] lg:max-w-[400px] object-contain"
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="lg:ml-[50%] mt-4 mb-8 lg:mr-6 max-lg:px-2 flex-1">
-        <div className="h-full">
+      <div className="my-4 lg:mx-6 max-lg:px-2">
+        <div className="h-full border-2 rounded-xl bg-white overflow-y-auto scrollbar-hide">
           <form
             id="signup-form"
             onSubmit={handleSubmit(onSubmit)}
-            className="space-y-5 sm:p-4 p-2"
+            className="space-y-5 sm:p-5 p-2"
           >
-            <div className="md:text-3xl sm:text-2xl text-xl text-primary-700 leading-relaxed tracking-tighter font-bold lg:mb-2">
+            <div className="md:text-3xl sm:text-2xl text-xl text-gray-800 font-RadioGrotesk leading-relaxed tracking-normal font-bold lg:mb-2">
               Connect with Top Engineers
             </div>
             <div className="flex gap-x-6 gap-y-4 max-[500px]:flex-col flex-row">
@@ -88,7 +125,7 @@ const SignupForm = ({
                 control={control}
                 placeholder="John"
                 req={true}
-                cls={defaultCls}
+                cls={SignupFormCls}
                 error={errors.first_name}
               />
 
@@ -100,7 +137,7 @@ const SignupForm = ({
                 control={control}
                 placeholder="Doe"
                 req={true}
-                cls={defaultCls}
+                cls={SignupFormCls}
                 error={errors.last_name}
               />
             </div>
@@ -113,7 +150,7 @@ const SignupForm = ({
               control={control}
               placeholder="name@personal.com"
               req={true}
-              cls={defaultCls}
+              cls={SignupFormCls}
               error={errors.email}
             />
 
@@ -126,7 +163,7 @@ const SignupForm = ({
                 control={control}
                 placeholder="name@work.com"
                 req={true}
-                cls={defaultCls}
+                cls={SignupFormCls}
                 error={errors.working_email}
               />
             )}
@@ -141,7 +178,7 @@ const SignupForm = ({
                   control={control}
                   placeholder="username"
                   req={true}
-                  cls={defaultCls}
+                  cls={SignupFormCls}
                   error={errors.username}
                 />
               </div>
@@ -182,7 +219,7 @@ const SignupForm = ({
                 control={control}
                 placeholder="••••••••"
                 req={true}
-                cls={defaultCls}
+                cls={SignupFormCls}
                 error={errors.password}
               />
               {/* </div> */}
@@ -196,7 +233,7 @@ const SignupForm = ({
                 control={control}
                 placeholder="••••••••"
                 req={true}
-                cls={defaultCls}
+                cls={SignupFormCls}
                 error={errors.confirm_password}
               />
               {/* </div> */}
@@ -213,25 +250,31 @@ const SignupForm = ({
                 <div className="flex gap-x-6 gap-y-4 sm:flex-row flex-col mt-1">
                   <button
                     type="button"
-                    className={`flex flex-1 items-center text-white rounded-xl border-2 px-4 py-3 cursor-pointer outline-none focus-visible:border-primary-700 ${formData.looking_for === "freelance" ? "border-primary-50 bg-primary-500" : "border-transparent bg-gray-400"}`}
+                    className={`flex flex-1 items-center rounded-md px-4 py-2 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-blue-300 transition-colors duration-300 ${formData.looking_for === "freelance" ? "bg-blue-300 text-white" : "bg-gray-200 text-gray-600"}`}
                     onClick={() => {
                       handleChange("looking_for", "freelance");
                     }}
                   >
-                    <FaRegClock size={20} />
-                    <div className="ml-2 font-medium whitespace-nowrap">
+                    <span className="p-1.5 border rounded-full inline-block w-8 h-8 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+                      <FaClock className="text-white w-full h-full" />
+                    </span>
+                    {/* <FaRegClock size={20} /> */}
+                    <div className="flex-1 font-medium text-lg font-RadioGrotesk tracking-wide text-center whitespace-nowrap">
                       Freelance Contractor
                     </div>
                   </button>
                   <button
                     type="button"
-                    className={`flex flex-1 items-center text-white rounded-xl border-2 px-4 py-3 cursor-pointer outline-none focus-visible:border-primary-700 ${formData.looking_for === "full_time" ? "border-primary-50 bg-primary-500" : "border-transparent bg-gray-400"}`}
+                    className={`flex flex-1 items-center rounded-md px-4 py-2 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-blue-300 transition-colors duration-300 
+                    ${formData.looking_for === "full_time" ? "bg-blue-300 text-white" : "bg-gray-200 text-gray-600"}`}
                     onClick={() => {
                       handleChange("looking_for", "full_time");
                     }}
                   >
-                    <IoBriefcaseOutline size={20} />
-                    <div className="ml-2 font-medium whitespace-nowrap">
+                    <span className="p-1.5 border rounded-full inline-block w-8 h-8 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+                      <IoBriefcase className="text-white w-full h-full" />
+                    </span>
+                    <div className="flex-1 font-medium text-lg font-RadioGrotesk tracking-wide text-center whitespace-nowrap">
                       Full Time Employee
                     </div>
                   </button>
@@ -248,19 +291,19 @@ const SignupForm = ({
                     control={control}
                     placeholder="Location"
                     req={true}
-                    cls={defaultCls}
+                    cls={SignupFormCls}
                     error={errors.location}
                   />
                 </div>
 
                 <div className="flex flex-col flex-1">
                   <SearchSelectDropdown
-                    selected={formData.years_of_experience}
+                    // selected={formData.years_of_experience}
                     label="Years of Experience"
                     name="years_of_experience"
                     labelCls="text-gray-500 font-semibold relative flex items-center gap-2"
                     placeholder="Experience"
-                    cls={defaultCls}
+                    cls={SignupFormCls}
                     tags={ExperienceTags}
                     onSingleChange={handleChange}
                     multiple={false}
@@ -278,6 +321,7 @@ const SignupForm = ({
             <div className="w-full">
               <SearchSelectDropdown
                 usingIn="signup"
+                placeholder="Search and add a skill"
                 label={
                   type === "Recruiter"
                     ? "Skills Required"
@@ -286,7 +330,7 @@ const SignupForm = ({
                 onChange={handleSkillChange}
                 tags={tagOpns}
                 cls={
-                  "relative p-2 bg-gray-200 text-primary-700 rounded-lg border border-gray-300 outline-none focus:border-primary-500 mt-1"
+                  "relative mt-1 p-2 bg-gray-50 text-primary-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
                 }
               />
             </div>
@@ -299,19 +343,19 @@ const SignupForm = ({
               control={control}
               placeholder="How did you hear about us"
               req={false}
-              cls={defaultCls}
+              cls={SignupFormCls}
               error={errors.how_heard_about_codeunity}
             />
 
             <button
               type="submit"
-              className="mt-4 w-full disabled:bg-[#9737bd]/70 bg-[#9737bd]/90 hover:bg-[#9737bd] active:scale-95 transition-all duration-300 text-white font-bold py-2 px-4 rounded-xl outline-none focus-visible:outline-primary-700"
+              className="mt-4 text-lg w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 active:scale-95 transition-all duration-300 text-white font-bold py-2 px-4 rounded-xl outline-none focus-visible:outline-primary-700"
             >
               Register
             </button>
           </form>
 
-          <p className="text-sm mt-4 mx-4">
+          <p className="text-sm mx-4">
             By submitting, you acknowledge that you have read and agreed to our{" "}
             <a
               href="https://s3.us-east-2.amazonaws.com/flexiple-marketing/pdf/terms-of-use.pdf"
@@ -331,7 +375,7 @@ const SignupForm = ({
             .
           </p>
 
-          <p className="text-center text-sm mt-3">
+          <p className="text-center text-sm my-3">
             Already have an account?
             <Link href="/login">
               <span className="ml-2 text-[#9737bd] hover:underline italic font-bold text-base">

@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 
 export const dashboardDetails = async () => {
   const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
-  const access_token = cookies().get("token")?.value;
+  const access_token = cookies().get("access_token")?.value;
 
   let jobsCount = 0;
   let applicationsCount = 0;

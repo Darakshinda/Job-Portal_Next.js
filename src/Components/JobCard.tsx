@@ -40,26 +40,26 @@ const JobCard = ({
   return (
     <section className="w-full max-w-4xl space-y-4 bg-white rounded-3xl">
       <article className="rounded-3xl border border-gray-100 shadow-md transition-all duration-300 hover:shadow-lg py-4 px-6 relative">
-        <div className="flex items-center gap-3 w-full">
+        <div className="flex items-center gap-4 w-full">
           <Image
             src={job.logo || "/assets/images/default-profile.webp"}
             alt="profile"
             width={400}
             height={200}
-            className="w-20 h-20 object-contain rounded-full"
+            className="w-16 h-16 object-contain rounded-full"
           />
           <div className="flex flex-col items-start gap-2 w-full">
-            <p className="text-gray-600 text-xl font-bold w-[calc(100%-2rem)] truncate shrink">
+            <p className="text-gray-600 text-xl font-bold line-clamp-1">
               {job.position} at {job.company_name}, {job.emptype} Opportunity
             </p>
-            <span className="flex gap-2 items-center">
-              <span className="text-base text-gray-400">
+            <span className="flex gap-2 items-center flex-wrap">
+              <span className="text-base text-gray-400 whitespace-nowrap">
                 {job.company_name} •
               </span>
-              <span className="rounded-lg text-xs bg-blue-300 font-semibold px-2 py-1">
+              <span className="rounded-lg text-xs bg-blue-300 font-semibold px-2 py-1 whitespace-nowrap">
                 {job.emptype}
               </span>
-              <span className="rounded-lg text-xs bg-green-300 font-semibold px-2 py-1">
+              <span className="rounded-lg text-xs bg-green-300 font-semibold px-2 py-1 whitespace-nowrap">
                 {job.primtg}
               </span>
             </span>
@@ -73,7 +73,7 @@ const JobCard = ({
           {job.tags.map((tag, index) => (
             <span
               key={index}
-              className="px-2 py-1 bg-gray-300 text-gray-600 rounded-full font-semibold"
+              className="px-2 py-1 bg-gray-300 text-gray-600 rounded-full font-semibold whitespace-nowrap"
             >
               {tag}
             </span>

@@ -50,12 +50,12 @@ const Sidebar = ({ isHirer }: { isHirer: boolean }) => {
   const router = useRouter();
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-  const token = Cookies.get("token");
+  const token = Cookies.get("access_token");
 
   const handleLogOut = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("account_type");
-    Cookies.remove("token");
+    Cookies.remove("access_token");
     Cookies.remove("account_type");
     router.push("/");
   };
