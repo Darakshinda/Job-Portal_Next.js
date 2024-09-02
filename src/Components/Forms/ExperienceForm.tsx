@@ -28,6 +28,8 @@ interface ExperienceFormProps {
   formData?: Experience;
   index?: number;
   setIsEditing?: Dispatch<SetStateAction<boolean>>;
+  workExperienceArray?: Experience[];
+  onSubmitFn: Function;
 }
 
 const ExperienceForm = ({
@@ -37,6 +39,8 @@ const ExperienceForm = ({
   formData,
   index,
   setIsEditing,
+  workExperienceArray,
+  onSubmitFn,
 }: ExperienceFormProps) => {
   const {
     register,
@@ -47,6 +51,10 @@ const ExperienceForm = ({
   } = useForm<ExperienceSchema>({
     resolver: zodResolver(experienceSchema),
     mode: "onChange",
+    defaultValues: {
+      title: formData?.title,
+      description: formData?.description,
+    },
   });
 
   const [experienceFormData, setExperienceFormData] = useState<Experience>({
@@ -85,7 +93,7 @@ const ExperienceForm = ({
     }
   };
 
-  const handleAddWorkExperience = (data: ExperienceSchema) => {
+  const handleAddWorkExperience = async (data: ExperienceSchema) => {
     console.log("submitting");
     const finalFormData = {
       ...experienceFormData,
@@ -102,6 +110,8 @@ const ExperienceForm = ({
     } else {
       setWorkExperienceArray((prev: Experience[]) => [...prev, finalFormData]);
     }
+
+    await onSubmitFn();
 
     dropdown && dropdown(true); // show add Experience button
     setIsEditing && setIsEditing(false); // hide the form
@@ -157,7 +167,7 @@ const ExperienceForm = ({
               placeholder="Eg: FrontEnd Developer"
               req={true}
               cls={defaultPostEditFormInputCls}
-              errors={errors.title}
+              error={errors.title}
             />
           </div>
           {/* {errors.title && (

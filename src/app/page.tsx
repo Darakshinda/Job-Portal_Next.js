@@ -19,6 +19,7 @@ export default function Home() {
           height={500}
           className="object-contain"
         />
+        
       </div>
     </main>
   );

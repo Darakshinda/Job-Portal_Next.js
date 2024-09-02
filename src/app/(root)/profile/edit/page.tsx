@@ -36,6 +36,7 @@ import { error } from "console";
 import Spinner from "@/Components/Spinner";
 import debounce from "lodash/debounce";
 import PdfUploadForm from "@/Components/Forms/ResumeUpload";
+import { swalFailed, swalSuccess } from "@/lib/helpers/swal";
 
 const LocationTags = locOpns.countries;
 type AboutSchema = z.infer<typeof aboutSchema>;
@@ -169,6 +170,7 @@ const EditProfilePage = () => {
   } = useForm<AboutSchema>({
     mode: "onChange",
     resolver: zodResolver(aboutSchema),
+    defaultValues: zodAboutFormData,
   });
 
   const {
@@ -179,6 +181,7 @@ const EditProfilePage = () => {
   } = useForm<SocialProfilesSchema>({
     mode: "onChange",
     resolver: zodResolver(socialProfilesSchema),
+    defaultValues: zodSocialProfilesFormData,
   });
 
   const {
@@ -190,6 +193,10 @@ const EditProfilePage = () => {
   } = useForm<GeneralSchema>({
     mode: "onChange",
     resolver: zodResolver(generalSchema),
+    defaultValues: {
+      pronouns_self_describe: "",
+      gender_self_describe: "",
+    },
   });
 
   const handleAboutChange = (key: string, value: string | boolean) => {
@@ -303,6 +310,7 @@ const EditProfilePage = () => {
     if (!isLoading) {
       const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
       const access_token = localStorage.getItem("access_token");
+      console.log("onsubmitarrays");
       try {
         const response = await axios.put(
           `${baseurl}/accounts/profile/`,
@@ -319,25 +327,14 @@ const EditProfilePage = () => {
         );
         // console.log(response.data);
         if (Swal.isVisible()) return;
-        Swal.fire({
+        swalSuccess({
           title: "Profile update successful",
-          icon: "success",
-          toast: true,
-          timer: 3000,
-          position: "top-right",
-          timerProgressBar: true,
-          showConfirmButton: false,
         });
       } catch (error: any) {
         console.log(error.response?.data || error);
-        Swal.fire({
+        swalFailed({
           title: "Profile update failed. Please try again",
-          icon: "error",
-          toast: true,
-          timer: 3000,
-          position: "top-right",
-          timerProgressBar: true,
-          showConfirmButton: false,
+          error: error.response?.data,
         });
       }
     }
@@ -439,25 +436,14 @@ const EditProfilePage = () => {
         console.log(response.data);
         console.log(responsetwo.data);
 
-        Swal.fire({
+        swalSuccess({
           title: "Profile update successful",
-          icon: "success",
-          toast: true,
-          timer: 3000,
-          position: "top-right",
-          timerProgressBar: true,
-          showConfirmButton: false,
         });
       } catch (error: any) {
         console.log(error.response?.data || error);
-        Swal.fire({
+        swalFailed({
           title: "Profile update failed. Please try again",
-          icon: "error",
-          toast: true,
-          timer: 3000,
-          position: "top-right",
-          timerProgressBar: true,
-          showConfirmButton: false,
+          error: error.response?.data,
         });
       }
     }
@@ -470,19 +456,19 @@ const EditProfilePage = () => {
 
   // const debounceOnSubmit = useRef(debounce(onSubmitArrays, 1000)).current;
 
-  useEffect(() => {
-    if (!isLoading) {
-      // debounceOnSubmit();
-      onSubmitArrays();
-    }
-  }, [workExperienceArray, isLoading]);
+  // useEffect(() => {
+  //   if (!isLoading) {
+  //     // debounceOnSubmit();
+  //     onSubmitArrays();
+  //   }
+  // }, [workExperienceArray]);
 
-  useEffect(() => {
-    if (!isLoading) {
-      // debounceOnSubmit();
-      onSubmitArrays();
-    }
-  }, [educationArray, isLoading]);
+  // useEffect(() => {
+  //   if (!isLoading) {
+  //     // debounceOnSubmit();
+  //     onSubmitArrays();
+  //   }
+  // }, [educationArray]);
 
   useEffect(() => {
     function yoeToString(yoe: number): string {
@@ -997,6 +983,8 @@ const EditProfilePage = () => {
                     setWorkExperienceArray={setWorkExperienceArray}
                     defaultPostEditFormInputCls={defaultPostEditFormInputCls}
                     dropdown={setExpAddButton}
+                    workExperienceArray={workExperienceArray}
+                    onSubmitFn={onSubmitArrays}
                   />
                 )}
               </div>
@@ -1044,6 +1032,10 @@ const EditProfilePage = () => {
                     setEducationArray={setEducationArray}
                     defaultPostEditFormInputCls={defaultPostEditFormInputCls}
                     dropdown={setEducationAddButton}
+                    educationArray={educationArray}
+                    onSubmit={() => {
+                      onSubmitArrays();
+                    }}
                   />
                 )}
               </div>

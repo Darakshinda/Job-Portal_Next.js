@@ -25,6 +25,7 @@ const hirerRoutes = [
   "/razorpay",
 ];
 const seekerRoutes = ["/appliedJobs"];
+const profileRoutes = ["/profile", "/profile/edit"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -34,7 +35,6 @@ export function middleware(request: NextRequest) {
   // Check for login routes first
   if (loginRoutes.some((route) => pathname.startsWith(route))) {
     console.log("Login route");
-    // Redirect authenticated users away from login routes
     if (token) {
       if (account_type === "job_seeker") {
         return NextResponse.redirect(new URL("/seeker-dashboard", request.url));
@@ -42,7 +42,7 @@ export function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL("/dashboard", request.url));
       }
     }
-    return NextResponse.next(); // Allow access to login routes for unauthenticated users
+    return NextResponse.next();
   }
 
   // Allow public routes for everyone
@@ -51,9 +51,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // From this point on, we'll handle authenticated routes
-
-  // Allow seeker dashboard routes for everyone except job_hirer
   if (seekerDashboardRoutes.some((route) => pathname.startsWith(route))) {
     console.log("Seeker dashboard route");
     if (token) {
@@ -87,6 +84,11 @@ export function middleware(request: NextRequest) {
     if (account_type !== "job_seeker") {
       return NextResponse.redirect(new URL("/", request.url));
     }
+    return NextResponse.next();
+  }
+
+  if (profileRoutes.includes(pathname) && token) {
+    console.log("Profile route");
     return NextResponse.next();
   }
 

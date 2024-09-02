@@ -28,6 +28,8 @@ interface EducationFormProps {
   formData?: Education;
   index?: number;
   setIsEditing?: Dispatch<SetStateAction<boolean>>;
+  educationArray?: Education[];
+  onSubmit?: Function;
 }
 
 const EducationForm = ({
@@ -37,6 +39,8 @@ const EducationForm = ({
   formData,
   index,
   setIsEditing,
+  educationArray,
+  onSubmit,
 }: EducationFormProps) => {
   const {
     register,
@@ -48,6 +52,10 @@ const EducationForm = ({
   } = useForm<EducationSchema>({
     resolver: zodResolver(educationSchema),
     mode: "onChange",
+    defaultValues: {
+      year_of_graduation: formData?.year_of_graduation,
+      gpa: formData?.gpa,
+    },
   });
 
   const [educationFormData, setEducationFormData] = useState<Education>({
@@ -99,6 +107,8 @@ const EducationForm = ({
     } else {
       setEducationArray((prev: Education[]) => [...prev, finalEdu]);
     }
+
+    onSubmit && onSubmit();
 
     dropdown && dropdown(true); // show add Education button
     setIsEditing && setIsEditing(false); // hide form after editing
@@ -173,7 +183,7 @@ const EducationForm = ({
               cls={defaultPostEditFormInputCls}
               // register={register}
               control={control}
-              errors={errors.year_of_graduation}
+              error={errors.year_of_graduation}
               req={false}
             />
             {/* {errors.year_of_graduation && (
@@ -208,7 +218,7 @@ const EducationForm = ({
               // register={register}
               control={control}
               req={true}
-              errors={errors.gpa}
+              error={errors.gpa}
             />
             {/* {errors.gpa && (
                 <p className="text-red-500">{errors.gpa.message}</p>

@@ -74,7 +74,7 @@ const SignupForm = ({
           <form
             id="signup-form"
             onSubmit={handleSubmit(onSubmit)}
-            className="space-y-5 sm:p-4 p-2"
+            className="space-y-5 sm:p-4 p-2 bg-[#f9f9f9]"
           >
             <div className="md:text-3xl sm:text-2xl text-xl text-primary-700 leading-relaxed tracking-tighter font-bold lg:mb-2">
               Connect with Top Engineers
