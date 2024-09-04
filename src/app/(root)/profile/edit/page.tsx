@@ -564,8 +564,8 @@ const EditProfilePage = () => {
                 About
               </h1>
               <p className="text-sm">
-                Tell us about your background, and we'll connect you with the
-                opportunities that matter.
+                Tell us about your background, and we&quot;ll connect you with
+                the opportunities that matter.
               </p>
             </div>
 
@@ -980,8 +980,8 @@ const EditProfilePage = () => {
                     setWorkExperienceArray={setWorkExperienceArray}
                     defaultPostEditFormInputCls={defaultPostEditFormInputCls}
                     dropdown={setExpAddButton}
-                    workExperienceArray={workExperienceArray}
-                    onSubmitFn={onSubmitArrays}
+                    // workExperienceArray={workExperienceArray}
+                    // onSubmitFn={onSubmitArrays}
                   />
                 )}
               </div>

@@ -28,8 +28,6 @@ interface ExperienceFormProps {
   formData?: Experience;
   index?: number;
   setIsEditing?: Dispatch<SetStateAction<boolean>>;
-  workExperienceArray?: Experience[];
-  onSubmitFn: Function;
 }
 
 const ExperienceForm = ({
@@ -40,8 +38,6 @@ const ExperienceForm = ({
   formData,
   index,
   setIsEditing,
-  workExperienceArray,
-  onSubmitFn,
 }: ExperienceFormProps) => {
   const {
     control,
