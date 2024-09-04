@@ -983,8 +983,8 @@ const EditProfilePage = () => {
                     setWorkExperienceArray={setWorkExperienceArray}
                     defaultPostEditFormInputCls={defaultPostEditFormInputCls}
                     dropdown={setExpAddButton}
-                    workExperienceArray={workExperienceArray}
-                    onSubmitFn={onSubmitArrays}
+                    // workExperienceArray={workExperienceArray}
+                    // onSubmitFn={onSubmitArrays}
                   />
                 )}
               </div>
