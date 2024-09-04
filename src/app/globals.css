@@ -41,6 +41,7 @@
 
 body {
   color: rgb(var(--foreground-rgb));
+  scroll-behavior: smooth;
   /* background: linear-gradient(
       to bottom,
       transparent,
@@ -285,6 +286,48 @@ input[type="tel"] {
 .react-datepicker {
   outline: 2px solid var(--blue-500) !important;
   border-radius: 1rem !important;
+}
+
+.react-datepicker__current-month {
+  display: none !important;
+}
+
+.react-datepicker__month-dropdown-container {
+  margin-left: 0 !important;
+  margin-right: 0.25rem !important;
+}
+
+.react-datepicker__month-select {
+  font-weight: 600 !important;
+  font-size: 0.825rem !important;
+  border-radius: 1rem !important;
+  padding: 0.125rem 0.25rem !important;
+  outline: none !important;
+  text-align: center !important;
+
+  &:focus-visible {
+    @apply ring-1 ring-blue-300 !important;
+  }
+}
+
+.react-datepicker__year-dropdown-container {
+  margin-left: 0 !important;
+}
+
+.react-datepicker__year-select {
+  font-weight: 600 !important;
+  font-size: 0.825rem !important;
+  border-radius: 1rem !important;
+  padding: 0.125rem 0.25rem !important;
+  outline: none !important;
+
+  &:focus-visible {
+    @apply ring-1 ring-blue-300 !important;
+  }
+
+  &::-webkit-scrollbar {
+    width: 0 !important;
+  }
 }
 
 .react-datepicker__month-container {

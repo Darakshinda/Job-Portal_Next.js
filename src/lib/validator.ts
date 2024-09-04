@@ -13,7 +13,7 @@ const resetPasswordSchema = z
       .string()
       .regex(
         /^(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/,
-        "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one symbol."
+        "At least: 8 characters, 1 uppercase, 1 lowercase, 1 symbol"
       ),
     confirm_password: z.string(),
   })
@@ -52,7 +52,7 @@ const recruiterSignupFormSchema = z
       .string()
       .regex(
         /^(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/,
-        "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one symbol."
+        "At least: 8 characters, 1 uppercase, 1 lowercase, 1 symbol"
       ),
     confirm_password: z.string(),
     how_heard_about_codeunity: z.string(),
@@ -87,7 +87,7 @@ const seekerSignupFormSchema = z
       .string()
       .regex(
         /^(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/,
-        "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one symbol."
+        "At least: 8 characters, 1 uppercase, 1 lowercase, 1 symbol"
       ),
     confirm_password: z.string(),
     location: z.string().min(1, { message: "Location is required" }),
@@ -121,9 +121,13 @@ const aboutSchema = z.object({
     .email()
     .max(50, { message: "Email must be at most 50 characters long" }),
   designation: z
-    .string()
-    .min(1, { message: "Your designation is required" })
-    .max(50, { message: "Designation must be at most 50 characters long" })
+    .union([
+      z
+        .string()
+        .min(1, { message: "Your designation is required" })
+        .max(50, { message: "Designation must be at most 50 characters long" }),
+      z.null(),
+    ])
     .optional(),
   textarea: z
     .string()
@@ -139,9 +143,6 @@ const socialProfilesSchema = z.object({
 });
 
 const experienceSchema = z.object({
-  // start_date: z.string().min(1, { message: "Start date is required" }),
-  // end_date: z.string().min(1, { message: "End date is required" }),
-  // is_working: z.boolean(),
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string().min(1, { message: "Work Description is required" }),
 });
@@ -156,10 +157,15 @@ const educationSchema = z.object({
       message: "Graduation year cannot be more than 6 years in the future",
     })
     .or(z.null()),
-  gpa: z.coerce.number().gte(0, { message: "CGPA cannot be 0" }),
+  gpa: z.coerce
+    .number()
+    .gte(0, { message: "CGPA cannot be 0" })
+    .lte(10, { message: "CGPA cannot be more than 10" })
+    .or(z.null()),
 });
 
 const generalSchema = z.object({
+  achievements: z.string().optional(),
   gender_self_describe: z
     .string()
     .min(1, { message: "Field must not be empty" })

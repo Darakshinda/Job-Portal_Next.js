@@ -23,13 +23,26 @@ const hirerRoutes = [
   "/postedJobs/:jobId/edit/:path*",
   "/payment",
   "/razorpay",
+  "/profile",
+  "/profile/edit",
 ];
-const seekerRoutes = ["/appliedJobs"];
+const seekerRoutes = [
+  "/appliedJobs",
+  "/appliedJobs/:jobId/path*",
+  "/profile",
+  "/profile/edit",
+];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get("token")?.value;
+  const token = request.cookies.get("access_token")?.value;
   const account_type = request.cookies.get("account_type")?.value;
+
+  // Allow public routes for everyone
+  if (publicRoutes.includes(pathname)) {
+    console.log("Public route");
+    return NextResponse.next();
+  }
 
   // Check for login routes first
   if (loginRoutes.some((route) => pathname.startsWith(route))) {
@@ -45,15 +58,43 @@ export function middleware(request: NextRequest) {
     return NextResponse.next(); // Allow access to login routes for unauthenticated users
   }
 
-  // Allow public routes for everyone
-  if (publicRoutes.includes(pathname)) {
-    console.log("Public route");
-    return NextResponse.next();
+  // From this point on, we'll handle authenticated routes
+  // Redirect unauthenticated users to login
+  if (!token) {
+    console.log("No token found");
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // From this point on, we'll handle authenticated routes
+  if (pathname === "/profile" || pathname === "/profile/edit") {
+    if (token) {
+      if (account_type === "job_seeker") {
+        return NextResponse.next(); // Allow access to seekers
+      } else if (account_type === "job_hirer") {
+        // console.log("Hirer profile route");
+        return NextResponse.next(); // Allow access to hirers
+      } else {
+        return NextResponse.redirect(new URL("/", request.url)); // Redirect other roles or unauthenticated users
+      }
+    } else {
+      return NextResponse.redirect(new URL("/login", request.url)); // Redirect unauthenticated users to login
+    }
+  }
 
-  // Allow seeker dashboard routes for everyone except job_hirer
+  // Handle seeker routes first
+  if (seekerRoutes.some((route) => pathname.startsWith(route))) {
+    console.log("Seeker route");
+    if (token) {
+      if (account_type === "job_seeker") {
+        return NextResponse.next();
+      } else {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    } else {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
+
+  // Handle seeker dashboard routes
   if (seekerDashboardRoutes.some((route) => pathname.startsWith(route))) {
     console.log("Seeker dashboard route");
     if (token) {
@@ -63,31 +104,22 @@ export function middleware(request: NextRequest) {
         return NextResponse.next();
       }
     } else {
-      return NextResponse.next();
+      return NextResponse.redirect(new URL("/", request.url));
     }
   }
-  // Redirect unauthenticated users to login
-  if (!token) {
-    console.log("No token found");
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
 
-  // Protect hirer routes
+  // Handle hirer routes
   if (hirerRoutes.some((route) => pathname.startsWith(route))) {
     console.log("Hirer route");
-    if (account_type !== "job_hirer") {
+    if (token) {
+      if (account_type === "job_hirer") {
+        return NextResponse.next();
+      } else {
+        return NextResponse.redirect(new URL("/seeker-dashboard", request.url));
+      }
+    } else {
       return NextResponse.redirect(new URL("/", request.url));
     }
-    return NextResponse.next();
-  }
-
-  // Protect seeker routes
-  if (seekerRoutes.some((route) => pathname.startsWith(route))) {
-    console.log("Seeker route");
-    if (account_type !== "job_seeker") {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-    return NextResponse.next();
   }
 
   console.log("No route matched");

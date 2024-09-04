@@ -1,4 +1,4 @@
-import ProfileCard from "@/Components/ProfileCard";
+import ProfileCard from "@/Components/Cards/ProfileCard";
 import { CgScrollH } from "react-icons/cg";
 import { dashboardDetails } from "@/lib/actions/recruiter.actions";
 

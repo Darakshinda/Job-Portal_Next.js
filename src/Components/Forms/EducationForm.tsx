@@ -1,9 +1,9 @@
 "use client";
 
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import EducationSelect from "../EducationSelect";
-import SignupFormInput from "./SignupFormInput";
-import SearchSelectDropdown from "./SearchSelectDropdown";
+import CollegeSelect from "./Inputs/apiLinked/CollegeSelect";
+import SignupFormInput from "./Inputs/SignupFormInput";
+import SearchSelectDropdown from "./Custom/SearchSelectDropdown";
 import degreeOpns from "@/constants/data/degree.json";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
@@ -18,10 +18,11 @@ type Education = {
   degree?: string;
   major?: string;
   year_of_graduation?: number | null;
-  gpa?: number;
+  gpa?: number | null;
 };
 
 interface EducationFormProps {
+  onSubmitArrays: Function;
   setEducationArray: Function;
   defaultPostEditFormInputCls?: string;
   dropdown?: Dispatch<SetStateAction<boolean>>;
@@ -31,6 +32,7 @@ interface EducationFormProps {
 }
 
 const EducationForm = ({
+  onSubmitArrays,
   setEducationArray,
   defaultPostEditFormInputCls,
   dropdown,
@@ -39,23 +41,23 @@ const EducationForm = ({
   setIsEditing,
 }: EducationFormProps) => {
   const {
-    register,
     control,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<EducationSchema>({
     resolver: zodResolver(educationSchema),
     mode: "onChange",
+    defaultValues: {
+      year_of_graduation: new Date().getFullYear(),
+      gpa: 0,
+    },
   });
 
   const [educationFormData, setEducationFormData] = useState<Education>({
     college_name: "",
     degree: "",
     major: "",
-    // year_of_graduation: new Date().getFullYear() - 100,
-    // gpa: 0,
   });
   const [educationFormReset, setEducationFormReset] = useState(false);
 
@@ -67,58 +69,62 @@ const EducationForm = ({
     }
     setValue("year_of_graduation", formData?.year_of_graduation!);
     setValue("gpa", formData?.gpa!);
-  }, [formData]);
+  }, [formData]); // do not add setValue in the dependency array, that may cause the variable sized argument error
 
   const handleEducationChange = (key: string, value: string | boolean) => {
-    // if (key === "is_studying" && value === true) {
-    //   setEducationFormData((prevState) => ({
-    //     ...prevState,
-    //     [key]: value,
-    //   }));
-    //   setValue("year_of_graduation", null);
-    // } else {
     setEducationFormData((prevState) => ({
       ...prevState,
       [key]: value,
     }));
-    // }
   };
 
   const handleAddEducation = (data: EducationSchema) => {
     console.log("submitting");
-    const finalEdu = {
+
+    const finalFormData = {
       ...educationFormData,
       ...data,
     };
-    console.log("finalFormData", finalEdu); //To add to backend
+
+    let updatedEducationArray: Education[] = [];
+
     if (index !== undefined) {
+      // Editing an existing entry
       setEducationArray((prev: Education[]) => {
-        prev[index] = finalEdu;
-        return [...prev];
+        const updatedArray = [...prev];
+        updatedArray[index] = finalFormData;
+        updatedEducationArray = updatedArray;
+        return updatedArray;
       });
     } else {
-      setEducationArray((prev: Education[]) => [...prev, finalEdu]);
+      // Adding a new entry
+      setEducationArray((prev: Education[]) => {
+        const updatedArray = [...prev, finalFormData];
+        updatedEducationArray = updatedArray;
+        return updatedArray;
+      });
     }
 
-    dropdown && dropdown(true); // show add Education button
-    setIsEditing && setIsEditing(false); // hide form after editing
+    // Call onSubmitArrays with the updated education array
+    if (onSubmitArrays) {
+      onSubmitArrays(undefined, updatedEducationArray);
+    }
 
-    // setEducationArray((prev: Education[]) => [...prev, finalEdu]);
-    // dropdown(false);
+    dropdown && dropdown(true);
+    setIsEditing && setIsEditing(false);
   };
 
   const handleEducationFormReset = () => {
     console.log("resetting experience form");
     setEducationFormReset(true);
+    setValue("year_of_graduation", null);
+    setValue("gpa", null);
     setEducationFormData({
       college_name: "",
       degree: "",
       major: "",
     });
   };
-
-  // console.log("errors", errors);
-  // console.log(watch("year_of_graduation"));
 
   useEffect(() => {
     console.log("educationFormData", educationFormData);
@@ -131,7 +137,7 @@ const EducationForm = ({
           <label className="text-gray-500 font-semibold block mb-1.5 me-1.5">
             University <span className="text-red-500">*</span>
           </label>
-          <EducationSelect
+          <CollegeSelect
             handle={(val: string) => handleEducationChange("college_name", val)}
             val={
               formData?.college_name !== ""
@@ -158,9 +164,6 @@ const EducationForm = ({
               onSingleChange={handleEducationChange}
               multiple={false}
             />
-            {/* {errors.degree && (
-                <p className="text-red-500">{errors.degree.message}</p>
-              )} */}
           </div>
 
           <div className="flex-1 flex flex-col justify-center w-full">
@@ -171,14 +174,10 @@ const EducationForm = ({
               label="Graduation"
               placeholder="20xx"
               cls={defaultPostEditFormInputCls}
-              // register={register}
               control={control}
-              errors={errors.year_of_graduation}
-              req={false}
+              error={errors.year_of_graduation}
+              req={true}
             />
-            {/* {errors.year_of_graduation && (
-                <p className="text-red-500">{errors.year_of_graduation.message}</p>
-              )} */}
           </div>
         </div>
 
@@ -205,14 +204,10 @@ const EducationForm = ({
               label="CGPA"
               placeholder="Eg: 8.45"
               cls={defaultPostEditFormInputCls}
-              // register={register}
               control={control}
               req={true}
-              errors={errors.gpa}
+              error={errors.gpa}
             />
-            {/* {errors.gpa && (
-                <p className="text-red-500">{errors.gpa.message}</p>
-              )} */}
           </div>
         </div>
       </div>

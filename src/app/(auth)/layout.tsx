@@ -1,5 +1,3 @@
-import Footer from "@/Components/Footer";
-
 export default function AuthLayout({
   children,
 }: Readonly<{
@@ -8,7 +6,6 @@ export default function AuthLayout({
   return (
     <>
       <main className="h-screen bg-white w-full">{children}</main>
-      {/* <Footer /> */}
     </>
   );
 }

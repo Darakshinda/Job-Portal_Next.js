@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import axios from "axios";
-import Swal from "sweetalert2";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { loginFormSchema } from "@/lib/validator";
-import LoginFormInput from "@/Components/Forms/LoginFormInput";
+import LoginFormInput from "@/Components/Forms/Inputs/LoginFormInput";
 import { useRouter } from "next/navigation";
 import { FaUserAstronaut } from "react-icons/fa";
 import { RiLockPasswordLine } from "react-icons/ri";
@@ -72,6 +71,11 @@ const Login = () => {
         },
       });
 
+      swalSuccess({
+        title: "Login Successful",
+        type: "toast",
+      });
+
       axiosInstance
         .get("/accounts/profile")
         .then((response) => {
@@ -85,11 +89,6 @@ const Login = () => {
             expires: expires,
             sameSite: "strict",
             httpOnly: false,
-          });
-
-          swalSuccess({
-            title: "Login Successful",
-            type: "toast",
           });
 
           // Redirect the user to appropriate dashboard
@@ -223,11 +222,6 @@ const Login = () => {
                 </Link>
               );
             })}
-            {/* <div className=" p-1 rounded-lg bg-gradient-to-r from-blue-200 via-blue-300 to-blue-500">
-              <div className="bg-white rounded-md p-6">
-                Hover to See the Gradient Border Animation
-              </div>
-            </div> */}
           </div>
         </div>
       </div>

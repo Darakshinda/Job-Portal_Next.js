@@ -1,14 +1,13 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import CompanySelect from "../CompanySelect";
-import SearchSelectDropdown from "./SearchSelectDropdown";
+import CompanySelect from "../Forms/Inputs/apiLinked/CompanySelect";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import SignupFormInput from "./SignupFormInput";
-import { useForm } from "react-hook-form";
+import SignupFormInput from "./Inputs/SignupFormInput";
+import { Controller, useForm } from "react-hook-form";
 import { experienceSchema } from "@/lib/validator";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import ExperienceCard from "../ExperienceCard";
+import ExperienceCard from "@/Components/Cards/ExperienceCard";
 
 type ExperienceSchema = z.infer<typeof experienceSchema>;
 
@@ -22,6 +21,7 @@ type Experience = {
 };
 
 interface ExperienceFormProps {
+  onSubmitArrays: Function;
   setWorkExperienceArray: Function;
   defaultPostEditFormInputCls: string;
   dropdown?: Dispatch<SetStateAction<boolean>>;
@@ -31,6 +31,7 @@ interface ExperienceFormProps {
 }
 
 const ExperienceForm = ({
+  onSubmitArrays,
   setWorkExperienceArray,
   defaultPostEditFormInputCls,
   dropdown,
@@ -39,7 +40,6 @@ const ExperienceForm = ({
   setIsEditing,
 }: ExperienceFormProps) => {
   const {
-    register,
     control,
     handleSubmit,
     formState: { errors },
@@ -47,6 +47,10 @@ const ExperienceForm = ({
   } = useForm<ExperienceSchema>({
     resolver: zodResolver(experienceSchema),
     mode: "onChange",
+    defaultValues: {
+      title: "",
+      description: "",
+    },
   });
 
   const [experienceFormData, setExperienceFormData] = useState<Experience>({
@@ -60,7 +64,7 @@ const ExperienceForm = ({
   useEffect(() => {
     if (formData) {
       console.log("setting form Data");
-      // console.log("formData", formData);
+      console.log("formData", formData);
       setExperienceFormData(formData);
     }
     setValue("title", formData?.title!);
@@ -91,25 +95,50 @@ const ExperienceForm = ({
       ...experienceFormData,
       ...data,
     };
-    console.log("finalFormData", finalFormData);
 
     console.log("finalFormData", finalFormData); //To add to backend
+
+    // Update the workExperienceArray based on whether we're editing or adding a new entry
+    let updatedWorkExperienceArray: Experience[] = [];
+
     if (index !== undefined) {
+      // Editing an existing entry
       setWorkExperienceArray((prev: Experience[]) => {
-        prev[index] = finalFormData;
-        return [...prev];
+        const updatedArray = [...prev];
+        updatedArray[index] = finalFormData;
+        updatedWorkExperienceArray = updatedArray;
+        return updatedArray;
       });
     } else {
-      setWorkExperienceArray((prev: Experience[]) => [...prev, finalFormData]);
+      // Adding a new entry
+      setWorkExperienceArray((prev: Experience[]) => {
+        const updatedArray = [...prev, finalFormData];
+        updatedWorkExperienceArray = updatedArray;
+        return updatedArray;
+      });
     }
 
-    dropdown && dropdown(true); // show add Experience button
-    setIsEditing && setIsEditing(false); // hide the form
+    // Call onSubmitArrays with the updated workExperienceArray
+    if (onSubmitArrays) {
+      onSubmitArrays(updatedWorkExperienceArray);
+    }
+
+    // Update UI states
+    if (dropdown) {
+      dropdown(true); // Show the add Experience button
+    }
+    if (setIsEditing) {
+      setIsEditing(false); // Hide the form
+    }
+
+    setExperienceFormReset(false);
   };
 
   const handleExperienceFormReset = () => {
     console.log("resetting experience form");
     setExperienceFormReset(true);
+    setValue("title", "");
+    setValue("description", "");
     setExperienceFormData({
       company_name: "",
       start_date: null,
@@ -119,8 +148,11 @@ const ExperienceForm = ({
   };
 
   useEffect(() => {
-    console.log(experienceFormData);
-  }, [experienceFormData]);
+    console.log(experienceFormData.company_name);
+  }, [experienceFormData.company_name]);
+
+  const manualErrorCls =
+    "text-red-500 text-xs absolute font-semibold transition-all transform duration-300 absolute z-10 bg-red-50 rounded-b-md top-full px-2 py-0.5 before:content-[''] before:absolute before:w-2 before:h-2 before:bg-red-50 before:left-0 before:bottom-full after:content-[''] after:absolute after:z-10 after:w-2 after:h-2 after:bg-gray-50 after:rounded-bl-md after:border-l after:border-b after:border-gray-300 after:left-0 after:bottom-full";
 
   return (
     <form onSubmit={handleSubmit(handleAddWorkExperience)} className="w-full">
@@ -131,8 +163,8 @@ const ExperienceForm = ({
               Company Name <span className="text-red-500">*</span>
             </label>
             <CompanySelect
-              handle={(val: string) =>
-                handleExperienceChange("company_name", val)
+              handle={(value: string) =>
+                handleExperienceChange("company_name", value)
               }
               val={
                 formData?.company_name !== ""
@@ -152,17 +184,13 @@ const ExperienceForm = ({
               name="title"
               type="text"
               label="Title"
-              // register={register}
               control={control}
               placeholder="Eg: FrontEnd Developer"
               req={true}
               cls={defaultPostEditFormInputCls}
-              errors={errors.title}
+              error={errors.title}
             />
           </div>
-          {/* {errors.title && (
-                <p className="text-red-500">{errors.title.message}</p>
-              )} */}
         </div>
 
         <div className="flex flex-col sm:flex-row gap-x-6 gap-y-4 items-center">
@@ -174,11 +202,12 @@ const ExperienceForm = ({
             </label>
             <div className="flex items-center bg-gray-100 w-full rounded relative border border-gray-300 h-[2.6875rem]">
               <DatePicker
+                required
                 dateFormat="yyyy/MM/dd"
                 selected={
                   experienceFormData.start_date
                     ? new Date(experienceFormData.start_date)
-                    : new Date()
+                    : null
                 }
                 maxDate={new Date()}
                 onKeyDown={(e) => e.preventDefault()}
@@ -192,16 +221,13 @@ const ExperienceForm = ({
                     })
                   )
                 }
-                className="input-field pl-3 caret-transparent"
+                className="input-field pl-3 caret-transparent rounded"
                 wrapperClassName="datePicker"
                 showYearDropdown
                 showMonthDropdown
                 dropdownMode="select"
               />
             </div>
-            {/* {errors.start_date && (
-                <p className="text-red-500">{errors.start_date.message}</p>
-              )} */}
           </div>
 
           {!experienceFormData.currently_working && (
@@ -211,6 +237,7 @@ const ExperienceForm = ({
               </label>
               <div className="flex items-center bg-gray-100 w-full rounded relative border border-gray-300 h-[2.6875rem]">
                 <DatePicker
+                  required={!experienceFormData.currently_working}
                   dateFormat="yyyy/MM/dd"
                   selected={
                     experienceFormData.end_date
@@ -230,13 +257,13 @@ const ExperienceForm = ({
                     )
                   }
                   onKeyDown={(e) => e.preventDefault()}
-                  className="input-field pl-3 caret-transparent"
+                  className="input-field pl-3 caret-transparent rounded"
                   wrapperClassName="datePicker"
+                  showYearDropdown
+                  showMonthDropdown
+                  dropdownMode="select"
                 />
               </div>
-              {/* {errors.end_date && (
-                  <p className="text-red-500">{errors.end_date.message}</p>
-                )} */}
             </div>
           )}
         </div>
@@ -258,7 +285,7 @@ const ExperienceForm = ({
             </label>
           </div>
         </div>
-        <div className="flex flex-col w-full gap-1">
+        <div className="flex flex-col w-full gap-1 relative">
           <label
             htmlFor="description"
             className="w-full text-gray-500 text-base font-semibold"
@@ -266,21 +293,25 @@ const ExperienceForm = ({
             Work Description
             <span className="text-red-500 ms-1.5">*</span>
           </label>
-          <textarea
-            {...register("description")}
-            //   value={experienceFormData.description}
+          <Controller
             name="description"
-            id="description"
-            rows={6}
-            //   onChange={(e) =>
-            //     handleExperienceChange("description", e.target.value)
-            //   }
-            className="bg-gray-100 border border-gray-300 text-gray-800 rounded w-full placeholder:text-sm px-4 py-3 min-h-28 max-h-60 placeholder:italic placeholder-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
-            placeholder="Tell us more about your work experience"
+            control={control}
+            render={({ field }) => (
+              <textarea
+                {...field}
+                name="description"
+                id="description"
+                rows={6}
+                className="textarea bg-gray-50 border border-gray-300 text-gray-800 rounded w-full placeholder:text-sm px-4 py-3 min-h-28 max-h-60 placeholder:italic placeholder-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+                placeholder="Tell us more about your work experience"
+              />
+            )}
           />
-          {errors.description && (
-            <p className="text-red-500">{errors.description.message}</p>
-          )}
+          <p
+            className={`${manualErrorCls} ${errors.description ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}`}
+          >
+            {errors.description?.message}
+          </p>
         </div>
       </div>
 

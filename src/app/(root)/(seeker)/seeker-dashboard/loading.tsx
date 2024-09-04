@@ -1,4 +1,4 @@
-import Skeleton from "@/app/(root)/(recruiter)/postedJobs/skeleton";
+import Skeleton from "@/Components/Loaders/Skeleton";
 
 export default function Loading() {
   return <Skeleton />;

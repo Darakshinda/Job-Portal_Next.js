@@ -100,7 +100,7 @@ export default function Home() {
             initial="hidden"
             animate="visible"
             variants={slideInFromLeft}
-            transition={{ delay: 0, duration: 0.3, ease: "easeInOut" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
             whileHover={{ scale: 1.05, transition: { duration: 0.3 } }}
             className=" w-60 h-fit bg-white rounded-2xl transform md:absolute md:top-1/2 xl:left-[23%] lg:left-[18%] md:left-[15%] md:max-lg:ml-4 p-4 flex flex-col gap-1.5"
           >
@@ -140,7 +140,7 @@ export default function Home() {
             initial="hidden"
             animate="visible"
             variants={slideInFromLeft}
-            transition={{ delay: 0, duration: 0.3, ease: "easeInOut" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
             whileHover={{ scale: 1.05, transition: { duration: 0.3 } }}
             className=" w-48 h-fit bg-white select-none rounded-2xl transform md:absolute bottom-[15%] xl:left-[26%] lg:left-[20%] md:left-[15%] p-4 flex items-center gap-4"
           >
@@ -163,7 +163,7 @@ export default function Home() {
             initial="hidden"
             animate="visible"
             variants={slideInFromRight}
-            transition={{ delay: 0, duration: 0.3, ease: "easeInOut" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
             whileHover={{ scale: 1.05, transition: { duration: 0.3 } }}
             className="w-48 h-fit bg-white select-none rounded-2xl transform md:absolute top-1/2 xl:right-[23%] lg:right-[18%] md:right-[15%] md:max-lg:ml-4 p-4 flex items-center gap-3"
           >
@@ -184,7 +184,7 @@ export default function Home() {
             initial="hidden"
             animate="visible"
             variants={slideInFromRight}
-            transition={{ delay: 0, duration: 0.3, ease: "easeInOut" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
             whileHover={{ scale: 1.05, transition: { duration: 0.3 } }}
             className="w-fit h-fit bg-white select-none rounded-2xl transform md:absolute bottom-0 xl:right-[26%] lg:right-[20%] md:right-[15%] p-4"
           >

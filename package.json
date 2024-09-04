@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
+    "@radix-ui/react-slider": "^1.2.0",
     "axios": "^1.7.3",
     "cookies-next": "^4.2.1",
     "country-calling-code": "^0.0.3",

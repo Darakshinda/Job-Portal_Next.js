@@ -27,7 +27,7 @@ const config: Config = {
         Insomatte: ["Insomatte", "Inter", "sans-serif"],
       },
       backgroundImage: {
-        login: "url('/assets/images/login.jpeg')",
+        login: "url('/assets/images/login.jpg')",
         signup: "url('/assets/images/signup.webp')",
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
