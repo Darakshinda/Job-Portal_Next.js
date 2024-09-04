@@ -35,11 +35,12 @@ const Navbar = ({
           <>
             <Link
               href={`${accountType === "job_seeker" ? "/seeker-dashboard" : "/dashboard"}`}
-              className="sm:py-2 py-1 px-4 max-[400px]:hidden rounded-full transform transition-all ease-in-out duration-300 text-white
-              hover:-translate-y-1 focus-visible:-translate-y-1 hover:scale-110 focus-visible:scale-110 bg-blue-500/90 border-2 border-blue-500/90 hover:bg-blue-500 hover:border-blue-500 outline-none focus-visible:ring-2 ring-blue-300 focus-visible:ring-offset-2"
+              className="inline-block rounded-full bg-gray-300 from-purple-500 via-indigo-500 to-pink-500 bg-[length:_400%_400%] p-[2.5px] [animation-duration:_6s] animate-background hover:bg-gradient-to-r group"
             >
-              Dashboard
-              <span className="sr-only">Dashboard</span>
+              <span className="block rounded-full bg-blue-500 group-hover:bg-white px-4 py-1.5 font-medium text-white group-hover:text-blue-500 transition-colors duration-200">
+                Dashboard
+                <span className="sr-only">Dashboard</span>
+              </span>
             </Link>
 
             <button
@@ -53,12 +54,13 @@ const Navbar = ({
         ) : (
           <>
             <Link
-              href={"/seeker-dashboard"}
-              className="sm:py-2 py-1 px-4 max-[400px]:hidden rounded-full transform transition-all ease-in-out duration-300 text-white
-              hover:-translate-y-1 focus-visible:-translate-y-1 hover:scale-110 focus-visible:scale-110 bg-blue-500/90 border-2 border-blue-500/5 hover:bg-blue-500 hover:border-blue-500  outline-none focus-visible:ring-2 ring-blue-300 focus-visible:ring-offset-2 whitespace-nowrap"
+              href={`${accountType === "job_seeker" ? "/seeker-dashboard" : "/dashboard"}`}
+              className="inline-block rounded-full bg-gray-300 from-purple-500 via-indigo-500 to-pink-500 bg-[length:_400%_400%] p-[2.5px] [animation-duration:_6s] animate-background hover:bg-gradient-to-r group"
             >
-              Find Jobs <FaArrowRightLong className="inline-block" />
-              <span className="sr-only">Find Jobs</span>
+              <span className="block rounded-full bg-blue-500 group-hover:bg-white px-4 py-1.5 font-medium text-white group-hover:text-blue-500 transition-colors duration-200">
+                Find Jobs <FaArrowRightLong className="inline-block" />
+                <span className="sr-only">Find Jobs</span>
+              </span>
             </Link>
 
             <Link

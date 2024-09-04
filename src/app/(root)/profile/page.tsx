@@ -103,8 +103,8 @@ const ProfilePage = () => {
     : [];
 
   return (
-    <div className="w-full flex justify-center items-center min-h-screen bg-white min-[450px]:ps-[4.5rem]">
-      <div className="bg-[#fffff0] shadow-md rounded-lg sm:py-6 py-8 sm:px-12 px-4 max-w-5xl sm:my-8 min-[450px]:my-2.5 sm:mx-6 min-[450px]:mx-2.5 border border-gray-200">
+    <div className="w-full flex justify-center items-center min-h-screen bg-gray-50 min-[450px]:ps-[4.5rem]">
+      <div className="bg-white shadow-md rounded-lg sm:py-10 py-8 sm:px-12 px-4 max-w-5xl sm:my-8 min-[450px]:my-2.5 sm:mx-6 min-[450px]:mx-2.5 border border-gray-200">
         <div className="flex justify-between items-center mb-4 relative">
           <div className="flex items-center gap-2">
             <Image
@@ -118,7 +118,7 @@ const ProfilePage = () => {
               className="sm:w-16 sm:h-16 w-12 aspect-square rounded-full mr-2"
             />
             <div className="text-gray-700">
-              <h2 className="md:text-2xl sm:text-xl max-[450px]:text-base text-lg font-semibold">
+              <h2 className="md:text-2xl sm:text-xl max-[450px]:text-base text-lg font-semibold hover:text-blue-500 transition-colors duration-150">
                 {profileData.first_name} {profileData.last_name}
               </h2>
               <p className="text-gray-500 sm:text-base text-sm">

@@ -100,7 +100,7 @@ const Sidebar = ({ isHirer }: { isHirer: boolean }) => {
         <div className="fixed z-40 w-[100vw] h-[100dvh] inset-0 bg-black opacity-70 backdrop-blur-sm transition-opacity duration-1000"></div>
       )}
       <aside
-        className={`h-screen fixed z-50 transition-all duration-500 ${
+        className={`h-screen fixed z-50 transition-all duration-500 ease-out ${
           isOpen
             ? "sm:min-w-72 sm:max-w-72 min-w-52 max-w-52"
             : "min-w-[4.5rem] max-w-[4.5rem] max-[450px]:min-w-0 max-[450px]:max-w-0"
@@ -119,11 +119,11 @@ const Sidebar = ({ isHirer }: { isHirer: boolean }) => {
                 alt="Code Unity logo"
                 width={600}
                 height={90}
-                className="w-24 sm:w-32 sm:h-10 h-8 object-contain mx-4"
+                className={`w-24 sm:w-32 sm:h-10 h-8 object-contain mx-4 transition-all duration-700 ${isOpen ? "translate-x-0 opacity-100" : "max-[450px]:-translate-x-14 max-[450px]:opacity-0 translate-x-0"}`}
               />
             ) : (
               <p
-                className={`font-bold text-black my-2 transition-all duration-300 ${isOpen ? "-translate-x-0 opacity-100" : "max-[450px]:-translate-x-14 max-[450px]:opacity-0 translate-x-0"}`}
+                className={`font-bold text-black my-2 transition-all duration-300 ${isOpen ? "translate-x-0 opacity-100" : "max-[450px]:-translate-x-14 max-[450px]:opacity-0 translate-x-0"}`}
               >
                 &lt;/&gt;
               </p>
