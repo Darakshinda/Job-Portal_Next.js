@@ -166,13 +166,22 @@ const educationSchema = z.object({
 
 const generalSchema = z.object({
   achievements: z.string().optional(),
-  gender_self_describe: z
-    .string()
-    .min(1, { message: "Field must not be empty" })
-    .optional(),
   pronouns_self_describe: z
-    .string()
-    .min(1, { message: "Field must not be empty" })
+    .union([
+      z
+        .string()
+        .min(1, { message: "Field must not be empty" })
+        .max(30, { message: "Pronouns must be at most 30 characters long" }),
+      z.null(),
+    ])
+    .optional(),
+  gender_self_describe: z
+    .union([
+      z.string().min(1, { message: "Field must not be empty" }).max(50, {
+        message: "Pronouns must be at most 30 characters long",
+      }),
+      z.null(),
+    ])
     .optional(),
 });
 

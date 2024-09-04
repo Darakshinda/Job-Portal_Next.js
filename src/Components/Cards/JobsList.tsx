@@ -289,4 +289,7 @@ const JobsList: React.FC<SearchParams> = React.memo(
   }
 );
 
+// Add a displayName for better debugging
+JobsList.displayName = "JobsList";
+
 export default JobsList;

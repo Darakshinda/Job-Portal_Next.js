@@ -139,8 +139,8 @@ const EditProfilePage = () => {
   );
   const [zodGeneralFormData, setZodGeneralFormData] = useState<GeneralSchema>({
     achievements: "",
-    gender_self_describe: "",
-    pronouns_self_describe: "",
+    gender_self_describe: null,
+    pronouns_self_describe: null,
   });
 
   const [generalFormData, setGeneralFormData] = useState<General>({
@@ -162,7 +162,7 @@ const EditProfilePage = () => {
   const [aboutReset, setAboutReset] = useState(false);
   const [expAddButton, setExpAddButton] = useState(true);
   const [educationAddButton, setEducationAddButton] = useState(true);
-  const [identityDirty, setIdentityDirty] = useState(false);
+  const [identityFormDirty, setIdentityFormDirty] = useState(false);
 
   const {
     control: aboutControl,
@@ -189,6 +189,7 @@ const EditProfilePage = () => {
     handleSubmit: generalHandleSubmit,
     formState: { errors: generalErrors, isDirty: generalIsDirty },
     reset: generalFieldReset,
+    watch: generalFormWatch,
   } = useForm<GeneralSchema>({
     mode: "onChange",
     resolver: zodResolver(generalSchema),
@@ -216,13 +217,13 @@ const EditProfilePage = () => {
       [key]: value,
     }));
 
-    setIdentityDirty(true);
+    setIdentityFormDirty(true);
   };
 
   const handleAboutFormSubmit = (data: AboutSchema) => {
-    console.log("submitting about form");
-    console.log(data); //To add to backend
-    console.log(aboutFormData); //To add to backend
+    // console.log("submitting about form");
+    // console.log(data); //To add to backend
+    // console.log(aboutFormData); //To add to backend
     const totalFormData = {
       ...aboutFormData,
       ...data,
@@ -232,27 +233,27 @@ const EditProfilePage = () => {
 
   const handleAboutFormReset = () => {
     setAboutReset(true);
-    console.log("resetting about form");
+    // console.log("resetting about form");
     setAboutFormData(initialAboutFormData);
     aboutFieldReset(zodAboutFormData);
-    console.log(aboutFormData);
+    // console.log(aboutFormData);
   };
 
   const handleSocialProfilesFormSubmit = (data: SocialProfilesSchema) => {
-    console.log("submitting social profiles form");
-    console.log(data); //To add to backend
+    // console.log("submitting social profiles form");
+    // console.log(data); //To add to backend
     onSubmit(data);
   };
 
   const handleSocialProfilesFormReset = () => {
-    console.log("resetting social profiles form");
+    // console.log("resetting social profiles form");
     socialProfilesReset(zodSocialProfilesFormData);
   };
 
   const handleGeneralFormSubmit = (data: GeneralSchema) => {
-    console.log("submitting general form");
-    console.log(data);
-    console.log(generalFormData);
+    // console.log("submitting general form");
+    // console.log(data);
+    // console.log(generalFormData);
     const totalFormData = {
       ...generalFormData,
       ...data,
@@ -261,7 +262,7 @@ const EditProfilePage = () => {
   };
 
   const handleGeneralFormReset = () => {
-    console.log("resetting general form");
+    // console.log("resetting general form");
     setGeneralFormData(initialGeneralFormData);
     setZodGeneralFormData(zodGeneralFormData);
   };
@@ -274,20 +275,12 @@ const EditProfilePage = () => {
     return match ? match[0] : "0";
   };
 
-  useEffect(() => {
-    console.log("experience array", workExperienceArray);
-  }, [workExperienceArray]);
-
-  useEffect(() => {
-    console.log("education array", educationArray);
-  }, [educationArray]);
-
   const onSubmitArrays = async (
     updatedWorkExperienceArray?: WorkExperience[],
     updatedEducationArray?: Education[]
   ) => {
-    console.log(updatedWorkExperienceArray);
-    console.log(updatedEducationArray);
+    // console.log(updatedWorkExperienceArray);
+    // console.log(updatedEducationArray);
     const workExperienceToSubmit =
       updatedWorkExperienceArray ?? workExperienceArray;
     const educationToSubmit = updatedEducationArray ?? educationArray;
@@ -369,7 +362,7 @@ const EditProfilePage = () => {
     }
     formData.append("account_type", isHirer ? "job_hirer" : "job_seeker");
 
-    console.log("FormData: ", formData);
+    // console.log("FormData: ", formData);
 
     // Append additional fields
     // for (var i = 0; i < generalFormData.race_ethnicity!.length; i++) {
@@ -411,16 +404,23 @@ const EditProfilePage = () => {
         }
       ); //This is not the right way to do but formData object doesn't take number data type
 
-      console.log(response.data);
-      console.log(responsetwo.data);
+      // console.log(response.data);
+      // console.log(responsetwo.data);
 
       swalSuccess({ title: "Profile updated successfully", type: "toast" });
     } catch (error: any) {
-      console.log(error.response?.data || error);
-      swalFailed({
-        title: "Profile update failed. Please try again",
-        type: "toast",
-      });
+      // console.log(error.response?.data || error);
+      if (error.response?.data.profile_picture) {
+        swalFailed({
+          title: "Please upload a valid image file",
+          type: "toast",
+        });
+      } else {
+        swalFailed({
+          title: "Profile update failed. Please try again",
+          type: "toast",
+        });
+      }
     }
   };
 
@@ -505,8 +505,10 @@ const EditProfilePage = () => {
 
         const generalDetails = {
           achievements: response.data.achievements,
-          pronouns: response.data.pronouns,
-          gender: response.data.gender,
+          pronouns_self_describe: "",
+          gender_self_describe: "",
+          // pronouns_self_describe: response.data.pronouns_self_describe, // to be added in backend
+          // gender_self_describe: response.data.gender_self_describe, // to be added in backend
         };
         generalFieldReset(generalDetails);
         setZodGeneralFormData(generalDetails);
@@ -523,12 +525,13 @@ const EditProfilePage = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    console.log(
-      aboutFormData.profile_picture_url,
-      aboutFormData.profile_picture
-    );
-  }, [aboutFormData.profile_picture_url, aboutFormData.profile_picture]);
+  // useEffect(() => {
+  //   console.log("experience array", workExperienceArray);
+  // }, [workExperienceArray]);
+
+  // useEffect(() => {
+  //   console.log("education array", educationArray);
+  // }, [educationArray]);
 
   if (isLoading) {
     return (
@@ -558,8 +561,8 @@ const EditProfilePage = () => {
                 About
               </h1>
               <p className="text-sm">
-                Tell us about your background, and we'll connect you with the
-                opportunities that matter.
+                Tell us about your background, and we&apos;ll connect you with
+                the opportunities that matter.
               </p>
             </div>
 
@@ -1050,19 +1053,6 @@ const EditProfilePage = () => {
               </p>
             </h1>
 
-            {/* <textarea
-              id="achievements"
-              name="achievements"
-              rows={6}
-              value={generalFormData.achievements}
-              className="textarea bg-gray-50 border border-gray-300 text-gray-800 rounded w-full placeholder:text-sm px-4 py-3 min-h-28 max-h-60 placeholder:italic placeholder-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
-              placeholder="It's OK to brag - e.g. I launched 3 successful Facebook apps which in total reached 2M+ users and generated $100k+ in revenue. I built everything from the front-end to the back-end and everything in between."
-              onChange={(e) =>
-              {
-                handleGeneralChange("achievements", e.target.value);
-              }
-              }
-            /> */}
             <Controller
               name="achievements"
               control={generalControl}
@@ -1088,9 +1078,9 @@ const EditProfilePage = () => {
               <button
                 type="submit"
                 // onClick={handleGeneralFormSubmit}
-                onClick={() => {
-                  console.log(generalFormData.achievements);
-                }}
+                // onClick={() => {
+                //   console.log(generalFormData.achievements);
+                // }}
                 className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={generalFormData.achievements === ""}
               >
@@ -1123,7 +1113,7 @@ const EditProfilePage = () => {
 
           <div className="flex flex-col gap-y-3">
             <div className="flex flex-col sm:flex-row gap-x-6 gap-y-4 items-center">
-              <div className="flex flex-col justify-center w-full">
+              <div className="flex flex-col justify-center w-full relative">
                 <SearchSelectDropdown
                   label="Pronouns"
                   name="pronouns"
@@ -1142,7 +1132,7 @@ const EditProfilePage = () => {
                 </span>
               </div>
 
-              <div className="flex flex-col justify-center w-full">
+              <div className="flex flex-col justify-center w-full relative">
                 <SearchSelectDropdown
                   label="Gender"
                   name="gender"
@@ -1213,7 +1203,7 @@ const EditProfilePage = () => {
 
           <div
             className={`md:col-start-2 md:col-span-1 justify-self-center space-x-4 pt-2 transition-all duration-300 ${
-              generalIsDirty || identityDirty
+              generalIsDirty || identityFormDirty
                 ? "translate-y-0 opacity-100 scale-100"
                 : "-translate-y-full opacity-0 scale-0"
             }`}
@@ -1223,7 +1213,12 @@ const EditProfilePage = () => {
               disabled={
                 generalFormData.pronouns === "" ||
                 generalFormData.gender === "" ||
-                generalIsDirty
+                (generalFormData.pronouns === "Self-describe" &&
+                  (generalFormWatch("pronouns_self_describe") === "" ||
+                    undefined)) ||
+                (generalFormData.gender === "Self-describe" &&
+                  generalFormWatch("gender_self_describe") === "") ||
+                !identityFormDirty
               }
               className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg disabled:cursor-not-allowed disabled:opacity-50"
             >

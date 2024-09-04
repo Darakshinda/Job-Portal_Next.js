@@ -171,7 +171,7 @@ const EditJobForm = ({ params }: { params: { jobId: string } }) => {
         jobDescriptionError: "",
       }));
     }
-  }, [formData.desc]);
+  }, [formData.desc, isFormDirty]);
 
   useEffect(() => {
     if (
@@ -188,7 +188,7 @@ const EditJobForm = ({ params }: { params: { jobId: string } }) => {
         howToApplyError: "",
       }));
     }
-  }, [formData.how2apply]);
+  }, [formData.how2apply, isFormDirty]);
 
   useEffect(() => {
     if (Number(formData.minSalary) > Number(formData.maxSalary)) {

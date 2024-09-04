@@ -41,10 +41,10 @@ const UploadButton: React.FC<ImgProps> = ({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     const file = event.target.files?.[0];
-    console.log("File:", file);
+    // console.log("File:", file);
     if (file) {
       const imageUrl = URL.createObjectURL(file);
-      console.log("Image URL:", imageUrl);
+      // console.log("Image URL:", imageUrl);
       setBackgroundImg(imageUrl); // Update background image
       onChange(name, file); // Handle file upload logic
       setFlag && setFlag(true);
@@ -80,6 +80,7 @@ const UploadButton: React.FC<ImgProps> = ({
       {!backgroundImg && (
         <div className="flex flex-col w-full h-full items-center relative">
           <Image
+            loading="lazy"
             src="/assets/images/default-profile.webp"
             alt="Upload Icon"
             sizes="100%"

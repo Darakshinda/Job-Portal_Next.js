@@ -29,5 +29,5 @@
     ".next/types/**/*.ts",
     "src/app/(root)/profile/edit"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "src/stories"]
 }
