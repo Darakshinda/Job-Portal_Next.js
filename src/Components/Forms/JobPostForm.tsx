@@ -1,4 +1,5 @@
-import React, { Dispatch, SetStateAction, useEffect } from "react";
+import axios from "axios";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import PostFormInput from "./Inputs/PostFormInput";
 import SearchSelectDropdown from "./Custom/SearchSelectDropdown";
 import EmploymentTags from "@/constants/data/employmentType.json";
@@ -9,12 +10,13 @@ import QuillEditorComponent from "./Custom/QuillComponent";
 import SignupFormInput from "./Inputs/SignupFormInput";
 import BenefitOptions from "./Custom/BenefitOptions";
 import benefitOpns from "@/constants/data/benefits.json";
-import JobCard from "../Cards/JobCard";
 import {
   UseFormHandleSubmit,
   UseFormRegister,
   UseFormWatch,
 } from "react-hook-form";
+import PreviewModeModal from "../Modals/PreviewModeModal";
+import DotLoader from "../Loaders/DotLoader";
 
 type JobPostFormProps = {
   type: string;
@@ -32,6 +34,8 @@ type JobPostFormProps = {
   // common props
   // manual form data and error handling props
   currencyList: string[];
+  setCurrencyList: Dispatch<SetStateAction<string[]>>;
+  setCurrencyRates: Dispatch<SetStateAction<{ [key: string]: number }>>;
   formData: {
     emptype: string;
     primtg: string;
@@ -54,6 +58,7 @@ type JobPostFormProps = {
   setIsFormDirty: any;
   isDirty: boolean;
   isFormDirty: boolean;
+  isPosting: boolean;
 };
 
 const JobPostForm = ({
@@ -66,14 +71,18 @@ const JobPostForm = ({
   watch,
   errors,
   currencyList,
+  setCurrencyList,
+  setCurrencyRates,
   formData,
   setFormData,
   handleError,
   setIsFormDirty,
   isDirty,
   isFormDirty,
+  isPosting,
 }: JobPostFormProps) => {
   const LocationTags = locOpns.countries;
+  const [loaded, setLoaded] = useState(false);
 
   const handlePreview = () => {
     setPreviewMode((prev: boolean) => !prev);
@@ -103,6 +112,29 @@ const JobPostForm = ({
     }));
     setIsFormDirty(true);
   };
+
+  useEffect(() => {
+    const getVals = async () => {
+      const apiUrl =
+        "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json";
+
+      try {
+        const response = await axios.get(apiUrl);
+        // console.log("Fetched currency rates:", response.data);
+        const List = Object.keys(response.data.usd);
+        setCurrencyList(List);
+        const currencyRates = response.data.usd;
+        // console.log("Fetched currency rates:", currencyRates);
+        setCurrencyRates(currencyRates);
+      } catch (error) {
+        console.error("Failed to fetch currency rates:", error);
+      }
+
+      setLoaded(true);
+    };
+
+    if (currencyList.length === 0) getVals();
+  }, []);
 
   // To show a warning on reload request
   useEffect(() => {
@@ -324,6 +356,9 @@ const JobPostForm = ({
                   >
                     ?
                   </button>
+                  <span title="Required" className="text-red-500 inline-block">
+                    *
+                  </span>
                   <div className="absolute z-10 left-0 transform top-full translate-y-8 mb-2 max-w-sm bg-blue-100 text-gray-600 text-xs font-medium px-2 py-1 rounded opacity-0 peer-hover:opacity-100 peer-hover:translate-y-0 peer-hover:z-10 transition-all duration-300 ease-in-out pointer-events-none">
                     It&apos;s illegal to not share salary range on job posts
                     since 2021. Posts without salary will automatically show an
@@ -331,47 +366,57 @@ const JobPostForm = ({
                   </div>
                 </label>
 
-                {currencyList.length > 0 && (
-                  <SearchSelectDropdown
-                    name="currencyType"
-                    tags={currencyList}
-                    cls="w-20 px-2 py-0.5 bg-gray-50 text-gray-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
-                    onSingleChange={handleChange}
-                    placeholder="Currency"
-                    multiple={false}
-                    selected={formData.currencyType}
-                  />
+                {loaded ? (
+                  currencyList.length > 0 && (
+                    <SearchSelectDropdown
+                      name="currencyType"
+                      tags={currencyList}
+                      cls="w-24 px-2 py-0.5 bg-gray-50 text-gray-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic uppercase"
+                      onSingleChange={handleChange}
+                      placeholder="Currency"
+                      multiple={false}
+                      selected={formData.currencyType}
+                    />
+                  )
+                ) : (
+                  <div className="w-24 h-8 bg-gray-300 rounded animate-pulse"></div>
                 )}
               </div>
 
-              <div className="flex w-full justify-between relative items-center gap-2.5 mt-0.5">
-                <SignupFormInput
-                  id="minSalary"
-                  name="minSalary"
-                  type="number"
-                  placeholder="Min Salary"
-                  cls={postFormCls}
-                  handleChange={handleChange}
-                  req={true}
-                  value={type === "edit" ? formData.minSalary : ""}
-                />
-                <span className="text-lg italic"> to </span>
-                <SignupFormInput
-                  id="maxSalary"
-                  name="maxSalary"
-                  type="number"
-                  placeholder="Max Salary"
-                  cls={postFormCls}
-                  handleChange={handleChange}
-                  req={true}
-                  value={type === "edit" ? formData.maxSalary : ""}
-                />
-                <span
-                  className={`text-red-500 text-xs mt-1 font-semibold absolute ${handleError.minsalMaxsalError ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
-                >
-                  {handleError.minsalMaxsalError}
-                </span>
-              </div>
+              {loaded ? (
+                <div className="flex w-full justify-between relative items-center gap-2.5 mt-0.5">
+                  <SignupFormInput
+                    id="minSalary"
+                    name="minSalary"
+                    type="number"
+                    placeholder="Min Salary"
+                    cls={postFormCls}
+                    handleChange={handleChange}
+                    req={true}
+                    value={type === "edit" ? formData.minSalary : ""}
+                  />
+                  <span className="text-lg italic"> to </span>
+                  <SignupFormInput
+                    id="maxSalary"
+                    name="maxSalary"
+                    type="number"
+                    placeholder="Max Salary"
+                    cls={postFormCls}
+                    handleChange={handleChange}
+                    req={true}
+                    value={type === "edit" ? formData.maxSalary : ""}
+                  />
+                  <span
+                    className={`text-red-500 text-xs mt-1 font-semibold absolute ${handleError.minsalMaxsalError ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
+                  >
+                    {handleError.minsalMaxsalError}
+                  </span>
+                </div>
+              ) : (
+                <div className="w-full h-16">
+                  <DotLoader />
+                </div>
+              )}
             </div>
 
             <div>
@@ -430,7 +475,7 @@ const JobPostForm = ({
               <button
                 type="submit"
                 className="px-4 py-2 rounded-full bg-gray-200 hover:bg-blue-200 hover:text-blue-500 transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-gray-200 disabled:hover:text-gray-500"
-                disabled={!isDirty && !isFormDirty}
+                disabled={(!isDirty && !isFormDirty) || isPosting}
               >
                 Post
               </button>
@@ -463,43 +508,11 @@ const JobPostForm = ({
           {/* Overlay Background */}
           <div className="fixed inset-0 bg-black opacity-80 backdrop-blur-sm z-[60] transition-opacity duration-300"></div>
 
-          <div className="fixed inset-0 flex md:justify-center items-center z-[80] w-full overflow-auto">
-            <div className="min-w-[52rem] h-fit px-10 rounded-lg">
-              <h3 className="text-purple-600 font-bold text-3xl">Preview</h3>
-              <p className="text-gray-200 text-lg py-3">
-                Here is a preview of how your job post will look like, with the
-                details:
-              </p>
-              <JobCard
-                type="preview"
-                job={{
-                  company_name: watch && watch("company_name"),
-                  position: watch && watch("position"),
-                  emptype: formData.emptype,
-                  primtg: formData.primtg,
-                  tags: formData.tagsArray,
-                  locns: formData.locns,
-                  desc: formData.desc,
-                  minsal: Number(formData.minSalary),
-                  maxsal: Number(formData.maxSalary),
-                  how2apply: formData.how2apply,
-                  benefits: formData.benefitsArray,
-                  email4jobappl: watch && watch("email4jobappl"),
-                  apply_url: watch && watch("apply_url"),
-                }}
-                seekerside={false}
-              />
-
-              <div className="w-full flex mt-3">
-                <button
-                  className="inline-block bg-red-500 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg mx-auto"
-                  onClick={handlePreview}
-                >
-                  Go Back
-                </button>
-              </div>
-            </div>
-          </div>
+          <PreviewModeModal
+            watch={watch}
+            formData={formData}
+            handlePreview={handlePreview}
+          />
         </>
       )}
     </div>

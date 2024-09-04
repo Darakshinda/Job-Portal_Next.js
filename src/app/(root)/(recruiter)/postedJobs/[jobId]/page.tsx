@@ -17,6 +17,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { IoMdClose } from "react-icons/io";
+import CoverLetterModal from "@/Components/Modals/CoverLetterModal";
 
 interface Application {
   job: number;
@@ -206,28 +207,14 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
         <>
           <div className="fixed z-[60] w-[100vw] h-[100dvh] inset-0 bg-black opacity-70 backdrop-blur-sm transition-opacity duration-1000"></div>
 
-          <div className="overflow-y-auto overflow-x-hidden fixed z-[70] flex justify-center items-center w-full inset-0 h-full select-none">
-            <div className="relative p-4 w-full max-w-md h-auto">
-              <div className="relative p-4 flex flex-col w-full text-center bg-gray-100 rounded-lg shadow dark:bg-gray-800 sm:p-5">
-                <h2 className="text-gray-500 font-semibold w-full mb-4">
-                  Cover Letter
-                </h2>
-                <button className="absolute top-5 right-6">
-                  <IoMdClose
-                    size={24}
-                    className="text-red-500 "
-                    onClick={() => setIsCoverOpen(false)}
-                  />
-                </button>
-                <p>
-                  {jobDetails.applications[index].applicant_cover_letter ||
-                    "I'm interested in this opportunity and I believe I have the right skills for this opportunity."}
-                </p>
-              </div>
-            </div>
-          </div>
+          <CoverLetterModal
+            setIsCoverOpen={setIsCoverOpen}
+            jobDetails={jobDetails}
+            index={index}
+          />
         </>
       )}
+
       <h1 className="text-center lg:text-4xl md:text-3xl text-2xl font-bold text-gray-800 font-RadioGrotesk tracking-wide">
         {jobDetails.position || "Job Title"}
       </h1>
@@ -236,7 +223,7 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
         <h4 className="sm:text-lg text-base font-semibold text-gray-600 mb-1">
           {jobDetails.primary_tag || "Primary Tag"} -{" "}
           <span className="hover:text-blue-500 transition-colors duration-300">
-            {jobDetails.employee_type} Oppurtunity
+            {jobDetails.employee_type} Opportunity
           </span>
         </h4>
         <h5 className="text-sm font-semibold text-gray-400 sm:mb-2 mb-1">
@@ -255,9 +242,9 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
           <h2 className="block">
             <FaMoneyBillAlt size={18} className="inline me-1.5 text-gray-700" />
             <p className="text-gray-500 text-sm inline-block">
-              <span className="inline-block font-semibold">Salary -</span> ₹
-              {jobDetails.annual_salary_min || "Min"} -
-              {jobDetails.annual_salary_max || "Max"} LPA
+              <span className="inline-block font-semibold">Salary -</span> $
+              {jobDetails.annual_salary_min || "Min"}K -
+              {jobDetails.annual_salary_max || "Max"}K USD
             </p>
           </h2>
         </div>

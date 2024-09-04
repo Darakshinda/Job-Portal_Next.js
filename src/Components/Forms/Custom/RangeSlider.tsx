@@ -143,7 +143,7 @@ const RangeSlider = ({
           <SearchSelectDropdown
             name="currencyType"
             tags={currencyList}
-            cls="w-20 px-2 py-0.5 bg-gray-50 text-gray-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
+            cls="w-24 px-2 py-0.5 bg-gray-50 text-gray-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
             onSingleChange={handleCurrencyChange}
             selected={currencyType}
             placeholder="Currency"

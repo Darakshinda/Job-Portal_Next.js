@@ -100,7 +100,7 @@ const JobCard = ({
             <p className="inline-block sm:space-x-2.5 space-x-1 whitespace-nowrap">
               <IoCashOutline className="inline sm:w-6 w-4 aspect-square" />
               <span className="text-gray-500 sm:text-sm text-xs">
-                ₹ {job.minsal}-{job.maxsal} LPA
+                $ {job.minsal}-{job.maxsal} USD
               </span>
             </p>
           </div>

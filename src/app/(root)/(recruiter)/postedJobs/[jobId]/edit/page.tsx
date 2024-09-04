@@ -28,7 +28,7 @@ type FormData = {
   feedback: string;
 };
 
-const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
+const EditJobForm = ({ params }: { params: { jobId: string } }) => {
   const router = useRouter();
   const jobId = params.jobId;
   const baseurl =
@@ -53,6 +53,17 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
     { USD: 1 }
   );
 
+  const [isPosting, setIsPosting] = useState(false);
+  const [previewMode, setPreviewMode] = useState(false);
+  const [isFormDirty, setIsFormDirty] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  const [handleError, setHandleError] = useState({
+    jobDescriptionError: "",
+    howToApplyError: "",
+    minsalMaxsalError: "",
+  });
+
   const {
     register,
     handleSubmit,
@@ -68,16 +79,6 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
       email4jobappl: "",
       apply_url: "",
     },
-  });
-
-  const [previewMode, setPreviewMode] = useState(false);
-  const [isFormDirty, setIsFormDirty] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  const [handleError, setHandleError] = useState({
-    jobDescriptionError: "",
-    howToApplyError: "",
-    minsalMaxsalError: "",
   });
 
   benefitOpns.sort((a, b) => {
@@ -156,24 +157,6 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
 
   // To handle errors manually for minSal and maxSal
   useEffect(() => {
-    if (Number(formData.minSalary) > Number(formData.maxSalary)) {
-      // console.log("Min Salary should be less than Max Salary");
-      setHandleError((prevState) => {
-        return {
-          ...prevState,
-          minsalMaxsalError:
-            "Minimum salary should be less than maximum salary",
-        };
-      });
-    } else {
-      setHandleError((prevState) => ({
-        ...prevState,
-        minsalMaxsalError: "",
-      }));
-    }
-  }, [formData.minSalary, formData.maxSalary]);
-
-  useEffect(() => {
     if (
       (formData.desc === "" || formData.desc === "<p><br></p>") &&
       isFormDirty
@@ -208,25 +191,22 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
   }, [formData.how2apply]);
 
   useEffect(() => {
-    const getVals = async () => {
-      const apiKey = "6bec93c77b543a360c7e8995";
-      const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/USD`;
-
-      try {
-        const response = await axios.get(apiUrl);
-        const currencyRates = response.data.conversion_rates;
-        const List = Object.keys(currencyRates);
-        // console.log("Fetched currency rates:", currencyRates);
-
-        setCurrencyList(List);
-        setCurrencyRates(currencyRates);
-      } catch (error) {
-        console.error("Failed to fetch currency rates:", error);
-      }
-    };
-
-    if (currencyList.length === 0) getVals();
-  }, []);
+    if (Number(formData.minSalary) > Number(formData.maxSalary)) {
+      // console.log("Min Salary should be less than Max Salary");
+      setHandleError((prevState) => {
+        return {
+          ...prevState,
+          minsalMaxsalError:
+            "Minimum salary should be less than maximum salary",
+        };
+      });
+    } else {
+      setHandleError((prevState) => ({
+        ...prevState,
+        minsalMaxsalError: "",
+      }));
+    }
+  }, [formData.minSalary, formData.maxSalary]);
 
   const onSubmit = async (data: Schema) => {
     if (
@@ -235,6 +215,10 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
       handleError.howToApplyError
     )
       return;
+
+    if (isPosting) return;
+
+    setIsPosting(true);
 
     const token = localStorage.getItem("access_token");
     const url_job = `${baseurl}/jobs/${jobId}/update/`; // Update your endpoint
@@ -305,7 +289,8 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
           }
         )
         .then((response) => {
-          console.log(response.data);
+          // console.log(response.data);
+          // console.log("Job Post Updated Successfully");
           swalSuccess({
             title: "Job Post Updated Successfully",
             type: "toast",
@@ -313,13 +298,15 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
           router.push("/postedJobs");
         })
         .catch((error) => {
-          console.error("There was an error registering the job!", error);
+          // console.error("There was an error registering the job!", error);
           swalFailed({ title: "Error occurred at server 🤖", type: "toast" });
         });
     } catch (error) {
-      console.error("There was an error registering the job!", error);
+      // console.error("There was an error registering the job!", error);
       swalFailed({ title: "Error occurred at server 🤖", type: "toast" });
     }
+
+    setIsPosting(false);
   };
 
   return (
@@ -337,10 +324,13 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
           formData={formData}
           setFormData={setFormData}
           currencyList={currencyList}
+          setCurrencyList={setCurrencyList}
+          setCurrencyRates={setCurrencyRates}
           handleError={handleError}
           isDirty={isDirty}
           isFormDirty={isFormDirty}
           setIsFormDirty={setIsFormDirty}
+          isPosting={isPosting}
         />
       ) : (
         <div className="flex items-center justify-center w-full h-[100dvh]">
@@ -351,4 +341,4 @@ const EditJobPostPage = ({ params }: { params: { jobId: string } }) => {
   );
 };
 
-export default EditJobPostPage;
+export default EditJobForm;

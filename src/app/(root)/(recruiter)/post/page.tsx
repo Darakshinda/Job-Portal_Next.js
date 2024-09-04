@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { postJobSchema } from "@/lib/validator";
 import { swalFailed, swalSuccess } from "@/lib/helpers/swal";
-import { useRouter } from "next/navigation";
 import JobPostForm from "@/Components/Forms/JobPostForm";
 
 type Schema = z.infer<typeof postJobSchema>;
@@ -49,6 +49,7 @@ const JobForm = () => {
     { USD: 1 }
   );
 
+  const [isPosting, setIsPosting] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
   const [isFormDirty, setIsFormDirty] = useState(false);
 
@@ -127,27 +128,6 @@ const JobForm = () => {
     }
   }, [formData.minSalary, formData.maxSalary]);
 
-  useEffect(() => {
-    const getVals = async () => {
-      const apiKey = "6bec93c77b543a360c7e8995";
-      const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/USD`;
-
-      try {
-        const response = await axios.get(apiUrl);
-        const currencyRates = response.data.conversion_rates;
-        const List = Object.keys(currencyRates);
-        // console.log("Fetched currency rates:", currencyRates);
-
-        setCurrencyList(List);
-        setCurrencyRates(currencyRates);
-      } catch (error) {
-        console.error("Failed to fetch currency rates:", error);
-      }
-    };
-
-    if (currencyList.length === 0) getVals();
-  }, []);
-
   const onSubmit = async (data: Schema) => {
     if (
       handleError.minsalMaxsalError ||
@@ -155,6 +135,10 @@ const JobForm = () => {
       handleError.howToApplyError
     )
       return;
+
+    if (isPosting) return;
+
+    setIsPosting(true);
 
     const token = localStorage.getItem("access_token");
     const { company_name, position, email4jobappl, apply_url } = data;
@@ -187,6 +171,18 @@ const JobForm = () => {
       }
     }
 
+    // console.log(company_name, position, email4jobappl, apply_url);
+    // console.log(
+    //   minSalary,
+    //   maxSalary,
+    //   emptype,
+    //   primtg,
+    //   locns,
+    //   desc,
+    //   how2apply,
+    //   feedback
+    // );
+    // console.log(allTags, allBenefits);
     try {
       await axios
         .post(
@@ -225,23 +221,25 @@ const JobForm = () => {
           router.push("/postedJobs");
         })
         .catch((error) => {
-          console.error("There was an error registering the job!", error);
+          // console.error("There was an error registering the job!", error);
           // alert("Failed to register the job");
           swalFailed({ title: "Failed to register the job", type: "toast" });
         });
     } catch (error) {
-      console.error("There was an error registering the job!", error);
+      // console.error("There was an error registering the job!", error);
       // alert("Failed to register the job");
       swalFailed({
         title: "Server Error 🤖. Please try again",
         type: "toast",
       });
     }
+
+    setIsPosting(false);
   };
 
   // useEffect(() => {
-  //   console.log(formData.tagsArray);
-  // }, [formData.tagsArray]);
+  //   console.log(formData.currencyType);
+  // }, [formData.currencyType]);
 
   return (
     <JobPostForm
@@ -256,10 +254,13 @@ const JobForm = () => {
       formData={formData}
       setFormData={setFormData}
       currencyList={currencyList}
+      setCurrencyList={setCurrencyList}
+      setCurrencyRates={setCurrencyRates}
       handleError={handleError}
       isDirty={isDirty}
       isFormDirty={isFormDirty}
       setIsFormDirty={setIsFormDirty}
+      isPosting={isPosting}
     />
   );
 };
