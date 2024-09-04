@@ -29,6 +29,8 @@ interface EducationFormProps {
   formData?: Education;
   index?: number;
   setIsEditing?: Dispatch<SetStateAction<boolean>>;
+  educationArray?: Education[];
+  onSubmit?: Function;
 }
 
 const EducationForm = ({
@@ -39,6 +41,8 @@ const EducationForm = ({
   formData,
   index,
   setIsEditing,
+  educationArray,
+  onSubmit,
 }: EducationFormProps) => {
   const {
     control,

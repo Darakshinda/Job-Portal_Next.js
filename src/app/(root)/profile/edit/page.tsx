@@ -172,6 +172,7 @@ const EditProfilePage = () => {
   } = useForm<AboutSchema>({
     mode: "onChange",
     resolver: zodResolver(aboutSchema),
+    defaultValues: zodAboutFormData,
   });
 
   const {
@@ -182,6 +183,7 @@ const EditProfilePage = () => {
   } = useForm<SocialProfilesSchema>({
     mode: "onChange",
     resolver: zodResolver(socialProfilesSchema),
+    defaultValues: zodSocialProfilesFormData,
   });
 
   const {
@@ -193,6 +195,10 @@ const EditProfilePage = () => {
   } = useForm<GeneralSchema>({
     mode: "onChange",
     resolver: zodResolver(generalSchema),
+    defaultValues: {
+      pronouns_self_describe: "",
+      gender_self_describe: "",
+    },
   });
 
   const handleAboutChange = (key: string, value: string | boolean) => {
@@ -977,6 +983,8 @@ const EditProfilePage = () => {
                     setWorkExperienceArray={setWorkExperienceArray}
                     defaultPostEditFormInputCls={defaultPostEditFormInputCls}
                     dropdown={setExpAddButton}
+                    workExperienceArray={workExperienceArray}
+                    onSubmitFn={onSubmitArrays}
                   />
                 )}
               </div>
@@ -1028,6 +1036,10 @@ const EditProfilePage = () => {
                     setEducationArray={setEducationArray}
                     defaultPostEditFormInputCls={defaultPostEditFormInputCls}
                     dropdown={setEducationAddButton}
+                    educationArray={educationArray}
+                    onSubmit={() => {
+                      onSubmitArrays();
+                    }}
                   />
                 )}
               </div>

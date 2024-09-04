@@ -28,6 +28,8 @@ interface ExperienceFormProps {
   formData?: Experience;
   index?: number;
   setIsEditing?: Dispatch<SetStateAction<boolean>>;
+  workExperienceArray?: Experience[];
+  onSubmitFn: Function;
 }
 
 const ExperienceForm = ({
@@ -38,6 +40,8 @@ const ExperienceForm = ({
   formData,
   index,
   setIsEditing,
+  workExperienceArray,
+  onSubmitFn,
 }: ExperienceFormProps) => {
   const {
     control,
@@ -89,7 +93,7 @@ const ExperienceForm = ({
     }
   };
 
-  const handleAddWorkExperience = (data: ExperienceSchema) => {
+  const handleAddWorkExperience = async (data: ExperienceSchema) => {
     console.log("submitting");
     const finalFormData = {
       ...experienceFormData,
