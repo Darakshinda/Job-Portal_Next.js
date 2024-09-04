@@ -105,8 +105,6 @@ const SignupSeeker = () => {
     return match ? match[0] : "0";
   };
 
-  // console.log(formData);
-
   const {
     control,
     handleSubmit,
@@ -127,7 +125,6 @@ const SignupSeeker = () => {
   });
 
   const onSubmit = async (data: Schema) => {
-    // console.log("registering");
     const {
       first_name,
       last_name,
@@ -138,7 +135,7 @@ const SignupSeeker = () => {
       how_heard_about_codeunity,
     } = data;
     const { technical_skills, phone_number, years_of_experience } = formData;
-    // console.log(first_name, last_name, email, working_email, username, password, phone_number, how_heard_about_codeunity, looking_for, technical_skills);
+
     let skills = "";
     for (let i = 0; i < technical_skills.length; i++) {
       if (i === technical_skills.length - 1) {
@@ -165,7 +162,7 @@ const SignupSeeker = () => {
           skills,
         }
       );
-      // console.log("Registration successful:", response.data);
+
       swalSuccess({
         title: "Registration Successful",
         message: "You have registered successfully!",
@@ -179,16 +176,12 @@ const SignupSeeker = () => {
     }
   };
 
-  const SignupFormCls =
-    "relative mt-1 p-2 bg-gray-200 text-primary-700 rounded-lg border border-gray-300 outline-none focus:border-primary-500";
-
   return (
     <SignupForm
       type="Seeker"
       handleSubmit={handleSubmit}
       onSubmit={onSubmit}
       control={control}
-      defaultCls={SignupFormCls}
       errors={errors}
       handleChange={handleChange}
       formData={formData}

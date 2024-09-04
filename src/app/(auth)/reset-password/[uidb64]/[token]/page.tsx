@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import LoginFormInput from "@/Components/Forms/LoginFormInput";
+import LoginFormInput from "@/Components/Forms/Inputs/LoginFormInput";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { resetPasswordSchema } from "@/lib/validator";
 

@@ -23,14 +23,22 @@ const hirerRoutes = [
   "/postedJobs/:jobId/edit/:path*",
   "/payment",
   "/razorpay",
+  "/profile",
+  "/profile/edit",
 ];
 const seekerRoutes = ["/appliedJobs"];
 const profileRoutes = ["/profile", "/profile/edit"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get("token")?.value;
+  const token = request.cookies.get("access_token")?.value;
   const account_type = request.cookies.get("account_type")?.value;
+
+  // Allow public routes for everyone
+  if (publicRoutes.includes(pathname)) {
+    console.log("Public route");
+    return NextResponse.next();
+  }
 
   // Check for login routes first
   if (loginRoutes.some((route) => pathname.startsWith(route))) {
@@ -60,16 +68,11 @@ export function middleware(request: NextRequest) {
         return NextResponse.next();
       }
     } else {
-      return NextResponse.next();
+      return NextResponse.redirect(new URL("/", request.url));
     }
   }
-  // Redirect unauthenticated users to login
-  if (!token) {
-    console.log("No token found");
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
 
-  // Protect hirer routes
+  // Handle hirer routes
   if (hirerRoutes.some((route) => pathname.startsWith(route))) {
     console.log("Hirer route");
     if (account_type !== "job_hirer") {

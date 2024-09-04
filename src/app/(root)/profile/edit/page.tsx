@@ -1,48 +1,45 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import LoginFormInput from "@/Components/Forms/LoginFormInput";
 import {
   aboutSchema,
-  educationSchema,
   generalSchema,
   socialProfilesSchema,
 } from "@/lib/validator";
-import { FaGithub, FaLinkedin, FaTelegram, FaGlobe } from "react-icons/fa";
+import {
+  FaPlus,
+  FaGithub,
+  FaLinkedin,
+  FaTelegram,
+  FaGlobe,
+} from "react-icons/fa";
 import locOpns from "@/constants/data/location.json";
 import ExperienceTags from "@/constants/data/experience.json";
 import companyType from "@/constants/data/companytype.json";
-import SkillTags from "@/constants/data/tags.json";
-import ethnicity from "@/constants/data/ethinicity.json";
-import SignupFormInput from "@/Components/Forms/SignupFormInput";
-import SearchSelectDropdown from "@/Components/Forms/SearchSelectDropdown";
-import Image from "next/image";
-import MultiSelect from "@/Components/MultiSelect";
-import CompanySelect from "@/Components/CompanySelect";
-import "react-datepicker/dist/react-datepicker.css";
+import SkillTags from "@/constants/data/skillTags.json";
+import ethnicity from "@/constants/data/ethnicity.json";
+import LoginFormInput from "@/Components/Forms/Inputs/LoginFormInput";
+import SignupFormInput from "@/Components/Forms/Inputs/SignupFormInput";
+import CompanySelect from "@/Components/Forms/Inputs/apiLinked/CompanySelect";
+import SearchSelectDropdown from "@/Components/Forms/Custom/SearchSelectDropdown";
+import PdfUploadForm from "@/Components/Forms/Custom/ResumeUpload";
+import ImgUpload from "@/Components/Forms/Custom/ImgUpload";
+import MultiSelect from "@/Components/Forms/Custom/MultiSelect";
 import ExperienceForm from "@/Components/Forms/ExperienceForm";
 import EducationForm from "@/Components/Forms/EducationForm";
-import axios from "axios";
-import ExperienceCard from "@/Components/ExperienceCard";
-import { FaPlus } from "react-icons/fa";
-import EducationCard from "@/Components/EducationCard";
-import Swal from "sweetalert2";
-import ImgUpload from "@/Components/ImgUpload";
-import { set } from "date-fns";
-import { error } from "console";
-import Spinner from "@/Components/Spinner";
-import debounce from "lodash/debounce";
-import PdfUploadForm from "@/Components/Forms/ResumeUpload";
+import ExperienceCard from "@/Components/Cards/ExperienceCard";
+import EducationCard from "@/Components/Cards/EducationCard";
+import Spinner from "@/Components/Loaders/Spinner";
 import { swalFailed, swalSuccess } from "@/lib/helpers/swal";
+import "react-datepicker/dist/react-datepicker.css";
 
 const LocationTags = locOpns.countries;
 type AboutSchema = z.infer<typeof aboutSchema>;
 type SocialProfilesSchema = z.infer<typeof socialProfilesSchema>;
-type EducationSchema = z.infer<typeof educationSchema>;
-
 type GeneralSchema = z.infer<typeof generalSchema>;
 
 type About = {
@@ -56,7 +53,7 @@ type About = {
   designation?: string; // hirer
   years_of_experience: string; // seeker
   company_name: string; // hirer
-  skillsArray: string[]; // both
+  skillsArray: string[]; // seeker
   // primary_role: string;
   product_service: string; // hirer
   company_stage: string; // hirer
@@ -84,11 +81,11 @@ type Education = {
 
 type General = {
   achievements?: string;
-  pronouns?: string;
+  pronouns: string;
+  gender: string;
   pronounsSelfDescribe?: string;
-  gender?: string;
   genderSelfDescribe?: string;
-  race_ethnicity?: string[];
+  race_ethnicity: string[];
 };
 
 const EditProfilePage = () => {
@@ -108,9 +105,10 @@ const EditProfilePage = () => {
     first_name: "",
     last_name: "",
     email: "",
-    designation: "",
+    designation: null,
     textarea: "",
   });
+
   const [aboutFormData, setAboutFormData] = useState<About>({
     profile_picture: null,
     location: "",
@@ -134,16 +132,20 @@ const EditProfilePage = () => {
 
   const [initialGeneralFormData, setInitialGeneralFormData] = useState<General>(
     {
-      // achievements: "",
       pronouns: "",
       gender: "",
+      race_ethnicity: [],
     }
   );
+  const [zodGeneralFormData, setZodGeneralFormData] = useState<GeneralSchema>({
+    achievements: "",
+    gender_self_describe: "",
+    pronouns_self_describe: "",
+  });
 
   const [generalFormData, setGeneralFormData] = useState<General>({
-    achievements: "",
-    gender: "",
     pronouns: "",
+    gender: "",
     race_ethnicity: [],
   });
 
@@ -152,15 +154,15 @@ const EditProfilePage = () => {
   >([]);
   const [educationArray, setEducationArray] = useState<Education[]>([]);
 
-  const [aboutReset, setAboutReset] = useState(false);
-  const [identityDirty, setIdentityDirty] = useState(false);
-  const [aboutFormDirty, setAboutFormDirty] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isHirer, setIsHirer] = useState(false);
+  const [profilePicChanged, setProfilePicChanged] = useState(false);
+  const [resumeChanged, setResumeChanged] = useState(false);
+  const [aboutFormDirty, setAboutFormDirty] = useState(false);
+  const [aboutReset, setAboutReset] = useState(false);
   const [expAddButton, setExpAddButton] = useState(true);
   const [educationAddButton, setEducationAddButton] = useState(true);
-  const [profilePicChanged, setProfilePicChanged] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [resumeChanged, setResumeChanged] = useState(false);
+  const [identityDirty, setIdentityDirty] = useState(false);
 
   const {
     control: aboutControl,
@@ -175,7 +177,7 @@ const EditProfilePage = () => {
 
   const {
     register: socialProfilesRegister,
-    handleSubmit: socialProfilesHandleSubmit,
+    handleSubmit: socialProfilesSubmit,
     formState: { errors: socialProfilesErrors, isDirty: socialProfilesIsDirty },
     reset: socialProfilesReset,
   } = useForm<SocialProfilesSchema>({
@@ -186,10 +188,9 @@ const EditProfilePage = () => {
 
   const {
     control: generalControl,
-    // register: generalRegister,
     handleSubmit: generalHandleSubmit,
     formState: { errors: generalErrors, isDirty: generalIsDirty },
-    // watch,
+    reset: generalFieldReset,
   } = useForm<GeneralSchema>({
     mode: "onChange",
     resolver: zodResolver(generalSchema),
@@ -216,45 +217,24 @@ const EditProfilePage = () => {
   };
 
   const handleGeneralChange = (key: string, value: string | string[]) => {
-    if (key !== "achievements") {
-      setIdentityDirty(true);
-    }
     setGeneralFormData((prevState) => ({
       ...prevState,
       [key]: value,
     }));
+
+    setIdentityDirty(true);
   };
-
-  useEffect(() => {
-    console.log("experience array", workExperienceArray);
-  }, [workExperienceArray]);
-
-  // useEffect(() => {
-  //   console.log("submittting work experience");
-  //   onSubmit(workExperienceArray);
-  // }, [workExperienceArray]);
-
-  // useEffect(() => {
-  //   console.log("submittting education");
-  //   onSubmit(educationArray);
-  // }, [educationArray]);
-
-  useEffect(() => {
-    console.log("education array", educationArray);
-  }, [educationArray]);
 
   const handleAboutFormSubmit = (data: AboutSchema) => {
     console.log("submitting about form");
     console.log(data); //To add to backend
     console.log(aboutFormData); //To add to backend
-    const newFormData = {
+    const totalFormData = {
       ...aboutFormData,
       ...data,
     };
-    onSubmit(newFormData);
+    onSubmit(totalFormData);
   };
-
-  // console.log("about form errors: ", aboutErrors);
 
   const handleAboutFormReset = () => {
     setAboutReset(true);
@@ -279,196 +259,176 @@ const EditProfilePage = () => {
     console.log("submitting general form");
     console.log(data);
     console.log(generalFormData);
-    const newFormData = {
+    const totalFormData = {
       ...generalFormData,
       ...data,
     };
-    onSubmit(newFormData);
+    onSubmit(totalFormData);
   };
 
   const handleGeneralFormReset = () => {
     console.log("resetting general form");
     setGeneralFormData(initialGeneralFormData);
+    setZodGeneralFormData(zodGeneralFormData);
   };
 
   const yoeStringToNumber = (yoe: string): string => {
-    // Handle the specific case for "Less than 1 year"
     if (yoe === "Less than 1 year") {
       return "0";
     }
-
-    // Extract digits from the string using a regular expression
     const match = yoe.match(/\d+/);
-
-    // If a match is found, return it; otherwise, return "1" for the specific case
     return match ? match[0] : "0";
   };
 
-  // console.log("yoe: ", aboutFormData.years_of_experience);
+  useEffect(() => {
+    console.log("experience array", workExperienceArray);
+  }, [workExperienceArray]);
 
-  const onSubmitArrays = async () => {
-    if (!isLoading) {
-      const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
-      const access_token = localStorage.getItem("access_token");
-      console.log("onsubmitarrays");
-      try {
-        const response = await axios.put(
-          `${baseurl}/accounts/profile/`,
-          {
-            work_experience_details: workExperienceArray,
-            education_details: educationArray,
-            account_type: isHirer ? "job_hirer" : "job_seeker",
+  useEffect(() => {
+    console.log("education array", educationArray);
+  }, [educationArray]);
+
+  const onSubmitArrays = async (
+    updatedWorkExperienceArray?: WorkExperience[],
+    updatedEducationArray?: Education[]
+  ) => {
+    console.log(updatedWorkExperienceArray);
+    console.log(updatedEducationArray);
+    const workExperienceToSubmit =
+      updatedWorkExperienceArray ?? workExperienceArray;
+    const educationToSubmit = updatedEducationArray ?? educationArray;
+
+    const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
+    const access_token = localStorage.getItem("access_token");
+    try {
+      const response = await axios.put(
+        `${baseurl}/accounts/profile/`,
+        {
+          work_experience_details: workExperienceToSubmit,
+          education_details: educationToSubmit,
+          account_type: isHirer ? "job_hirer" : "job_seeker", // this is only for seeker
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
           },
-          {
-            headers: {
-              Authorization: `Bearer ${access_token}`,
-            },
-          }
-        );
-        // console.log(response.data);
-        if (Swal.isVisible()) return;
-        swalSuccess({
-          title: "Profile update successful",
-        });
-      } catch (error: any) {
-        console.log(error.response?.data || error);
-        swalFailed({
-          title: "Profile update failed. Please try again",
-          error: error.response?.data,
-        });
-      }
+        }
+      );
+      // console.log(response.data);
+      swalSuccess({ title: "Profile updated successfully", type: "toast" });
+    } catch (error: any) {
+      console.log(error.response?.data || error);
+      swalFailed({
+        title: "Profile update failed. Please try again",
+        type: "toast",
+      });
     }
   };
 
   const onSubmit = async (data: any) => {
-    if (!isLoading) {
-      const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
-      const access_token = localStorage.getItem("access_token");
+    const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
+    const access_token = localStorage.getItem("access_token");
 
-      const formData = new FormData();
+    const formData = new FormData();
 
-      if (profilePicChanged && aboutFormData.profile_picture) {
-        formData.append("profile_picture", aboutFormData.profile_picture);
-      }
+    if (profilePicChanged && aboutFormData.profile_picture) {
+      formData.append("profile_picture", aboutFormData.profile_picture);
+    }
 
-      if (resumeChanged && aboutFormData.resume) {
-        formData.append("resume", aboutFormData.resume);
-      }
+    if (resumeChanged && aboutFormData.resume) {
+      formData.append("resume", aboutFormData.resume);
+    }
 
-      let skills = "";
-      for (var i = 0; i < aboutFormData.skillsArray.length; i++) {
-        skills += aboutFormData.skillsArray[i];
-        if (i !== aboutFormData.skillsArray.length - 1) {
-          skills += ",";
-        }
-      }
-
-      // Append form data fields
-      Object.keys(data).forEach((key) => {
-        if (
-          key !== "profile_picture" &&
-          key !== "years_of_experience" &&
-          key !== "skillsArray" &&
-          key !== "work_experience_details" &&
-          key !== "education_details" &&
-          key !== "resume"
-        ) {
-          formData.append(key, data[key]);
-        }
-        if (key === "skillsArray") {
-          if (isHirer) {
-            formData.append("hiring_skills", skills);
-          } else {
-            formData.append("technical_skills", skills);
-          }
-        }
-      });
-
-      console.log("FormData: ", formData);
-
-      // Append additional fields
-      formData.append("account_type", isHirer ? "job_hirer" : "job_seeker");
-      // for (var i = 0; i < generalFormData.race_ethnicity!.length; i++) {
-      //   races += generalFormData.race_ethnicity![i];
-      //   if (i !== generalFormData.race_ethnicity!.length - 1) {
-      //     races += ",";
-      //   }
-      // }
-
-      // formData.append("race_ethnicity", races);
-
-      if (isHirer) {
-        formData.append("company_description", data.textarea);
-      } else {
-        formData.append("bio", data.textarea);
-        // formData.append("work_experience_details", JSON.stringify(workExperienceArray));
-        // formData.append("education_details", JSON.stringify(educationArray)); // Uncomment if you have educationArray
-      }
-
-      try {
-        const response = await axios.put(
-          `${baseurl}/accounts/profile/`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${access_token}`,
-            },
-          }
-        );
-
-        const responsetwo = await axios.put(
-          `${baseurl}/accounts/profile/`,
-          {
-            years_of_experience: yoeStringToNumber(
-              aboutFormData.years_of_experience
-            ),
-            account_type: isHirer ? "job_hirer" : "job_seeker",
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${access_token}`,
-            },
-          }
-        ); //This is not the right way to do but formData object doesn't take number data type
-
-        console.log(response.data);
-        console.log(responsetwo.data);
-
-        swalSuccess({
-          title: "Profile update successful",
-        });
-      } catch (error: any) {
-        console.log(error.response?.data || error);
-        swalFailed({
-          title: "Profile update failed. Please try again",
-          error: error.response?.data,
-        });
+    let skills = "";
+    for (var i = 0; i < aboutFormData.skillsArray.length; i++) {
+      skills += aboutFormData.skillsArray[i];
+      if (i !== aboutFormData.skillsArray.length - 1) {
+        skills += ",";
       }
     }
+
+    // Append form data fields
+    Object.keys(data).forEach((key) => {
+      if (
+        key !== "profile_picture" &&
+        key !== "years_of_experience" &&
+        key !== "skillsArray" &&
+        key !== "work_experience_details" &&
+        key !== "education_details" &&
+        key !== "resume"
+      ) {
+        formData.append(key, data[key]);
+      }
+      if (key === "skillsArray") {
+        if (isHirer) {
+          formData.append("hiring_skills", skills);
+        } else {
+          formData.append("technical_skills", skills);
+        }
+      }
+    });
+
+    if (isHirer) {
+      formData.append("company_description", data.textarea);
+    } else {
+      formData.append("bio", data.textarea);
+    }
+    formData.append("account_type", isHirer ? "job_hirer" : "job_seeker");
+
+    console.log("FormData: ", formData);
+
+    // Append additional fields
+    // for (var i = 0; i < generalFormData.race_ethnicity!.length; i++) {
+    //   races += generalFormData.race_ethnicity![i];
+    //   if (i !== generalFormData.race_ethnicity!.length - 1) {
+    //     races += ",";
+    //   }
+    // }
+
+    // formData.append("race_ethnicity", races);
+    // formData.append("work_experience_details", JSON.stringify(workExperienceArray));
+    // formData.append("education_details", JSON.stringify(educationArray)); // Uncomment if you have educationArray
+
+    try {
+      const response = await axios.put(
+        `${baseurl}/accounts/profile/`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+
+      const responsetwo = await axios.put(
+        `${baseurl}/accounts/profile/`,
+        {
+          years_of_experience: yoeStringToNumber(
+            aboutFormData.years_of_experience
+          ),
+          account_type: isHirer ? "job_hirer" : "job_seeker",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      ); //This is not the right way to do but formData object doesn't take number data type
+
+      console.log(response.data);
+      console.log(responsetwo.data);
+
+      swalSuccess({ title: "Profile updated successfully", type: "toast" });
+    } catch (error: any) {
+      console.log(error.response?.data || error);
+      swalFailed({
+        title: "Profile update failed. Please try again",
+        type: "toast",
+      });
+    }
   };
-
-  const defaultPostEditFormInputCls =
-    "bg-gray-100 mt-1 p-2 rounded border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic placeholder-gray-400";
-  const socialProfilesCls =
-    "peer py-3 px-4 ps-11 block w-full bg-gray-100 rounded-lg outline-none disabled:opacity-50 disabled:pointer-events-none placeholder:text-gray-400";
-
-  // const debounceOnSubmit = useRef(debounce(onSubmitArrays, 1000)).current;
-
-  // useEffect(() => {
-  //   if (!isLoading) {
-  //     // debounceOnSubmit();
-  //     onSubmitArrays();
-  //   }
-  // }, [workExperienceArray]);
-
-  // useEffect(() => {
-  //   if (!isLoading) {
-  //     // debounceOnSubmit();
-  //     onSubmitArrays();
-  //   }
-  // }, [educationArray]);
 
   useEffect(() => {
     function yoeToString(yoe: number): string {
@@ -483,9 +443,10 @@ const EditProfilePage = () => {
       }
     }
 
-    async function fetchData() {
+    const fetchData = async () => {
       const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
       const access_token = localStorage.getItem("access_token");
+
       try {
         const response = await axios.get(`${baseurl}/accounts/profile`, {
           headers: {
@@ -512,9 +473,9 @@ const EditProfilePage = () => {
           resume: null, //update this
           resume_url: response.data.resume,
         };
-        setAboutFormData(loadedAboutFormData);
         setInitialAboutFormData(loadedAboutFormData);
-        // console.log("Profile Picture URL: ", response.data.profile_picture);
+        setAboutFormData(loadedAboutFormData);
+
         const aboutDetails = {
           first_name: response.data.first_name,
           last_name: response.data.last_name,
@@ -522,7 +483,7 @@ const EditProfilePage = () => {
           designation:
             response.data.account_type === "job_hirer"
               ? response.data.designation
-              : "N/A",
+              : null,
           textarea:
             response.data.account_type === "job_hirer"
               ? response.data.company_description
@@ -540,17 +501,21 @@ const EditProfilePage = () => {
         socialProfilesReset(socialLinks);
         setZodSocialProfilesFormData(socialLinks);
 
-        const generalDetails = {
-          achievements: response.data.achievements, //doesn't exist for hirer
+        const loadedGeneralFormData = {
           pronouns: response.data.pronouns,
           gender: response.data.gender,
           race_ethnicity: response.data.race_ethnicity,
         };
-        setGeneralFormData(generalDetails);
-        setInitialGeneralFormData({
-          pronouns: generalDetails.pronouns,
-          gender: generalDetails.gender,
-        });
+        setInitialGeneralFormData(loadedGeneralFormData);
+        setGeneralFormData(loadedGeneralFormData);
+
+        const generalDetails = {
+          achievements: response.data.achievements,
+          pronouns: response.data.pronouns,
+          gender: response.data.gender,
+        };
+        generalFieldReset(generalDetails);
+        setZodGeneralFormData(generalDetails);
 
         setWorkExperienceArray(response.data.work_experience_details);
         setEducationArray(response.data.education_details);
@@ -559,9 +524,17 @@ const EditProfilePage = () => {
       } catch (error: any) {
         console.log(error.response?.data || error);
       }
-    }
+    };
+
     fetchData();
   }, []);
+
+  useEffect(() => {
+    console.log(
+      aboutFormData.profile_picture_url,
+      aboutFormData.profile_picture
+    );
+  }, [aboutFormData.profile_picture_url, aboutFormData.profile_picture]);
 
   if (isLoading) {
     return (
@@ -571,30 +544,38 @@ const EditProfilePage = () => {
     );
   }
 
+  const defaultPostEditFormInputCls =
+    "relative w-full mt-0.5 p-2 bg-gray-50 text-gray-800 rounded border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic";
+  const socialProfilesCls =
+    "peer py-2.5 px-4 ps-11 block w-full bg-gray-50 rounded border border-gray-300 outline-none placeholder:text-gray-400 focus-visible:ring-2";
+  const manualErrorCls =
+    "text-red-500 text-xs absolute font-semibold transition-all transform duration-300 absolute z-10 bg-red-50 rounded-b-md top-full px-2 py-0.5 before:content-[''] before:absolute before:w-2 before:h-2 before:bg-red-50 before:left-0 before:bottom-full after:content-[''] after:absolute after:z-10 after:w-2 after:h-2 after:bg-gray-50 after:rounded-bl-md after:border-l after:border-b after:border-gray-300 after:left-0 after:bottom-full";
+
   return (
-    <div className="flex-1 bg-white min-h-screen ps-20 ">
-      <div className="mx-auto my-14 max-w-5xl space-y-10 border-2 rounded-md p-6">
+    <div className="flex-1 flex justify-center bg-white min-h-screen min-[450px]:ps-[4.5rem] ">
+      <div className="lg:my-14 md:my-12 sm:my-10 my-6 md:mx-4 sm:mx-2 max-w-5xl space-y-10 sm:border-2 sm:rounded-md sm:p-6 p-3">
         <form
           className="grid md:grid-cols-[30%,1fr] max-md:grid-cols-1 gap-x-6 gap-y-4"
           onSubmit={handleAboutSubmit(handleAboutFormSubmit)}
         >
-          <div className="flex flex-col items-start gap-y-6">
+          <div className="flex flex-col items-start md:gap-y-10 sm:gap-y-8 gap-y-4">
             <div>
-              <h1 className="text-lg font-semibold text-gray-800 mb-2">
+              <h1 className="md:text-2xl text-lg font-semibold font-RadioGrotesk tracking-wide text-gray-800 mb-2">
                 About
               </h1>
               <p className="text-sm">
-                Tell us more about yourself so we could bring relevant
-                information to you
+                Tell us about your background, and we'll connect you with the
+                opportunities that matter.
               </p>
             </div>
 
             <div className="w-full flex justify-center">
               <ImgUpload
-                keyy="profile_picture"
+                name="profile_picture"
                 onChange={handleAboutChange}
-                val={aboutFormData.profile_picture_url}
-                setflg={setProfilePicChanged} //changes when profile pic is changed
+                Url={aboutFormData.profile_picture_url}
+                file={aboutFormData.profile_picture}
+                setFlag={setProfilePicChanged} //changes when profile pic is changed
               />
             </div>
           </div>
@@ -654,7 +635,7 @@ const EditProfilePage = () => {
                   />
                 </div>
               ) : (
-                <div className="flex flex-col justify-center w-full">
+                <div className="flex flex-col justify-center w-full relative">
                   <SearchSelectDropdown
                     selected={aboutFormData.location}
                     label="Location"
@@ -667,11 +648,11 @@ const EditProfilePage = () => {
                     multiple={false}
                     req={true}
                   />
-                  {aboutFormData.location === "" && (
-                    <span className="text-red-500 text-xs font-semibold">
-                      Location is required
-                    </span>
-                  )}
+                  <span
+                    className={`${manualErrorCls} ${aboutFormData.location === "" ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} `}
+                  >
+                    Location is required
+                  </span>
                 </div>
               )}
 
@@ -689,7 +670,7 @@ const EditProfilePage = () => {
                   />
                 </div>
               ) : (
-                <div className="flex flex-col justify-center w-full">
+                <div className="flex flex-col justify-center w-full relative">
                   <SearchSelectDropdown
                     selected={aboutFormData.years_of_experience}
                     label="Years of Experience"
@@ -702,38 +683,44 @@ const EditProfilePage = () => {
                     multiple={false}
                     req={false}
                   />
-                  {aboutFormData.years_of_experience === "" && (
-                    <span className="text-red-500 text-xs font-semibold">
-                      Years of experience is required
-                    </span>
-                  )}
+                  <span
+                    className={`${manualErrorCls} ${aboutFormData.years_of_experience === "" ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} `}
+                  >
+                    Years of experience is required
+                  </span>
                 </div>
               )}
             </div>
 
-            <div className="flex flex-col">
-              <SearchSelectDropdown
-                existingTags={aboutFormData.skillsArray}
-                label={isHirer ? "Looking for" : "Skills"}
-                name={isHirer ? "looking_for" : "skills"}
-                labelCls="text-gray-500 font-semibold relative flex items-center gap-2"
-                placeholder={isHirer ? "Looking for" : "Skills"}
-                cls={defaultPostEditFormInputCls}
-                tags={SkillTags}
-                onChange={handleSkillChange}
-                multiple={true}
-                req={false}
-              />
-              {aboutFormData.skillsArray?.length === 0 && (
-                <span className="text-red-500 text-xs font-semibold">
-                  {isHirer ? "Skills are required" : "Skills are required"}
+            {!isHirer && (
+              <div className="flex flex-col relative">
+                <SearchSelectDropdown
+                  existingTags={
+                    aboutFormData.skillsArray?.length > 0
+                      ? aboutFormData.skillsArray
+                      : []
+                  }
+                  label="Skills"
+                  name="skills"
+                  labelCls="text-gray-500 font-semibold relative flex items-center gap-2"
+                  placeholder="Skills"
+                  cls={defaultPostEditFormInputCls}
+                  tags={SkillTags}
+                  onChange={handleSkillChange}
+                  multiple={true}
+                  req={false}
+                />
+                <span
+                  className={`${manualErrorCls} ${aboutFormData.skillsArray?.length === 0 ? "-translate-y-0 opacity-100" : "translate-y-full opacity-0"} `}
+                >
+                  Skills are required
                 </span>
-              )}
-            </div>
+              </div>
+            )}
 
             {isHirer && (
               <div className="flex flex-col sm:flex-row gap-x-6 gap-y-4 items-center">
-                <div className="flex flex-col justify-center w-full">
+                <div className="flex flex-col justify-center w-full relative">
                   <SearchSelectDropdown
                     selected={aboutFormData.product_service}
                     label="Product/Service based"
@@ -745,14 +732,14 @@ const EditProfilePage = () => {
                     onSingleChange={handleAboutChange}
                     multiple={false}
                   />
-                  {aboutFormData.product_service === "" && (
-                    <span className="text-red-500 text-xs font-semibold">
-                      Product/Service is required
-                    </span>
-                  )}
+                  <span
+                    className={`${manualErrorCls} ${aboutFormData.product_service === "" ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} `}
+                  >
+                    This Field is required
+                  </span>
                 </div>
 
-                <div className="flex flex-col justify-center w-full">
+                <div className="flex flex-col justify-center w-full relative">
                   <SearchSelectDropdown
                     selected={aboutFormData.company_stage}
                     label="Company Stage"
@@ -764,16 +751,16 @@ const EditProfilePage = () => {
                     onSingleChange={handleAboutChange}
                     multiple={false}
                   />
-                  {aboutFormData.company_stage === "" && (
-                    <span className="text-red-500 text-xs font-semibold">
-                      Company stage is required
-                    </span>
-                  )}
+                  <span
+                    className={`${manualErrorCls} ${aboutFormData.company_stage === "" ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} `}
+                  >
+                    Company Stage is required
+                  </span>
                 </div>
               </div>
             )}
 
-            <div className="flex flex-col w-full gap-1">
+            <div className="flex flex-col w-full gap-1 relative">
               <label
                 htmlFor={isHirer ? "company_description" : "bio"}
                 className="w-full text-gray-500 text-base font-semibold"
@@ -786,12 +773,11 @@ const EditProfilePage = () => {
                 control={aboutControl}
                 render={({ field }) => (
                   <textarea
-                    // {...aboutControl.register("textarea")}
                     {...field}
                     name="textarea"
                     id="textarea"
                     rows={6}
-                    className="textarea bg-gray-100 border border-gray-300 text-gray-800 rounded w-full placeholder:text-sm px-4 py-3 min-h-28 max-h-60 placeholder:italic placeholder-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+                    className="textarea bg-gray-50 border border-gray-300 text-gray-800 rounded w-full placeholder:text-sm px-4 py-3 min-h-28 max-h-60 placeholder:italic placeholder-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
                     placeholder={
                       isHirer
                         ? "Tell us about your company"
@@ -801,7 +787,7 @@ const EditProfilePage = () => {
                 )}
               />
               <span
-                className={`text-red-500 text-xs font-semibold  ${aboutErrors.textarea ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
+                className={`${manualErrorCls} ${aboutErrors.textarea ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} `}
               >
                 {aboutErrors.textarea?.message}
               </span>
@@ -819,36 +805,48 @@ const EditProfilePage = () => {
             </div>
           </div>
 
-          {(aboutFormDirty || aboutIsDirty) && (
-            <div className="md:col-start-2 md:col-span-1 justify-self-center space-x-4 pt-2">
-              <button
-                type="submit"
-                className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg disabled:cursor-not-allowed disabled:opacity-50"
-                disabled={
-                  aboutFormData.location === "" ||
-                  aboutFormData.skillsArray.length === 0 ||
-                  aboutFormData.years_of_experience === ""
-                }
-              >
-                Save
-              </button>
+          <div
+            className={`md:col-start-2 md:col-span-1 justify-self-center space-x-4 pt-2 transition-all duration-300 ${
+              aboutFormDirty || aboutIsDirty
+                ? "translate-y-0 opacity-100 scale-100"
+                : "-translate-y-full opacity-0 scale-0"
+            }`}
+          >
+            <button
+              type="submit"
+              className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={
+                aboutFormData.location === "" ||
+                aboutFormData.skillsArray.length === 0 ||
+                aboutFormData.years_of_experience === ""
+              }
+            >
+              Save
+            </button>
 
-              <button
-                type="reset"
-                className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
-                onClick={handleAboutFormReset}
-              >
-                Reset
-              </button>
-            </div>
-          )}
+            <button
+              type="reset"
+              className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
+              onClick={handleAboutFormReset}
+            >
+              Reset
+            </button>
+          </div>
         </form>
 
         <form
           className="grid md:grid-cols-[30%,1fr] grid-cols-1 gap-x-6 gap-y-4"
-          onSubmit={socialProfilesHandleSubmit(handleSocialProfilesFormSubmit)}
+          onSubmit={socialProfilesSubmit(handleSocialProfilesFormSubmit)}
         >
-          <h1>Social Profiles</h1>
+          <div>
+            <h1 className="md:text-2xl text-lg font-semibold font-RadioGrotesk tracking-wide text-gray-800 mb-2">
+              Social Profiles
+            </h1>
+            <p className="text-sm text-pretty">
+              Let us know more about your passions and expertise to improve your
+              profile connections.
+            </p>
+          </div>
 
           <div className="flex flex-col gap-y-4">
             <LoginFormInput
@@ -861,10 +859,7 @@ const EditProfilePage = () => {
               placeholder="https://"
               icon={<FaGlobe />}
               req={true}
-              cls={
-                socialProfilesCls +
-                "  focus:outline-gray-700 focus:ring-gray-700"
-              }
+              cls={socialProfilesCls + " focus-visible:ring-gray-700"}
             />
             <LoginFormInput
               id="linkedin"
@@ -876,10 +871,7 @@ const EditProfilePage = () => {
               placeholder="https://linkedin.com/in/username"
               icon={<FaLinkedin />}
               req={true}
-              cls={
-                socialProfilesCls +
-                "  focus:outline-blue-700 focus:ring-blue-700"
-              }
+              cls={socialProfilesCls + "  focus-visible:ring-blue-700"}
             />
             <LoginFormInput
               id="github"
@@ -891,10 +883,7 @@ const EditProfilePage = () => {
               placeholder="https://github.com/username"
               icon={<FaGithub />}
               req={true}
-              cls={
-                socialProfilesCls +
-                "  focus:outline-purple-500 focus:ring-purple-500"
-              }
+              cls={socialProfilesCls + "  focus-visible:ring-purple-500"}
             />
             <LoginFormInput
               id="telegram"
@@ -906,47 +895,52 @@ const EditProfilePage = () => {
               placeholder="https://t.me/username"
               icon={<FaTelegram />}
               req={true}
-              cls={
-                socialProfilesCls +
-                "  focus:outline-blue-500 focus:ring-blue-500"
-              }
+              cls={socialProfilesCls + "  focus-visible:ring-blue-500"}
             />
           </div>
 
-          {socialProfilesIsDirty && (
-            <div className="md:col-start-2 md:col-span-1 justify-self-center space-x-4 pt-4">
-              <button
-                type="submit"
-                className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg disabled:cursor-not-allowed disabled:opacity-50"
-                disabled={
-                  !!(
-                    socialProfilesErrors.website ||
-                    socialProfilesErrors.linkedin ||
-                    socialProfilesErrors.github ||
-                    socialProfilesErrors.telegram
-                  )
-                }
-              >
-                Save
-              </button>
+          <div
+            className={`md:col-start-2 md:col-span-1 justify-self-center space-x-4 pt-2 transition-all duration-300 ${
+              socialProfilesIsDirty
+                ? "translate-y-0 opacity-100 scale-100"
+                : "-translate-y-full opacity-0 scale-0"
+            }`}
+          >
+            <button
+              type="submit"
+              className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={
+                !!(
+                  socialProfilesErrors.website ||
+                  socialProfilesErrors.linkedin ||
+                  socialProfilesErrors.github ||
+                  socialProfilesErrors.telegram
+                )
+              }
+            >
+              Save
+            </button>
 
-              <button
-                type="button"
-                onClick={handleSocialProfilesFormReset}
-                className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
-              >
-                Reset
-              </button>
-            </div>
-          )}
+            <button
+              type="button"
+              onClick={handleSocialProfilesFormReset}
+              className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
+            >
+              Reset
+            </button>
+          </div>
         </form>
 
         {!isHirer && (
           <>
             <div className="grid md:grid-cols-[30%,1fr] grid-cols-1 gap-x-6 gap-y-4">
               <div>
-                <h1>Experience</h1>
-                <p className="text-sm">Which companies have you worked with?</p>
+                <h1 className="md:text-2xl text-lg font-semibold font-RadioGrotesk tracking-wide text-gray-800 mb-2">
+                  Experience
+                </h1>
+                <p className="text-sm">
+                  Outline your professional experience and key roles.
+                </p>
               </div>
 
               <div className="flex flex-col items-start w-full gap-4">
@@ -962,7 +956,9 @@ const EditProfilePage = () => {
                       currently_working={workExperience.currently_working}
                       description={workExperience.description}
                       // prop drill
+                      workExperienceArray={workExperienceArray}
                       setWorkExperienceArray={setWorkExperienceArray}
+                      onSubmitArrays={onSubmitArrays}
                       defaultPostEditFormInputCls={defaultPostEditFormInputCls}
                     />
                   ))}
@@ -980,6 +976,7 @@ const EditProfilePage = () => {
                   </div>
                 ) : (
                   <ExperienceForm
+                    onSubmitArrays={onSubmitArrays}
                     setWorkExperienceArray={setWorkExperienceArray}
                     defaultPostEditFormInputCls={defaultPostEditFormInputCls}
                     dropdown={setExpAddButton}
@@ -992,10 +989,11 @@ const EditProfilePage = () => {
 
             <div className="grid md:grid-cols-[30%,1fr] grid-cols-1 gap-x-6 gap-y-4">
               <div>
-                <h1>Education</h1>
+                <h1 className="md:text-2xl text-lg font-semibold font-RadioGrotesk tracking-wide text-gray-800 mb-2">
+                  Education
+                </h1>
                 <p className="text-sm">
-                  Tell us more about yourself so we could bring relevant
-                  information to you.
+                  Provide details about your educational qualifications.
                 </p>
               </div>
 
@@ -1011,7 +1009,9 @@ const EditProfilePage = () => {
                       gpa={education.gpa}
                       major={education.major}
                       // prop drill
+                      educationArray={educationArray}
                       setEducationArray={setEducationArray}
+                      onSubmitArrays={onSubmitArrays}
                       defaultPostEditFormInputCls={defaultPostEditFormInputCls}
                     />
                   ))}
@@ -1029,6 +1029,7 @@ const EditProfilePage = () => {
                   </div>
                 ) : (
                   <EducationForm
+                    onSubmitArrays={onSubmitArrays}
                     setEducationArray={setEducationArray}
                     defaultPostEditFormInputCls={defaultPostEditFormInputCls}
                     dropdown={setEducationAddButton}
@@ -1051,47 +1052,71 @@ const EditProfilePage = () => {
             <h1>
               <label
                 htmlFor="achievements"
-                className="w-full text-gray-700 text-base font-semibold"
+                className="md:text-2xl text-lg font-semibold font-RadioGrotesk tracking-wide text-gray-800 inline-block mb-2"
               >
                 Achievements
               </label>
+
+              <p className="text-sm">
+                Detail the significant accomplishments that set you apart
+              </p>
             </h1>
 
-            <textarea
-              name="achievements"
+            {/* <textarea
               id="achievements"
+              name="achievements"
               rows={6}
               value={generalFormData.achievements}
-              className="bg-gray-100 border border-gray-300 text-gray-800 rounded w-full placeholder:text-sm px-4 py-3 min-h-28 max-h-60 placeholder:italic placeholder-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+              className="textarea bg-gray-50 border border-gray-300 text-gray-800 rounded w-full placeholder:text-sm px-4 py-3 min-h-28 max-h-60 placeholder:italic placeholder-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
               placeholder="It's OK to brag - e.g. I launched 3 successful Facebook apps which in total reached 2M+ users and generated $100k+ in revenue. I built everything from the front-end to the back-end and everything in between."
               onChange={(e) =>
-                handleGeneralChange("achievements", e.target.value)
+              {
+                handleGeneralChange("achievements", e.target.value);
               }
+              }
+            /> */}
+            <Controller
+              name="achievements"
+              control={generalControl}
+              render={({ field }) => (
+                <textarea
+                  {...field}
+                  name="achievements"
+                  id="achievements"
+                  rows={6}
+                  className="textarea bg-gray-50 border border-gray-300 text-gray-800 rounded w-full placeholder:text-sm px-4 py-3 min-h-28 max-h-60 placeholder:italic placeholder-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+                  placeholder="It's OK to brag - e.g. I launched 3 successful Facebook apps which in total reached 2M+ users and generated $100k+ in revenue. I built everything from the front-end to the back-end and everything in between."
+                />
+              )}
             />
 
-            {generalIsDirty && (
-              <div className="md:col-start-2 md:col-span-1 justify-self-center space-x-4 pt-4">
-                <button
-                  type="submit"
-                  // onClick={handleGeneralFormSubmit}
-                  onClick={() => {
-                    console.log(generalFormData.achievements);
-                  }}
-                  className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg disabled:cursor-not-allowed disabled:opacity-50"
-                  disabled={generalFormData.achievements === ""}
-                >
-                  Save
-                </button>
+            <div
+              className={`md:col-start-2 md:col-span-1 justify-self-center space-x-4 pt-2 transition-all duration-300 ${
+                generalIsDirty
+                  ? "translate-y-0 opacity-100 scale-100"
+                  : "-translate-y-full opacity-0 scale-0"
+              }`}
+            >
+              <button
+                type="submit"
+                // onClick={handleGeneralFormSubmit}
+                onClick={() => {
+                  console.log(generalFormData.achievements);
+                }}
+                className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={generalFormData.achievements === ""}
+              >
+                Save
+              </button>
 
-                <button
-                  type="reset"
-                  onClick={() => handleGeneralChange("achievements", "")}
-                  className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
-                >
-                  Reset
-                </button>
-              </div>
-            )}
+              <button
+                type="reset"
+                onClick={() => handleGeneralChange("achievements", "")}
+                className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
+              >
+                Reset
+              </button>
+            </div>
           </form>
         )}
 
@@ -1099,9 +1124,16 @@ const EditProfilePage = () => {
           className="grid md:grid-cols-[30%,1fr] grid-cols-1 gap-x-6 gap-y-4"
           onSubmit={generalHandleSubmit(handleGeneralFormSubmit)}
         >
-          <h1>Identity</h1>
+          <div>
+            <h1 className="md:text-2xl text-lg font-semibold font-RadioGrotesk tracking-wide text-gray-800 mb-2">
+              Identity
+            </h1>
+            <p className="text-sm">
+              Describe your personal and professional identity here.
+            </p>
+          </div>
 
-          <div className="flex flex-col gap-y-4">
+          <div className="flex flex-col gap-y-3">
             <div className="flex flex-col sm:flex-row gap-x-6 gap-y-4 items-center">
               <div className="flex flex-col justify-center w-full">
                 <SearchSelectDropdown
@@ -1115,11 +1147,11 @@ const EditProfilePage = () => {
                   multiple={false}
                   selected={generalFormData.pronouns}
                 />
-                {generalFormData.pronouns === "" && (
-                  <span className="text-red-500 text-xs font-semibold">
-                    Pronouns are required
-                  </span>
-                )}
+                <span
+                  className={`${manualErrorCls} ${generalFormData.pronouns === "" ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} `}
+                >
+                  Pronouns is required
+                </span>
               </div>
 
               <div className="flex flex-col justify-center w-full">
@@ -1140,11 +1172,11 @@ const EditProfilePage = () => {
                   multiple={false}
                   selected={generalFormData.gender}
                 />
-                {generalFormData.gender === "" && (
-                  <span className="text-red-500 text-xs font-semibold">
-                    Gender is required
-                  </span>
-                )}
+                <span
+                  className={`${manualErrorCls} ${generalFormData.gender === "" ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} `}
+                >
+                  Gender is required
+                </span>
               </div>
             </div>
 
@@ -1158,7 +1190,7 @@ const EditProfilePage = () => {
                     label="Describe your pronouns"
                     control={generalControl}
                     placeholder=""
-                    req={false}
+                    req={true}
                     cls={defaultPostEditFormInputCls}
                     error={generalErrors.pronouns_self_describe}
                   />
@@ -1174,7 +1206,7 @@ const EditProfilePage = () => {
                     label="Describe your gender"
                     control={generalControl}
                     placeholder=""
-                    req={false}
+                    req={true}
                     cls={defaultPostEditFormInputCls}
                     error={generalErrors.gender_self_describe}
                   />
@@ -1191,32 +1223,33 @@ const EditProfilePage = () => {
             />
           </div>
 
-          {(generalIsDirty || identityDirty) && (
-            <div className="md:col-start-2 md:col-span-1 justify-self-center space-x-4 pt-4">
-              <button
-                type="submit"
-                // onClick={handleGeneralFormSubmit}
-                // onClick={() => {
-                //   console.log(generalFormData);
-                // }}
-                disabled={
-                  generalFormData.pronouns === "" ||
-                  generalFormData.gender === ""
-                }
-                className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Save
-              </button>
+          <div
+            className={`md:col-start-2 md:col-span-1 justify-self-center space-x-4 pt-2 transition-all duration-300 ${
+              generalIsDirty || identityDirty
+                ? "translate-y-0 opacity-100 scale-100"
+                : "-translate-y-full opacity-0 scale-0"
+            }`}
+          >
+            <button
+              type="submit"
+              disabled={
+                generalFormData.pronouns === "" ||
+                generalFormData.gender === "" ||
+                generalIsDirty
+              }
+              className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Save
+            </button>
 
-              <button
-                type="reset"
-                onClick={handleGeneralFormReset}
-                className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
-              >
-                Reset
-              </button>
-            </div>
-          )}
+            <button
+              type="reset"
+              onClick={handleGeneralFormReset}
+              className="bg-blue-500 text-white font-bold px-8 py-2 rounded-lg"
+            >
+              Reset
+            </button>
+          </div>
         </form>
       </div>
     </div>

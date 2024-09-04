@@ -12,8 +12,8 @@ const Footer = () => {
           <Image
             src="/assets/icons/logo.svg"
             alt="Code Unity logo"
-            width={600}
-            height={90}
+            width={415}
+            height={60}
             className=" min-w-24 w-24 sm:min-w-32 sm:w-32 sm:h-10 h-8 object-contain"
           />
         </Link>

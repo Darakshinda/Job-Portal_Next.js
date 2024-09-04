@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { FaMoneyBillAlt } from "react-icons/fa";
-import { FaDeleteLeft, FaLocationDot } from "react-icons/fa6";
+import { FaLocationDot } from "react-icons/fa6";
 import { IoTimerOutline } from "react-icons/io5";
-import { FiDelete, FiUsers } from "react-icons/fi";
+import { FiUsers } from "react-icons/fi";
 import axios from "axios";
-import SkillTags from "@/constants/data/tags.json";
-import ApplicantCard from "@/Components/ApplicantCard";
-import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
+import SkillTags from "@/constants/data/skillTags.json";
+import ApplicantCard from "@/Components/Cards/ApplicantCard";
+import { MdDelete, MdEdit } from "react-icons/md";
 import Swal from "sweetalert2";
-import DeleteConfirmation from "@/Components/DeleteConfirmation";
-import SearchSelectDropdown from "@/Components/Forms/SearchSelectDropdown";
-import Spinner from "@/Components/Spinner";
+import DeleteConfirmation from "@/Components/Modals/DeleteConfirmation";
+import SearchSelectDropdown from "@/Components/Forms/Custom/SearchSelectDropdown";
+import Spinner from "@/Components/Loaders/Spinner";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -191,7 +191,7 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
     );
 
   return (
-    <section className="w-full min-h-screen bg-white py-4 sm:px-16 md:px-10 px-1">
+    <section className="w-full min-h-screen bg-white py-4 sm:px-6 md:px-10">
       {isModalOpen && (
         <>
           <div className="fixed z-[60] w-[100vw] h-[100dvh] inset-0 bg-black opacity-70 backdrop-blur-sm transition-opacity duration-1000"></div>
@@ -228,22 +228,22 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
           </div>
         </>
       )}
-      <h1 className="text-center text-4xl font-bold text-gray-800">
+      <h1 className="text-center lg:text-4xl md:text-3xl text-2xl font-bold text-gray-800 font-RadioGrotesk tracking-wide">
         {jobDetails.position || "Job Title"}
       </h1>
 
-      <div className="sm:mx-4 sm:my-6 my-2 sm:px-10 px-4 sm:py-6 py-2 border-2 border-gray-300 rounded-xl  relative">
-        <h4 className="text-lg font-semibold text-gray-600 mb-1">
+      <div className="sm:mx-4 sm:my-6 my-2 sm:px-10 px-4 sm:py-6 py-2 sm:border-2 border-t-2 sm:border-gray-300 sm:rounded-xl relative">
+        <h4 className="sm:text-lg text-base font-semibold text-gray-600 mb-1">
           {jobDetails.primary_tag || "Primary Tag"} -{" "}
           <span className="hover:text-blue-500 transition-colors duration-300">
             {jobDetails.employee_type} Oppurtunity
           </span>
         </h4>
-        <h5 className="text-sm font-semibold text-gray-400 mb-2">
+        <h5 className="text-sm font-semibold text-gray-400 sm:mb-2 mb-1">
           {jobDetails.company_name || "Company Name"}
         </h5>
 
-        <div className="my-3 flex flex-wrap items-center gap-x-10 gap-y-4">
+        <div className="sm:my-3 my-1.5 flex flex-wrap items-center gap-x-10 gap-y-1">
           <h2 className="block">
             <FaLocationDot size={18} className="inline me-1.5 text-gray-700" />
             <p className="text-gray-500 text-sm inline-block">
@@ -262,7 +262,7 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
           </h2>
         </div>
 
-        <div className="flex items-center gap-2 my-7">
+        <div className="flex items-center gap-2 sm:my-7 my-3">
           <span className="bg-gray-200 text-xs text-gray-600 px-1.5 py-1 rounded-lg">
             <IoTimerOutline size={14} className="inline me-1.5" />
             Posted {getTimePast(jobDetails.created_at)}
@@ -279,25 +279,24 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
           </span>
         </div>
 
-        <hr className="border-gray-200 border my-6" />
+        <hr className="border-gray-200 border sm:my-6 my-4" />
 
         <div className="absolute right-2 top-2 p-2 space-y-3">
           <Link
             href={`/postedJobs/${jobId}/edit`}
             title="Edit Job"
-            className="p-1 block outline-none border-2 border-gray-300 bg-gray-200/70 hover:bg-gray-300/60 rounded-lg"
+            className="p-1 block outline-none border-2 border-gray-300 bg-gray-100 hover:bg-gray-200 rounded-md"
           >
-            <MdOutlineEdit size={20} className="text-blue-500" />
+            <MdEdit size={20} className="text-blue-500" />
           </Link>
           <button
             title="Delete Job"
             onClick={() => {
-              // document.body.style.overflow = isModalOpen ? "hidden" : "auto";
               setIsModalOpen((curr) => !curr);
             }}
-            className="p-1 block outline-none border-2 border-gray-300 bg-gray-200/70 hover:bg-gray-300/60 rounded-lg"
+            className="p-1 block outline-none border-2 border-gray-300 bg-gray-100 hover:bg-gray-200 rounded-md"
           >
-            <MdOutlineDeleteForever size={20} className="text-red-500" />
+            <MdDelete size={20} className="text-red-500" />
           </button>
         </div>
 
@@ -305,17 +304,21 @@ const JobDetails = ({ params }: { params: { jobId: number } }) => {
           About the internship /Job
         </h2>
 
-        <article
-          dangerouslySetInnerHTML={{ __html: jobDetails.job_description }}
-        ></article>
+        <div className="sm:text-base text-sm">
+          <article
+            dangerouslySetInnerHTML={{ __html: jobDetails.job_description }}
+          ></article>
+        </div>
 
         <h2 className="text-base font-semibold text-blue-600 mt-6 mb-4">
           How to Apply
         </h2>
 
-        <article
-          dangerouslySetInnerHTML={{ __html: jobDetails.how_to_apply }}
-        ></article>
+        <div className="sm:text-base text-sm">
+          <article
+            dangerouslySetInnerHTML={{ __html: jobDetails.how_to_apply }}
+          ></article>
+        </div>
 
         <hr className="border-gray-200 border my-6" />
 
