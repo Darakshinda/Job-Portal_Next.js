@@ -21,6 +21,7 @@ const ResetPasswordConfirmPage: React.FC = () => {
     mode: "onChange",
     resolver: zodResolver(resetPasswordSchema),
   });
+
   const router = useRouter();
   const Params = useParams<{ uidb64: string; token: string }>();
   const uidb64 = Params.uidb64;

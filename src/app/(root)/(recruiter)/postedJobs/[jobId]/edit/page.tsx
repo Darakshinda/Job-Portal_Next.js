@@ -8,44 +8,64 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { postJobSchema } from "@/lib/validator";
-import { swalFailed, swalSuccess } from "@/lib/helpers/swal";
+import { swalFailed, swalSuccess, swalWarning } from "@/lib/helpers/swal";
 import JobPostForm from "@/Components/Forms/JobPostForm";
 import Spinner from "@/Components/Loaders/Spinner";
 
 type Schema = z.infer<typeof postJobSchema>;
 
 type FormData = {
-  emptype: string;
-  primtg: string;
-  tagsArray: string[];
-  locns: string;
-  desc: string;
-  minSalary: string;
-  maxSalary: string;
-  currencyType: string;
-  benefitsArray: string[];
-  how2apply: string;
-  feedback: string;
+  job_role: string;
+  job_description: string;
+  job_location: string; // need to make it as string[] later
+  industry: string;
+  employment_type: string;
+  experience_needed: string;
+  skills_required: string[];
+  benefits: string[];
+
+  how_to_apply: string;
+  apply_url: string;
+  application_deadline: string;
+
+  currency_type: string;
+  annual_salary_min: number;
+  annual_salary_max: number;
+
+  // prefetched data
+  company_name?: string;
+  company_photo?: File | null;
+  company_website?: string;
+  company_photo_url?: string;
 };
 
 const EditJobForm = ({ params }: { params: { jobId: string } }) => {
   const router = useRouter();
   const jobId = params.jobId;
-  const baseurl =
-    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000/api";
+  const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
 
   const [formData, setFormData] = useState<FormData>({
-    emptype: "",
-    primtg: "",
-    tagsArray: [],
-    locns: "",
-    desc: "",
-    minSalary: "",
-    maxSalary: "",
-    currencyType: "USD",
-    benefitsArray: [],
-    how2apply: "",
-    feedback: "",
+    job_role: "",
+    job_description: "",
+    job_location: "",
+    industry: "",
+    employment_type: "",
+    experience_needed: "",
+    skills_required: [],
+    benefits: [],
+
+    how_to_apply: "",
+    apply_url: "",
+    application_deadline: "",
+
+    currency_type: "USD",
+    annual_salary_min: 0,
+    annual_salary_max: 0,
+
+    company_name: "",
+    company_photo: null,
+    company_website: "",
+    company_photo_url: "",
   });
 
   const [currencyList, setCurrencyList] = useState<string[]>([]);
@@ -74,21 +94,17 @@ const EditJobForm = ({ params }: { params: { jobId: string } }) => {
     mode: "onChange",
     resolver: zodResolver(postJobSchema),
     defaultValues: {
-      company_name: "",
-      position: "",
-      email4jobappl: "",
+      job_role: "",
       apply_url: "",
     },
   });
 
   benefitOpns.sort((a, b) => {
-    const aInSubset = formData.benefitsArray!.includes(a);
-    const bInSubset = formData.benefitsArray!.includes(b);
+    const aInSubset = formData.benefits!.includes(a);
+    const bInSubset = formData.benefits!.includes(b);
 
     if (aInSubset && bInSubset) {
-      return (
-        formData.benefitsArray!.indexOf(a) - formData.benefitsArray!.indexOf(b)
-      );
+      return formData.benefits!.indexOf(a) - formData.benefits!.indexOf(b);
     } else if (aInSubset) {
       return -1;
     } else if (bInSubset) {
@@ -100,6 +116,35 @@ const EditJobForm = ({ params }: { params: { jobId: string } }) => {
 
   // To Fetch data of the job post
   useEffect(() => {
+    const fetchCompanyProfile = async () => {
+      const baseurl = process.env.NEXT_PUBLIC_BASE_URL; // Your base URL from environment variables
+      const access_token = localStorage.getItem("access_token"); // Access access_token from localStorage
+
+      try {
+        const response = await axios.get(
+          `${baseurl}/accounts/company-profile/`,
+          {
+            headers: {
+              Authorization: `Bearer ${access_token}`,
+            },
+          }
+        );
+        // console.log(response);
+
+        if (response.status === 200) {
+          setFormData((prevData) => ({
+            ...prevData,
+            company_name: response.data.company_name,
+            company_website: response.data.company_website,
+            company_photo: null, // this is done intentionally to avoid photo upload
+            company_photo_url: response.data.company_photo_url,
+          }));
+        }
+      } catch (error: any) {
+        console.error("Error fetching company profile", error);
+      }
+    };
+
     const fetchJobData = async () => {
       const access_token =
         typeof window !== "undefined"
@@ -107,42 +152,46 @@ const EditJobForm = ({ params }: { params: { jobId: string } }) => {
           : null;
 
       if (access_token) {
-        axios
-          .get(`${baseurl}/jobs/${jobId}/`, {
+        try {
+          const response = await axios.get(`${baseurl}/jobs/${jobId}/`, {
             headers: {
               Authorization: `Bearer ${access_token}`,
             },
-          })
-          .then((response) => {
-            // console.log(response.data);
-            reset({
-              company_name: response.data.company_name,
-              position: response.data.position,
-              email4jobappl: response.data.apply_email_address,
-              apply_url: response.data.apply_url,
-            });
-            setFormData({
-              emptype: response.data.employee_type,
-              primtg: response.data.primary_tag,
-              locns: response.data.location_restriction,
-              desc: response.data.job_description,
-              minSalary: response.data.annual_salary_min,
-              maxSalary: response.data.annual_salary_max,
-              currencyType: "USD",
-              how2apply: response.data.how_to_apply,
-              feedback: response.data.feedback,
-              tagsArray: splitStringByComma(response.data.tags),
-              benefitsArray: splitStringByComma(response.data.benefits),
-            });
-            setIsLoaded(true);
-          })
-          .catch((error) => {
-            console.log(error.code);
-            swalFailed({ title: "Failed to fetch job data 🤖", type: "toast" });
           });
+
+          // console.log(response.data);
+          reset({
+            job_role: response.data.job_role,
+            apply_url: response.data.apply_url,
+          });
+
+          setFormData((prevData) => ({
+            ...prevData,
+            job_role: response.data.job_role,
+            job_description: response.data.job_description,
+            job_location: response.data.job_location,
+            industry: response.data.industry,
+            employment_type: response.data.employment_type,
+            experience_needed: response.data.experience_needed,
+            skills_required: splitStringByComma(response.data.skills_required),
+            benefits: splitStringByComma(response.data.benefits),
+            how_to_apply: response.data.how_to_apply,
+            apply_url: response.data.apply_url,
+            application_deadline: response.data.application_deadline,
+            currency_type: "USD",
+            annual_salary_min: response.data.annual_salary_min,
+            annual_salary_max: response.data.annual_salary_max,
+          }));
+
+          setIsLoaded(true);
+        } catch (error: any) {
+          console.error(error);
+          swalFailed({ title: "Failed to fetch job data 🤖", type: "toast" });
+        }
       }
     };
 
+    fetchCompanyProfile();
     fetchJobData();
   }, [jobId, reset, baseurl]);
 
@@ -150,15 +199,19 @@ const EditJobForm = ({ params }: { params: { jobId: string } }) => {
     return inputString.split(",").map((tag) => tag.trim());
   };
 
-  const currencyInBaseUSD = (currency: string, amount: number) => {
-    const rate = currencyRates[currency];
+  const currencyInBaseUSD = (currencyType: string, amount: number) => {
+    // console.log(currencyType, amount);
+    const rate = currencyRates[currencyType];
+    // console.log(rate);
+    // console.log(Math.round(amount / rate));
     return Math.round(amount / rate);
   };
 
   // To handle errors manually for minSal and maxSal
   useEffect(() => {
     if (
-      (formData.desc === "" || formData.desc === "<p><br></p>") &&
+      (formData.job_description === "" ||
+        formData.job_description === "<p><br></p>") &&
       isFormDirty
     ) {
       setHandleError((prevState) => ({
@@ -171,11 +224,12 @@ const EditJobForm = ({ params }: { params: { jobId: string } }) => {
         jobDescriptionError: "",
       }));
     }
-  }, [formData.desc, isFormDirty]);
+  }, [formData.job_description, isFormDirty]);
 
   useEffect(() => {
     if (
-      (formData.how2apply === "" || formData.how2apply === "<p><br></p>") &&
+      (formData.how_to_apply === "" ||
+        formData.how_to_apply === "<p><br></p>") &&
       isFormDirty
     ) {
       setHandleError((prevState) => ({
@@ -188,10 +242,12 @@ const EditJobForm = ({ params }: { params: { jobId: string } }) => {
         howToApplyError: "",
       }));
     }
-  }, [formData.how2apply, isFormDirty]);
+  }, [formData.how_to_apply, isFormDirty]);
 
   useEffect(() => {
-    if (Number(formData.minSalary) > Number(formData.maxSalary)) {
+    if (
+      Number(formData.annual_salary_min) > Number(formData.annual_salary_max)
+    ) {
       // console.log("Min Salary should be less than Max Salary");
       setHandleError((prevState) => {
         return {
@@ -206,7 +262,7 @@ const EditJobForm = ({ params }: { params: { jobId: string } }) => {
         minsalMaxsalError: "",
       }));
     }
-  }, [formData.minSalary, formData.maxSalary]);
+  }, [formData.annual_salary_min, formData.annual_salary_max]);
 
   const onSubmit = async (data: Schema) => {
     if (
@@ -221,93 +277,111 @@ const EditJobForm = ({ params }: { params: { jobId: string } }) => {
     setIsPosting(true);
 
     const token = localStorage.getItem("access_token");
-    const url_job = `${baseurl}/jobs/${jobId}/update/`; // Update your endpoint
+    const job_update_url = `${baseurl}/jobs/${jobId}/update/`; // Update your endpoint
     // Prepare your payload and send the update request...
-    const { company_name, position, email4jobappl, apply_url } = data;
+    const { job_role, apply_url } = data;
     const {
-      emptype,
-      primtg,
-      tagsArray,
-      locns,
-      desc,
-      minSalary,
-      maxSalary,
-      benefitsArray,
-      how2apply,
-      feedback,
+      job_description,
+      job_location,
+      industry,
+      employment_type,
+      experience_needed,
+      skills_required,
+      benefits,
+
+      how_to_apply,
+      application_deadline,
+
+      currency_type,
+      annual_salary_min,
+      annual_salary_max,
     } = formData;
 
-    let allTags = "";
-    for (let i = 0; i < tagsArray!.length; i++) {
-      allTags = allTags + tagsArray![i];
-      if (i < tagsArray!.length - 1) {
-        allTags = allTags + ",";
+    let skills = "";
+    for (let i = 0; i < skills_required.length; i++) {
+      skills = skills + skills_required[i];
+      if (i < skills_required.length - 1) {
+        skills = skills + ",";
       }
     }
 
+    const removeEmojis = (text: string) => {
+      return text
+        .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, "")
+        .trim();
+    };
+
     let allBenefits = "";
-    for (let i = 0; i < benefitsArray!.length; i++) {
-      allBenefits = allBenefits + benefitsArray![i];
-      if (i < benefitsArray!.length - 1) {
+    for (let i = 0; i < benefits.length; i++) {
+      allBenefits = allBenefits + removeEmojis(benefits[i]);
+      if (i < benefits.length - 1) {
         allBenefits = allBenefits + ",";
       }
     }
 
     // console.log("updating job");
 
+    const payload = {
+      job_role,
+      job_description,
+      job_location,
+      industry,
+      employment_type,
+      experience_needed,
+      skills_required: skills,
+      benefits: allBenefits,
+
+      how_to_apply,
+      apply_url,
+      application_deadline,
+
+      currency_type: "USD",
+      annual_salary_min:
+        currency_type !== "USD"
+          ? currencyInBaseUSD(currency_type, Number(annual_salary_min))
+          : annual_salary_min,
+      annual_salary_max:
+        currency_type !== "USD"
+          ? currencyInBaseUSD(currency_type, Number(annual_salary_max))
+          : annual_salary_max,
+    };
+    // console.log(payload);
+
+    // Check if any required fields are empty
+    const hasEmptyFields = Object.values(payload).some((value) => !value);
+    if (hasEmptyFields) {
+      swalWarning({ title: "Please fill in all the fields", type: "toast" });
+      setIsPosting(false);
+      return;
+    }
+
     try {
-      await axios
-        .put(
-          url_job,
-          {
-            annual_salary_max: currencyInBaseUSD(
-              formData.currencyType!,
-              Number(minSalary)
-            ),
-            annual_salary_min: currencyInBaseUSD(
-              formData.currencyType!,
-              Number(maxSalary)
-            ),
-            employee_type: emptype,
-            company_email: email4jobappl,
-            company_name: company_name,
-            how_to_apply: how2apply,
-            job_description: desc,
-            location_restriction: locns,
-            primary_tag: primtg,
-            benefits: allBenefits,
-            position: position,
-            tags: allTags,
-            apply_url: apply_url,
-            apply_email_address: email4jobappl,
-            feedback: feedback,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        .then((response) => {
-          // console.log(response.data);
-          // console.log("Job Post Updated Successfully");
-          swalSuccess({
-            title: "Job Post Updated Successfully",
-            type: "toast",
-          });
-          router.push("/postedJobs");
-        })
-        .catch((error) => {
-          // console.error("There was an error registering the job!", error);
-          swalFailed({ title: "Error occurred at server 🤖", type: "toast" });
-        });
+      const response = await axios.put(job_update_url, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Uncomment if needed for debugging
+      // console.log(response.data);
+      // console.log("Job Post Updated Successfully");
+
+      swalSuccess({
+        title: "Job Post Updated Successfully",
+        type: "toast",
+      });
+      router.push("/postedJobs");
     } catch (error) {
+      // Uncomment if needed for debugging
       // console.error("There was an error registering the job!", error);
+
       swalFailed({ title: "Error occurred at server 🤖", type: "toast" });
     }
 
     setIsPosting(false);
   };
+
+  // console.log(formData.application_deadline);
 
   return (
     <>

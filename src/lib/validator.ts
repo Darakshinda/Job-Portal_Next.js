@@ -41,13 +41,14 @@ const recruiterSignupFormSchema = z
       .string()
       .email()
       .max(50, { message: "Email must be at most 50 characters long" }),
-    working_email: z
+    work_email: z
       .string()
       .email()
       .max(50, { message: "Working email must be at most 50 characters long" }),
     username: z
       .string()
-      .min(3, { message: "Username must be at least 3 characters long" }),
+      .min(3, { message: "Username must be at least 3 characters long" })
+      .regex(/^\S*$/, { message: "Username cannot contain spaces" }),
     password: z
       .string()
       .regex(
@@ -55,7 +56,7 @@ const recruiterSignupFormSchema = z
         "At least: 8 characters, 1 uppercase, 1 lowercase, 1 symbol"
       ),
     confirm_password: z.string(),
-    how_heard_about_codeunity: z.string(),
+    how_heard_about_company: z.string(),
   })
   .refine(
     (data) => {
@@ -90,12 +91,12 @@ const seekerSignupFormSchema = z
         "At least: 8 characters, 1 uppercase, 1 lowercase, 1 symbol"
       ),
     confirm_password: z.string(),
-    location: z.string().min(1, { message: "Location is required" }),
+    // location: z.string().min(1, { message: "Location is required" }),
     // experience: z.coerce
     //   .number()
     //   .gte(0, { message: "Experience must be a non-negative number" })
     //   .lte(50, { message: "Experience must be at most 50 years" }),
-    how_heard_about_codeunity: z.string(),
+    how_heard_about_company: z.string(),
   })
   .refine((data) => data.password === data.confirm_password, {
     message: "Passwords do not match",
@@ -103,9 +104,8 @@ const seekerSignupFormSchema = z
   });
 
 const postJobSchema = z.object({
-  company_name: z.string().min(1, { message: "Company name is required" }),
-  position: z.string().min(1, { message: "Position is required" }),
-  email4jobappl: z.string().email(),
+  // company_name: z.string().min(1, { message: "Company name is required" }),
+  job_role: z.string().min(1, { message: "Job Role is required" }),
   apply_url: z.string().url(),
 });
 
@@ -116,10 +116,22 @@ const aboutSchema = z.object({
   last_name: z
     .string()
     .min(3, { message: "Last name must be at least 3 characters long" }),
-  email: z
-    .string()
-    .email()
-    .max(50, { message: "Email must be at most 50 characters long" }),
+  work_email: z
+    .union([
+      z
+        .string()
+        .email()
+        .min(1, { message: "Your work email is required" })
+        .max(50, { message: "Email must be at most 50 characters long" }),
+      z.null(),
+    ])
+    .optional(),
+  company_website: z
+    .union([
+      z.string().url().min(1, { message: "Website is required" }),
+      z.null(),
+    ])
+    .optional(),
   designation: z
     .union([
       z
@@ -165,7 +177,7 @@ const educationSchema = z.object({
 });
 
 const generalSchema = z.object({
-  achievements: z.string().optional(),
+  achievements: z.union([z.string(), z.null()]).optional(),
   pronouns_self_describe: z
     .union([
       z

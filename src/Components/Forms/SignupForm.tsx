@@ -7,6 +7,7 @@ import { FaClock } from "react-icons/fa6";
 import { IoBriefcase } from "react-icons/io5";
 import SearchSelectDropdown from "./Custom/SearchSelectDropdown";
 import tagOpns from "@/constants/data/skillTags.json";
+import LocationTags from "@/constants/data/location.json";
 import ExperienceTags from "@/constants/data/experience.json";
 import { Control, FieldErrors } from "react-hook-form";
 
@@ -16,18 +17,19 @@ type SignupFormProps = {
   onSubmit: Function;
   control: Control<any>;
   errors: FieldErrors;
+  isSubmitting: boolean;
   formData: {
-    phone_number: string;
+    phone_number: string; // common
     looking_for?: string; // hirer
-    hiring_skills?: string[]; // hirer
     technical_skills?: string[]; // seeker
     years_of_experience?: string; // seeker
   };
-  handleChange: (key: string, value: string) => void;
   formDataErrors: {
-    phone_number: string;
-    years_of_experience?: string;
+    phone_number: string; // common
+    location?: string; // seeker
+    years_of_experience?: string; // seeker
   };
+  handleChange: (key: string, value: string) => void;
   handleSkillChange: (skills: string[]) => void;
 };
 
@@ -37,9 +39,10 @@ const SignupForm = ({
   onSubmit,
   control,
   errors,
+  isSubmitting,
   formData,
-  handleChange,
   formDataErrors,
+  handleChange,
   handleSkillChange,
 }: SignupFormProps) => {
   const SignupFormCls =
@@ -105,7 +108,18 @@ const SignupForm = ({
       </div>
 
       <div className="my-4 lg:mx-6 max-lg:px-2">
-        <div className="h-full border-2 rounded-xl bg-white overflow-y-auto scrollbar-hide">
+        <div className="h-full border-2 rounded-xl bg-white overflow-y-auto scrollbar-hide relative">
+          {/* Overlay for the submitting state */}
+          {isSubmitting && (
+            <div
+              className="absolute inset-0 bg-gray-900 bg-opacity-50 z-20 flex items-center justify-center"
+              style={{ minHeight: "113vh" }} // need to change this
+            >
+              <div className="text-white text-xl font-semibold">
+                Submitting...
+              </div>
+            </div>
+          )}
           <form
             id="signup-form"
             onSubmit={handleSubmit(onSubmit)}
@@ -156,15 +170,15 @@ const SignupForm = ({
 
             {type === "Recruiter" && (
               <SignupFormInput
-                id="working_email"
-                name="working_email"
+                id="work_email"
+                name="work_email"
                 type="email"
                 label="Work Email"
                 control={control}
                 placeholder="name@work.com"
                 req={true}
                 cls={SignupFormCls}
-                error={errors.working_email}
+                error={errors.work_email}
               />
             )}
 
@@ -276,18 +290,23 @@ const SignupForm = ({
               </div>
             ) : (
               <div className="flex gap-x-6 gap-y-4 max-[500px]:flex-col flex-row">
-                <div className="flex-1">
-                  <SignupFormInput
-                    id="location"
-                    name="location"
-                    type="text"
+                <div className="flex flex-col flex-1">
+                  <SearchSelectDropdown
                     label="Location"
-                    control={control}
+                    name="location"
+                    labelCls="text-gray-500 font-semibold relative flex items-center gap-2"
                     placeholder="Location"
-                    req={true}
                     cls={SignupFormCls}
-                    error={errors.location}
+                    tags={LocationTags.countries}
+                    onSingleChange={handleChange}
+                    multiple={false}
+                    req={true}
                   />
+                  <span
+                    className={`text-red-500 text-xs font-semibold  ${formDataErrors.location ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 top-full`}
+                  >
+                    {formDataErrors.location || ""}
+                  </span>
                 </div>
 
                 <div className="flex flex-col flex-1">
@@ -311,38 +330,37 @@ const SignupForm = ({
               </div>
             )}
 
-            <div className="w-full">
-              <SearchSelectDropdown
-                usingIn="signup"
-                placeholder="Search and add a skill"
-                label={
-                  type === "Recruiter"
-                    ? "Skills Required"
-                    : "Search and add a skill"
-                }
-                onChange={handleSkillChange}
-                tags={tagOpns}
-                cls={SignupFormCls}
-              />
-            </div>
+            {type !== "Recruiter" && (
+              <div className="w-full">
+                <SearchSelectDropdown
+                  usingIn="signup"
+                  placeholder="Search and add a skill"
+                  label="Technical Skills"
+                  onChange={handleSkillChange}
+                  tags={tagOpns}
+                  cls={SignupFormCls}
+                />
+              </div>
+            )}
 
             <SignupFormInput
-              id="how_heard_about_codeunity"
-              name="how_heard_about_codeunity"
+              id="how_heard_about_company"
+              name="how_heard_about_company"
               type="text"
               label="How did you hear about CodeUnity?"
               control={control}
               placeholder="How did you hear about us"
               req={false}
               cls={SignupFormCls}
-              error={errors.how_heard_about_codeunity}
+              error={errors.how_heard_about_company}
             />
 
             <button
               type="submit"
               className="mt-4 text-lg w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 active:scale-95 transition-all duration-300 text-white font-bold py-2 px-4 rounded-xl outline-none focus-visible:outline-primary-700"
+              disabled={isSubmitting}
             >
-              Register
+              {isSubmitting ? "Registering..." : "Register"}
             </button>
           </form>
 

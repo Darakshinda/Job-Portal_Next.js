@@ -7,23 +7,37 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { postJobSchema } from "@/lib/validator";
-import { swalFailed, swalSuccess } from "@/lib/helpers/swal";
+import { swalFailed, swalSuccess, swalWarning } from "@/lib/helpers/swal";
 import JobPostForm from "@/Components/Forms/JobPostForm";
+import CompanyDetailsModal from "@/Components/Modals/CompanyDetailsModal";
+import { CgDanger } from "react-icons/cg";
+import Spinner from "@/Components/Loaders/Spinner";
 
 type Schema = z.infer<typeof postJobSchema>;
 
 type FormData = {
-  emptype: string;
-  primtg: string;
-  tagsArray: string[];
-  locns: string;
-  desc: string;
-  how2apply: string;
-  minSalary: string;
-  maxSalary: string;
-  currencyType: string;
-  benefitsArray: string[];
-  feedback: string;
+  job_role: string;
+  job_description: string;
+  job_location: string; // need to make it as string[] later
+  industry: string;
+  employment_type: string;
+  experience_needed: string;
+  skills_required: string[];
+  benefits: string[];
+
+  how_to_apply: string;
+  apply_url: string;
+  application_deadline: string;
+
+  currency_type: string;
+  annual_salary_min: number;
+  annual_salary_max: number;
+
+  // prefetched data
+  company_name?: string;
+  company_photo?: File | null;
+  company_website?: string;
+  company_photo_url?: string;
 };
 
 const JobForm = () => {
@@ -31,17 +45,27 @@ const JobForm = () => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   const [formData, setFormData] = useState<FormData>({
-    emptype: "",
-    primtg: "",
-    tagsArray: [],
-    locns: "",
-    desc: "",
-    how2apply: "",
-    minSalary: "0",
-    maxSalary: "0",
-    currencyType: "USD",
-    benefitsArray: [],
-    feedback: "",
+    job_role: "",
+    job_description: "",
+    job_location: "",
+    industry: "",
+    employment_type: "",
+    experience_needed: "",
+    skills_required: [],
+    benefits: [],
+
+    how_to_apply: "",
+    apply_url: "",
+    application_deadline: "",
+
+    currency_type: "USD",
+    annual_salary_min: 0,
+    annual_salary_max: 0,
+
+    company_name: "",
+    company_photo: null,
+    company_website: "",
+    company_photo_url: "",
   });
 
   const [currencyList, setCurrencyList] = useState<string[]>([]);
@@ -52,6 +76,13 @@ const JobForm = () => {
   const [isPosting, setIsPosting] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
   const [isFormDirty, setIsFormDirty] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loaded, setLoaded] = useState(false);
+
+  const [emptyFields, setEmptyFields] = useState<string[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isMissingDataFilled, setIsMissingDataFilled] =
+    useState<boolean>(false);
 
   const [handleError, setHandleError] = useState({
     jobDescriptionError: "",
@@ -68,21 +99,23 @@ const JobForm = () => {
     mode: "onChange",
     resolver: zodResolver(postJobSchema),
     defaultValues: {
-      company_name: "",
-      position: "",
-      email4jobappl: "",
+      job_role: "",
       apply_url: "",
     },
   });
 
-  const currencyInBaseUSD = (currency: string, amount: number) => {
-    const rate = currencyRates[currency];
+  const currencyInBaseUSD = (currencyType: string, amount: number) => {
+    // console.log(currencyType, amount);
+    const rate = currencyRates[currencyType];
+    // console.log(rate);
+    // console.log(Math.round(amount / rate));
     return Math.round(amount / rate);
   };
 
   useEffect(() => {
     if (
-      (formData.desc === "" || formData.desc === "<p><br></p>") &&
+      (formData.job_description === "" ||
+        formData.job_description === "<p><br></p>") &&
       isFormDirty
     ) {
       setHandleError((prevState) => ({
@@ -95,11 +128,12 @@ const JobForm = () => {
         jobDescriptionError: "",
       }));
     }
-  }, [formData.desc, isFormDirty]);
+  }, [formData.job_description, isFormDirty]);
 
   useEffect(() => {
     if (
-      (formData.how2apply === "" || formData.how2apply === "<p><br></p>") &&
+      (formData.how_to_apply === "" ||
+        formData.how_to_apply === "<p><br></p>") &&
       isFormDirty
     ) {
       setHandleError((prevState) => ({
@@ -112,10 +146,12 @@ const JobForm = () => {
         howToApplyError: "",
       }));
     }
-  }, [formData.how2apply, isFormDirty]);
+  }, [formData.how_to_apply, isFormDirty]);
 
   useEffect(() => {
-    if (Number(formData.minSalary) > Number(formData.maxSalary)) {
+    if (
+      Number(formData.annual_salary_min) > Number(formData.annual_salary_max)
+    ) {
       setHandleError((prevState) => ({
         ...prevState,
         minsalMaxsalError: "Minimum salary should be less than maximum salary",
@@ -126,9 +162,69 @@ const JobForm = () => {
         minsalMaxsalError: "",
       }));
     }
-  }, [formData.minSalary, formData.maxSalary]);
+  }, [formData.annual_salary_min, formData.annual_salary_max]);
+
+  useEffect(() => {
+    const fetchCompanyProfile = async () => {
+      const baseurl = process.env.NEXT_PUBLIC_BASE_URL; // Your base URL from environment variables
+      const access_token = localStorage.getItem("access_token"); // Access access_token from localStorage
+
+      try {
+        const response = await axios.get(
+          `${baseurl}/accounts/company-profile/`,
+          {
+            headers: {
+              Authorization: `Bearer ${access_token}`,
+            },
+          }
+        );
+        // console.log(response);
+
+        if (response.status === 200) {
+          // setCompanyData(response.data); // Set the company data in the state
+          setFormData((prevData) => ({
+            ...prevData,
+            company_name: response.data.company_name,
+            company_website: response.data.company_website,
+            company_photo: null, // this is done intentionally to avoid photo upload
+            company_photo_url: response.data.company_photo_url,
+          }));
+
+          const emptyFieldsArr = [];
+          if (!response.data.company_name) {
+            emptyFieldsArr.push("company_name");
+          }
+          if (!response.data.company_website) {
+            emptyFieldsArr.push("company_website");
+          }
+          if (!response.data.company_photo_url) {
+            emptyFieldsArr.push("company_photo");
+          }
+
+          setEmptyFields(emptyFieldsArr);
+          if (emptyFieldsArr.length > 0) {
+            setIsModalOpen(true);
+          }
+          setLoaded(true);
+          setIsLoading(false);
+        }
+      } catch (error: any) {
+        console.error("Error fetching company profile", error);
+      }
+    };
+
+    fetchCompanyProfile(); // Call the function immediately after mounting
+  }, [isMissingDataFilled]);
 
   const onSubmit = async (data: Schema) => {
+    if (
+      formData.company_name === "" ||
+      formData.company_website === "" ||
+      formData.company_photo_url === ""
+    ) {
+      setIsModalOpen(true);
+    }
+
     if (
       handleError.minsalMaxsalError ||
       handleError.jobDescriptionError ||
@@ -141,127 +237,159 @@ const JobForm = () => {
     setIsPosting(true);
 
     const token = localStorage.getItem("access_token");
-    const { company_name, position, email4jobappl, apply_url } = data;
+    const { job_role, apply_url } = data;
     const {
-      maxSalary,
-      minSalary,
-      emptype,
-      primtg,
-      locns,
-      desc,
-      benefitsArray,
-      how2apply,
-      feedback,
-      tagsArray,
+      job_description,
+      job_location,
+      industry,
+      employment_type,
+      experience_needed,
+      skills_required,
+      benefits,
+
+      how_to_apply,
+      application_deadline,
+
+      currency_type,
+      annual_salary_min,
+      annual_salary_max,
     } = formData;
 
-    let allTags = "";
-    for (let i = 0; i < tagsArray.length; i++) {
-      allTags = allTags + tagsArray[i];
-      if (i < tagsArray.length - 1) {
-        allTags = allTags + ",";
+    let skills = "";
+    for (let i = 0; i < skills_required.length; i++) {
+      skills = skills + skills_required[i];
+      if (i < skills_required.length - 1) {
+        skills = skills + ",";
       }
     }
 
     let allBenefits = "";
-    for (let i = 0; i < benefitsArray.length; i++) {
-      allBenefits = allBenefits + benefitsArray[i];
-      if (i < benefitsArray.length - 1) {
+    for (let i = 0; i < benefits.length; i++) {
+      allBenefits = allBenefits + benefits[i];
+      if (i < benefits.length - 1) {
         allBenefits = allBenefits + ",";
       }
     }
 
-    // console.log(company_name, position, email4jobappl, apply_url);
-    // console.log(
-    //   minSalary,
-    //   maxSalary,
-    //   emptype,
-    //   primtg,
-    //   locns,
-    //   desc,
-    //   how2apply,
-    //   feedback
-    // );
-    // console.log(allTags, allBenefits);
+    const payload = {
+      job_role,
+      job_description,
+      job_location,
+      industry,
+      employment_type,
+      experience_needed,
+      skills_required: skills,
+      benefits: allBenefits,
+
+      how_to_apply,
+      apply_url,
+      application_deadline,
+
+      currency_type: "USD",
+      annual_salary_min:
+        currency_type !== "USD"
+          ? currencyInBaseUSD(currency_type, Number(annual_salary_min))
+          : annual_salary_min,
+      annual_salary_max:
+        currency_type !== "USD"
+          ? currencyInBaseUSD(currency_type, Number(annual_salary_max))
+          : annual_salary_max,
+    };
+    // console.log(payload);
+    // Check if any required fields are empty
+    const hasEmptyFields = Object.values(payload).some((value) => !value);
+    if (hasEmptyFields) {
+      swalWarning({ title: "Please fill in all the fields", type: "toast" });
+      setIsPosting(false);
+      return;
+    }
+
     try {
-      await axios
-        .post(
-          `${baseUrl}/jobs/create/`,
-          {
-            annual_salary_min: currencyInBaseUSD(
-              formData.currencyType,
-              Number(minSalary)
-            ),
-            annual_salary_max: currencyInBaseUSD(
-              formData.currencyType,
-              Number(maxSalary)
-            ),
-            emptype: emptype,
-            company_email: email4jobappl,
-            company_name: company_name,
-            how_to_apply: how2apply,
-            job_description: desc,
-            location_restriction: locns,
-            primary_tag: primtg,
-            benefits: allBenefits,
-            position: position,
-            tags: allTags,
-            apply_url: apply_url,
-            apply_email_address: email4jobappl,
-            feedback: feedback,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        .then((response) => {
-          swalSuccess({ title: "Job registered successfully", type: "toast" });
-          router.push("/postedJobs");
-        })
-        .catch((error) => {
-          // console.error("There was an error registering the job!", error);
-          // alert("Failed to register the job");
-          swalFailed({ title: "Failed to register the job", type: "toast" });
-        });
-    } catch (error) {
-      // console.error("There was an error registering the job!", error);
-      // alert("Failed to register the job");
-      swalFailed({
-        title: "Server Error 🤖. Please try again",
-        type: "toast",
+      const response = await axios.post(`${baseUrl}/jobs/create/`, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
+      console.log(response.data);
+
+      // If successful, show success message and navigate
+      swalSuccess({ title: "Job registered successfully", type: "toast" });
+      router.push("/postedJobs");
+    } catch (error) {
+      // Log the error if necessary and show failure message
+      swalFailed({ title: "Failed to register the job", type: "toast" });
     }
 
     setIsPosting(false);
   };
 
   // useEffect(() => {
-  //   console.log(formData.currencyType);
-  // }, [formData.currencyType]);
+  //   console.log(formData.currency_type);
+  // }, [formData.currency_type]);
+  // console.log(watch("job_role"), watch("apply_url"));
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center w-full h-[100dvh]">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
-    <JobPostForm
-      type="post"
-      previewMode={previewMode}
-      setPreviewMode={setPreviewMode}
-      handleSubmit={handleSubmit}
-      onSubmit={onSubmit}
-      register={register}
-      watch={watch}
-      errors={errors}
-      formData={formData}
-      setFormData={setFormData}
-      currencyList={currencyList}
-      setCurrencyList={setCurrencyList}
-      setCurrencyRates={setCurrencyRates}
-      handleError={handleError}
-      isDirty={isDirty}
-      isFormDirty={isFormDirty}
-      setIsFormDirty={setIsFormDirty}
-      isPosting={isPosting}
-    />
+    <div className="mx-auto">
+      {/* Conditional rendering of the pop-up if there are empty fields */}
+      {loaded && emptyFields.length > 0 && isModalOpen && (
+        <>
+          <div className="fixed z-[60] w-[100vw] h-[100dvh] inset-0 bg-black opacity-70 backdrop-blur-sm transition-opacity duration-1000"></div>
+
+          <CompanyDetailsModal
+            emptyFields={emptyFields}
+            setIsModalOpen={setIsModalOpen}
+            setIsMissingDataFilled={setIsMissingDataFilled}
+            setMainFormData={setFormData}
+          />
+        </>
+      )}
+
+      {loaded && emptyFields.length > 0 && (
+        <button
+          className="flex items-center gap-x-2 flex-nowrap ml-auto mt-4 mr-4 bg-red-500 px-2 py-1 rounded-lg"
+          onClick={() => {
+            setIsModalOpen(true);
+          }}
+        >
+          <CgDanger className="text-white inline" />
+          <span className="text-white">Fill Company Details</span>
+        </button>
+      )}
+
+      <JobPostForm
+        type="post"
+        // preview mode
+        previewMode={previewMode}
+        setPreviewMode={setPreviewMode}
+        // form data and zod
+        handleSubmit={handleSubmit}
+        onSubmit={onSubmit}
+        register={register}
+        watch={watch}
+        errors={errors}
+        formData={formData}
+        setFormData={setFormData}
+        // currency conversion
+        currencyList={currencyList}
+        setCurrencyList={setCurrencyList}
+        setCurrencyRates={setCurrencyRates}
+        // manual error handling
+        handleError={handleError}
+        isDirty={isDirty}
+        isFormDirty={isFormDirty}
+        setIsFormDirty={setIsFormDirty}
+        isPosting={isPosting}
+      />
+    </div>
   );
 };
 

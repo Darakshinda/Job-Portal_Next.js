@@ -20,17 +20,17 @@ const Signup = () => {
   const [formData, setFormData] = useState<{
     phone_number: string;
     looking_for: string;
-    hiring_skills: string[];
+    // hiring_skills: string[];
   }>({
     phone_number: "",
     looking_for: "",
-    hiring_skills: [],
+    // hiring_skills: [],
   });
 
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<Schema>({
     resolver: zodResolver(recruiterSignupFormSchema),
     mode: "onChange", // onChange might effect browser performance so use onBlur/onTouched if needed
@@ -38,11 +38,11 @@ const Signup = () => {
       first_name: "",
       last_name: "",
       email: "",
-      working_email: "",
+      work_email: "",
       username: "",
       password: "",
       confirm_password: "",
-      how_heard_about_codeunity: "",
+      how_heard_about_company: "",
     },
   });
 
@@ -70,8 +70,8 @@ const Signup = () => {
   };
 
   const validatePhoneNumber = (phoneNumber: string) => {
-    const fullNumber = phoneNumber;
-    const parsedNumber = parsePhoneNumberFromString("+" + fullNumber);
+    // const fullNumber = phoneNumber;
+    const parsedNumber = parsePhoneNumberFromString("+" + phoneNumber);
 
     if (parsedNumber && parsedNumber.isValid()) {
       // console.log("Valid number:", parsedNumber.formatInternational());
@@ -94,26 +94,20 @@ const Signup = () => {
   };
 
   const onSubmit = async (data: Schema) => {
+    // console.log("Recruiter form data:", data, formData);
     const {
       first_name,
       last_name,
       email,
-      working_email,
+      work_email,
       username,
       password,
-      how_heard_about_codeunity,
+      how_heard_about_company,
     } = data;
-    const { phone_number, looking_for, hiring_skills } = formData;
+    const { phone_number, looking_for } = formData;
 
-    let skills = "";
-    for (let i = 0; i < hiring_skills.length; i++) {
-      if (i === hiring_skills.length - 1) {
-        skills += hiring_skills[i];
-      } else {
-        skills += hiring_skills[i] + ", ";
-      }
-    }
-    const formattedPhoneNumber = phone_number.replace(/\s/g, ""); // removing spaces from the phone number
+    // removing spaces from the phone number
+    const formattedPhoneNumber = phone_number.replace(/\s/g, "");
 
     try {
       const response = await axios.post(
@@ -122,30 +116,69 @@ const Signup = () => {
           first_name,
           last_name,
           email,
-          working_email,
           username,
-          formattedPhoneNumber,
           password,
-          looking_for,
-          skills,
-          how_heard_about_codeunity,
+          personal_info: {
+            phone_number: formattedPhoneNumber,
+            how_heard_about_company,
+          },
+          job_hirer_profile: {
+            work_email,
+            looking_for,
+          },
         }
       );
+      // console.log(response.data);
 
       swalSuccess({
         title: "Registration Successful",
-        message: "You have registered successfully!",
+        message:
+          "You have registered successfully! <br> Please check your email to activate your account",
       });
       // Redirect to the homepage
       router.push("/login");
 
       // console.log("Signed up successfully");
     } catch (error: any) {
-      // console.error("Registration failed:", error.response?.data);
-      swalFailed({
-        title: "Registration Failed",
-        error: error,
-      });
+      console.error("Registration failed:", error.response);
+
+      console.log(
+        axios.isAxiosError(error) &&
+          error.response &&
+          error.response.status === 400
+      );
+
+      if (
+        axios.isAxiosError(error) &&
+        error.response &&
+        error.response.status === 500
+      ) {
+        swalFailed({
+          title: "Registration Failed",
+          error: "Internal Server Error, Please try again!",
+        });
+      } else if (
+        axios.isAxiosError(error) &&
+        error.response &&
+        error.response.status === 400
+      ) {
+        if (
+          error.response?.data?.username[0] ||
+          error.response?.data.email[0]
+        ) {
+          swalFailed({
+            title: "Registration Failed",
+            error:
+              error.response?.data?.username[0] ||
+              error.response?.data.email[0],
+          });
+        }
+      } else {
+        swalFailed({
+          title: "Registration Failed",
+          error: "Please try again later!",
+        });
+      }
     }
   };
 
@@ -156,9 +189,10 @@ const Signup = () => {
       onSubmit={onSubmit}
       control={control}
       errors={errors}
-      handleChange={handleChange}
+      isSubmitting={isSubmitting}
       formData={formData}
       formDataErrors={formDataErrors}
+      handleChange={handleChange}
       handleSkillChange={handleSkillChange}
     />
   );

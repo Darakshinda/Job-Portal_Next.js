@@ -79,6 +79,13 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
     if (existingTags && existingTags.length > 0) {
       setSelectedTags(existingTags);
     }
+
+    // Exclude existingTags from techTags
+    const newFilteredTags = techTags.filter(
+      (tag) => !existingTags?.includes(tag)
+    );
+
+    setFilteredTags(newFilteredTags); // Update state with the filtered tags
   }, [existingTags]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -212,7 +219,7 @@ const SearchSelectDropdown: React.FC<SearchSelectDropdownProps> = ({
                   <li
                     key={index}
                     onClick={() => handleTagClick(tag)}
-                    className="py-2 px-4 cursor-pointer hover:bg-blue-50 select-none rounded-md snap-start"
+                    className={`py-2 px-4 cursor-pointer hover:bg-blue-50 select-none rounded-md snap-start ${name === "currency_type" && "uppercase"}`}
                   >
                     {tag}
                   </li>

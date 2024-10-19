@@ -6,45 +6,33 @@ import SearchFiltersForm from "@/Components/Forms/SearchFiltersForm";
 import { LuFilter } from "react-icons/lu";
 
 interface SearchParams {
-  query: string;
-  skillTags: string[];
-  location: string;
-  jobType: string;
-  minSalary: string;
-  maxSalary: string;
-  currencyType: string;
+  industry: string;
+  skills_required: string[];
+  job_location: string;
+  employment_type: string;
+  annual_salary_min: string;
+  annual_salary_max: string;
+  currency_type: string;
 }
 
 const JobsPage = ({ type }: { type: string }) => {
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
-  // const values = {
-  //   query: "",
-  //   skillTags: [],
-  //   location: "",
-  //   jobType: "",
-  //   minSalary: "1500",
-  //   maxSalary: "90000",
-  //   currencyType: "USD",
-  // };
+  const values = {
+    industry: "",
+    skills_required: [],
+    job_location: "",
+    employment_type: "",
+    annual_salary_min: "",
+    annual_salary_max: "",
+    currency_type: "USD",
+  };
 
   const [searchParams, setSearchParams] = useState<SearchParams>({
-    query: "",
-    skillTags: [],
-    location: "",
-    jobType: "",
-    minSalary: "1500",
-    maxSalary: "90000",
-    currencyType: "USD",
+    ...values,
   });
   const [tempParams, setTempParams] = useState<SearchParams>({
-    query: "",
-    skillTags: [],
-    location: "",
-    jobType: "",
-    minSalary: "1500",
-    maxSalary: "90000",
-    currencyType: "USD",
+    ...values,
   });
 
   const [resetFlag, setResetFlag] = useState<boolean>(false);
@@ -59,39 +47,28 @@ const JobsPage = ({ type }: { type: string }) => {
   const handleSkillChange = (skills: string[]) => {
     setTempParams((prevState) => ({
       ...prevState,
-      skillTags: skills,
+      skills_required: skills,
     }));
   };
 
   const handleSubmit = () => {
+    // console.log(tempParams);
     setSearchParams(tempParams);
   };
 
   const handleReset = () => {
     setResetFlag(true);
     setTempParams({
-      query: "",
-      skillTags: [],
-      location: "",
-      jobType: "",
-      minSalary: "1500",
-      maxSalary: "90000",
-      currencyType: "USD",
+      ...values,
     });
     setSearchParams({
-      query: "",
-      skillTags: [],
-      location: "",
-      jobType: "",
-      minSalary: "1500",
-      maxSalary: "90000",
-      currencyType: "USD",
+      ...values,
     });
   };
 
   // useEffect(() => {
-  //   console.log(tempParams);
-  // }, [tempParams]);
+  //   console.log(tempParams.currency_type);
+  // }, [tempParams.currency_type]);
 
   return (
     <div className="bg-[#FAFAFA] flex-1 sm:px-6 max-[450px]:px-2 px-3 flex flex-col min-h-screen max-h-screen relative scroll-smooth">
@@ -104,19 +81,42 @@ const JobsPage = ({ type }: { type: string }) => {
               : "Jobs"}
         </h1>
 
-        <div className="block lg:hidden sm:pe-4 relative justify-self-end">
-          <button
-            className="text-center md:text-lg text-base max-[450px]:text-sm text-gray-700 flex justify-center items-center sm:gap-2.5 gap-1 font-semibold tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded-md px-2 py-1 whitespace-nowrap"
-            onClick={() => setShowFilters((curr) => !curr)}
-          >
-            <span className="sm:p-2 p-1.5 bg-blue-100 rounded-full">
-              <LuFilter className="text-blue-500 w-4 h-4" />
-            </span>
-            Search Filters
-          </button>
-          <div
-            className={`absolute z-10 top-12 right-2 transition-all duration-300 ease-in-out ${showFilters ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}`}
-          >
+        {type !== "applied" && (
+          <div className="block lg:hidden sm:pe-4 relative justify-self-end">
+            <button
+              className="text-center md:text-lg text-base max-[450px]:text-sm text-gray-700 flex justify-center items-center sm:gap-2.5 gap-1 font-semibold tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded-md px-2 py-1 whitespace-nowrap"
+              onClick={() => setShowFilters((curr) => !curr)}
+            >
+              <span className="sm:p-2 p-1.5 bg-blue-100 rounded-full">
+                <LuFilter className="text-blue-500 w-4 h-4" />
+              </span>
+              Search Filters
+            </button>
+            <div
+              className={`absolute z-10 top-12 right-2 transition-all duration-300 ease-in-out ${showFilters ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}`}
+            >
+              <SearchFiltersForm
+                searchParams={tempParams}
+                handleChange={handleChange}
+                handleSkillChange={handleSkillChange}
+                handleSubmit={handleSubmit}
+                handleReset={handleReset}
+                resetFlag={resetFlag}
+                setResetFlag={setResetFlag}
+                setShowFilters={setShowFilters}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div
+        className={`flex-1 w-full max-h-[calc(100%-4.5rem)] grid grid-flow-col lg:grid-cols-[1fr,minmax(0,384px)] max-lg:grid-cols-1 justify-end gap-x-6`}
+      >
+        <JobsList type={type} searchParams={searchParams} />
+
+        {type !== "applied" && (
+          <div className="hidden lg:block">
             <SearchFiltersForm
               searchParams={tempParams}
               handleChange={handleChange}
@@ -125,26 +125,9 @@ const JobsPage = ({ type }: { type: string }) => {
               handleReset={handleReset}
               resetFlag={resetFlag}
               setResetFlag={setResetFlag}
-              setShowFilters={setShowFilters}
             />
           </div>
-        </div>
-      </div>
-
-      <div className="flex-1 w-full max-h-[calc(100%-4.5rem)] grid grid-flow-col lg:grid-cols-[1fr,minmax(0,384px)] max-lg:grid-cols-1 justify-end gap-x-6">
-        <JobsList type={type} searchParams={searchParams} />
-
-        <div className="hidden lg:block">
-          <SearchFiltersForm
-            searchParams={tempParams}
-            handleChange={handleChange}
-            handleSkillChange={handleSkillChange}
-            handleSubmit={handleSubmit}
-            handleReset={handleReset}
-            resetFlag={resetFlag}
-            setResetFlag={setResetFlag}
-          />
-        </div>
+        )}
       </div>
     </div>
   );

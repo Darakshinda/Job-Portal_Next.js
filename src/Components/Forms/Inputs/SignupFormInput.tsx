@@ -106,6 +106,7 @@ const SignupFormInput = ({
                   field.onChange(e); // Update React Hook Form state
                   handleChange && handleChange(name, e.target.value);
                 }}
+                value={field.value ?? ""}
               />
               {type === "password" && (
                 <button
@@ -113,7 +114,7 @@ const SignupFormInput = ({
                   onClick={() => {
                     setShowPassword((prev) => !prev);
                   }}
-                  className={`absolute top-3 right-1.5 p-1 flex items-center text-sm h-fit outline-none focus-visible:ring-2 ring-gray-400 rounded-lg`}
+                  className={`absolute top-1/2 -translate-y-1/2 right-1.5 p-1 flex items-center text-sm h-fit outline-none focus-visible:ring-2 ring-gray-400 rounded-lg`}
                 >
                   {showPassword ? (
                     <FaRegEye size={20} className="text-gray-500" />

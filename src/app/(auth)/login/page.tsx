@@ -47,7 +47,7 @@ const Login = () => {
 
   const onSubmit = async (data: Schema) => {
     const { username, password } = data;
-    // console.log(username, password);
+    // console.log(data);
 
     try {
       const response = await axios.post(`${baseurl}/accounts/login/`, {
@@ -55,62 +55,79 @@ const Login = () => {
         password,
       });
 
-      const { access, refresh } = response.data;
-
+      const { access, refresh, account_type } = response.data;
       const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
       // Save the tokens in localStorage or cookies
       localStorage.setItem("access_token", access);
       localStorage.setItem("refresh_token", refresh);
-
-      // save the account_type in the local storage and cookies
-      const axiosInstance = axios.create({
-        baseURL: baseurl,
-        headers: {
-          Authorization: `Bearer ${access}`,
-        },
-      });
+      localStorage.setItem("account_type", account_type);
 
       swalSuccess({
         title: "Login Successful",
         type: "toast",
       });
 
-      axiosInstance
-        .get("/accounts/profile")
-        .then((response) => {
-          localStorage.setItem("account_type", response.data.account_type);
-          Cookies.set("access_token", access, {
-            expires: expires,
-            sameSite: "strict",
-            httpOnly: false,
-          });
-          Cookies.set("account_type", response.data.account_type, {
-            expires: expires,
-            sameSite: "strict",
-            httpOnly: false,
-          });
+      Cookies.set("access_token", access, {
+        expires: expires,
+        sameSite: "strict",
+        httpOnly: false,
+      });
+      Cookies.set("refresh_token", refresh, {
+        expires: expires,
+        sameSite: "strict",
+        httpOnly: false,
+      });
+      Cookies.set("account_type", account_type, {
+        expires: expires,
+        sameSite: "strict",
+        httpOnly: false,
+      });
 
-          // Redirect the user to appropriate dashboard
-          if (response.data.account_type === "job_seeker") {
-            Router.push("/seeker-dashboard");
-          } else {
-            Router.push(`/dashboard`);
-          }
-        })
-        .catch((error) => {
-          console.error(error);
+      // Redirect the user to the appropriate dashboard
+      if (account_type === "job_seeker") {
+        Router.push("/seeker-dashboard");
+      } else if (account_type === "job_hirer") {
+        Router.push("/dashboard");
+      } else {
+        Router.push("/");
+      }
+    } catch (error) {
+      // Handle any errors that occurred during the login or profile fetching
+      console.error(error);
+
+      if (axios.isAxiosError(error) && error.response) {
+        // Handle 401 - Invalid credentials
+        if (error.response.status === 401) {
+          swalFailed({
+            title: "Invalid Credentials",
+            type: "toast",
+          });
+        }
+
+        // Handle 403 - Email not activated
+        else if (
+          error.response.status === 403 &&
+          error.response.data.detail === "Email is not activated."
+        ) {
+          swalFailed({
+            title: "Email Not Activated",
+            type: "toast",
+          });
+        }
+        // Handle other errors (server errors, etc.)
+        else {
           swalFailed({
             title: "Server Error",
-            type: "Toast",
+            type: "toast",
           });
+        }
+      } else {
+        swalFailed({
+          title: "Something went wrong",
+          type: "toast",
         });
-    } catch (error: any) {
-      swalFailed({
-        title: "Invalid Credentials",
-        type: "toast",
-      });
-      return;
+      }
     }
   };
 

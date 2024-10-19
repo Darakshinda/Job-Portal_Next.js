@@ -15,7 +15,7 @@ export const swalFailed = ({
     ? Swal.fire({
         title: title,
         icon: "error",
-        text: error?.response?.data?.username[0] || "An error occurred",
+        text: error,
         showClass: {
           popup: `
             animate__animated
@@ -57,7 +57,7 @@ export const swalSuccess = ({
     ? Swal.fire({
         title: title,
         icon: "success",
-        text: message,
+        html: message,
         showClass: {
           popup: `
             animate__animated
@@ -76,6 +76,42 @@ export const swalSuccess = ({
     : Swal.fire({
         title: title,
         icon: "success",
+        toast: true,
+        timer: 2000,
+        position: "top-right",
+        timerProgressBar: true,
+        showConfirmButton: false,
+      });
+};
+
+export const swalWarning = ({
+  title,
+  message,
+  type = "modal",
+}: SwalSuccessProps) => {
+  return type === "modal"
+    ? Swal.fire({
+        title: title,
+        icon: "success",
+        html: message,
+        showClass: {
+          popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+            `,
+        },
+        hideClass: {
+          popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+            `,
+        },
+      })
+    : Swal.fire({
+        title: title,
+        icon: "warning",
         toast: true,
         timer: 2000,
         position: "top-right",

@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import axios from "axios";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import * as z from "zod";
 import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { seekerSignupFormSchema } from "@/lib/validator";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
-import SignupForm from "@/Components/Forms/SignupForm";
 import { swalFailed, swalSuccess } from "@/lib/helpers/swal";
+import SignupForm from "@/Components/Forms/SignupForm";
 
 type Schema = z.infer<typeof seekerSignupFormSchema>;
 
@@ -20,18 +20,22 @@ const SignupSeeker = () => {
   const [formData, setFormData] = useState<{
     phone_number: string;
     technical_skills: string[];
+    location: string;
     years_of_experience: string;
   }>({
     phone_number: "",
     technical_skills: [],
+    location: "",
     years_of_experience: "",
   });
 
   const [formDataErrors, setFormDataErrors] = useState<{
     phone_number: string;
+    location: string;
     years_of_experience: string;
   }>({
     phone_number: "",
+    location: "",
     years_of_experience: "",
   });
 
@@ -54,15 +58,30 @@ const SignupSeeker = () => {
           years_of_experience: "Years of experience is required",
         }));
       }
-    } else {
-      if (key === "phone_number") {
-        const val = value;
-        setFormData((prevState) => ({
+    } else if (key === "phone_number") {
+      const val = value;
+      setFormData((prevState) => ({
+        ...prevState,
+        [key]: value,
+      }));
+      validatePhoneNumber(val);
+    } else if (key === "location") {
+      setFormData((prevState) => ({
+        ...prevState,
+        [key]: value,
+      }));
+      if (value) {
+        setFormDataErrors((prevState) => ({
           ...prevState,
-          [key]: val,
+          location: "",
         }));
-        validatePhoneNumber(val);
+      } else {
+        setFormDataErrors((prevState) => ({
+          ...prevState,
+          location: "Location is required",
+        }));
       }
+    } else {
       setFormData((prevState) => ({
         ...prevState,
         [key]: value,
@@ -97,18 +116,10 @@ const SignupSeeker = () => {
     }
   };
 
-  const yoeStringToNumber = (yoe: string): string => {
-    if (yoe === "Less than 1 year") {
-      return "0";
-    }
-    const match = yoe.match(/\d+/);
-    return match ? match[0] : "0";
-  };
-
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<Schema>({
     mode: "onChange",
     resolver: zodResolver(seekerSignupFormSchema),
@@ -119,8 +130,7 @@ const SignupSeeker = () => {
       username: "",
       password: "",
       confirm_password: "",
-      location: "",
-      how_heard_about_codeunity: "",
+      how_heard_about_company: "",
     },
   });
 
@@ -131,10 +141,10 @@ const SignupSeeker = () => {
       email,
       username,
       password,
-      location,
-      how_heard_about_codeunity,
+      how_heard_about_company,
     } = data;
-    const { technical_skills, phone_number, years_of_experience } = formData;
+    const { technical_skills, phone_number, location, years_of_experience } =
+      formData;
 
     let skills = "";
     for (let i = 0; i < technical_skills.length; i++) {
@@ -144,7 +154,8 @@ const SignupSeeker = () => {
         skills += technical_skills[i] + ", ";
       }
     }
-    phone_number.replaceAll(" ", "");
+    // removing spaces from the phone number
+    const formattedPhoneNumber = phone_number.replace(/\s/g, "");
 
     try {
       const response = await axios.post(
@@ -155,24 +166,60 @@ const SignupSeeker = () => {
           email,
           username,
           password,
-          phone_number,
-          how_heard_about_codeunity,
-          location,
-          experience: yoeStringToNumber(years_of_experience),
-          skills,
+          personal_info: {
+            phone_number: formattedPhoneNumber,
+            how_heard_about_company,
+          },
+          job_seeker_profile: {
+            location,
+            years_of_experience,
+            technical_skills: skills,
+          },
         }
       );
 
+      console.log(response.data);
+
       swalSuccess({
         title: "Registration Successful",
-        message: "You have registered successfully!",
+        message:
+          "You have registered successfully! <br> Please check your email to activate your account",
       });
       router.push("/login");
-
-      // console.log("Signed up successfully");
     } catch (error: any) {
-      // console.error("Registration failed:", error.response.data);
-      swalFailed({ title: "Registration Failed", error: error });
+      console.error("Registration failed:", error.response?.data);
+
+      if (
+        axios.isAxiosError(error) &&
+        error.response &&
+        error.response.status === 500
+      ) {
+        swalFailed({
+          title: "Registration Failed",
+          error: error.response?.data,
+        });
+      } else if (
+        axios.isAxiosError(error) &&
+        error.response &&
+        error.response.status === 400
+      ) {
+        if (
+          error.response?.data?.username[0] ||
+          error.response?.data.email[0]
+        ) {
+          swalFailed({
+            title: "Registration Failed",
+            error:
+              error.response?.data?.username[0] ||
+              error.response?.data.email[0],
+          });
+        }
+      } else {
+        swalFailed({
+          title: "Registration Failed",
+          error: "Please try again later!",
+        });
+      }
     }
   };
 
@@ -183,9 +230,10 @@ const SignupSeeker = () => {
       onSubmit={onSubmit}
       control={control}
       errors={errors}
-      handleChange={handleChange}
+      isSubmitting={isSubmitting}
       formData={formData}
       formDataErrors={formDataErrors}
+      handleChange={handleChange}
       handleSkillChange={handleSkillChange}
     />
   );

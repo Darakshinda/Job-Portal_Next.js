@@ -28,34 +28,45 @@ type Education = {
 interface ProfileData {
   first_name: string;
   last_name: string;
-  phone_number: string;
-  location: string;
   email: string;
-  linkedin: string | null;
-  instagram: string | null;
-  bio?: string | null;
-  telegram: string | null;
-  github: string | null;
-  gender: string | null;
-  available_for_work_from_date?: string | null;
-  years_of_experience?: number | null;
-  profile_picture: string | null;
-  achievements?: string;
-  account_type?: string;
-  designation?: string;
-  company_name?: string;
-  company_stage?: string;
-  company_description?: string;
-  product_service?: string;
-  website?: string;
-  work_experience?: WorkExperience[];
-  education?: Education[];
+  // account_type: "job_seeker" | "job_hirer";
+
+  job_seeker_profile?: {
+    achievements: string;
+    location: string;
+    bio: string;
+    years_of_experience: string;
+  };
+
+  job_hirer_profile?: {
+    designation: string;
+    company_name: string;
+    company_stage: string;
+    company_description: string;
+    product_service: string;
+  };
+
+  social_profile: {
+    website: string | null;
+    telegram: string | null;
+    github: string | null;
+    linkedin: string | null;
+  };
+
+  personal_info: {
+    phone_number: string;
+    profile_picture_url: string | null;
+  };
+
+  education_details: Education[];
+  work_experience_details: WorkExperience[];
 }
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 const ProfilePage = () => {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [accountType, setAccountType] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -66,19 +77,81 @@ const ProfilePage = () => {
           throw new Error("Access token not found");
         }
 
+        setAccountType(localStorage.getItem("account_type"));
+
         const response = await axios.get(`${baseUrl}/accounts/profile/`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
 
-        // Map backend fields to the ProfileData structure
         const data = response.data;
+        console.log(data);
+
+        // Map the response data to the ProfileData structure
         const mappedData: ProfileData = {
-          ...data,
-          education: data.education_details || [],
-          work_experience: data.work_experience_details || [],
+          first_name: data.first_name || "",
+          last_name: data.last_name || "",
+          email: data.email || "",
+          // account_type: data.account_type,
+
+          job_seeker_profile: data.job_seeker_profile
+            ? {
+                achievements: data.job_seeker_profile.achievements || "",
+                location: data.job_seeker_profile.location || "",
+                bio: data.job_seeker_profile.bio || "",
+                years_of_experience:
+                  data.job_seeker_profile.years_of_experience || "",
+              }
+            : undefined,
+
+          job_hirer_profile: data.job_hirer_profile
+            ? {
+                designation: data.job_hirer_profile.designation || "",
+                company_name: data.job_hirer_profile.company_name || "",
+                company_stage: data.job_hirer_profile.company_stage || "",
+                company_description:
+                  data.job_hirer_profile.company_description || "",
+                product_service: data.job_hirer_profile.product_service || "",
+              }
+            : undefined,
+
+          social_profile: {
+            website: data.social_profile?.website || null,
+            telegram: data.social_profile?.telegram || null,
+            github: data.social_profile?.github || null,
+            linkedin: data.social_profile?.linkedin || null,
+          },
+
+          personal_info: {
+            phone_number: data.personal_info?.phone_number || "",
+            profile_picture_url:
+              data.personal_info?.profile_picture_url || null,
+          },
+
+          education_details: data.education_details
+            ? data.education_details.map((edu: any) => ({
+                college_name: edu.college_name || "",
+                year_of_graduation: edu.year_of_graduation || 0,
+                degree: edu.degree || "",
+                gpa: edu.gpa || 0,
+                major: edu.major || "",
+              }))
+            : [],
+
+          work_experience_details: data.work_experience_details
+            ? data.work_experience_details.map((exp: any) => ({
+                company_name: exp.company_name || "",
+                title: exp.title || "",
+                start_date: exp.start_date || "",
+                end_date: exp.end_date || null,
+                currently_working: exp.currently_working || false,
+                description: exp.description || "",
+              }))
+            : [],
         };
+
+        console.log(mappedData);
 
         setProfileData(mappedData);
       } catch (error) {
@@ -98,24 +171,27 @@ const ProfilePage = () => {
   }
 
   // Transform achievements to an array if it is a string
-  const achievementsList: string[] = profileData.achievements
-    ? profileData.achievements.split(",").map((item) => item.trim())
+  const achievementsList: string[] = profileData.job_seeker_profile
+    ?.achievements
+    ? profileData.job_seeker_profile.achievements
+        .split(",")
+        .map((item) => item.trim())
     : [];
 
   return (
     <div className="w-full flex justify-center items-center min-h-screen bg-gray-50 min-[450px]:ps-[4.5rem]">
-      <div className="bg-white shadow-md rounded-lg sm:py-10 py-8 sm:px-12 px-4 max-w-5xl sm:my-8 min-[450px]:my-2.5 sm:mx-6 min-[450px]:mx-2.5 border border-gray-200">
-        <div className="flex justify-between items-center mb-4 relative">
+      <div className="bg-white shadow-md rounded-lg sm:py-10 py-8 sm:px-8 px-4 w-[50rem] max-w-5xl sm:my-8 min-[450px]:my-2.5 sm:mx-6 min-[450px]:mx-2.5 mx-1.5 border border-gray-200">
+        <div className="w-full flex justify-between items-center mb-4 relative gap-4">
           <div className="flex items-center gap-2">
             <Image
               src={
-                profileData.profile_picture ||
+                profileData.personal_info.profile_picture_url ||
                 "/assets/images/default-profile.webp"
               }
               width={64}
               height={64}
               alt="Profile Picture"
-              className="sm:w-16 sm:h-16 w-12 aspect-square rounded-full mr-2"
+              className="sm:w-16 sm:h-16 w-12 aspect-square rounded-full"
             />
             <div className="text-gray-700">
               <h2 className="md:text-2xl sm:text-xl max-[450px]:text-base text-lg font-semibold hover:text-blue-500 transition-colors duration-150">
@@ -124,10 +200,11 @@ const ProfilePage = () => {
               <p className="text-gray-500 sm:text-base text-sm">
                 {profileData.email}
               </p>
-              {profileData.account_type === "job_hirer" && (
+              {accountType === "job_hirer" && (
                 <p className="text-gray-500 md:text-base sm:text-sm text-xs">
-                  {profileData.designation} • {profileData.company_name} •{" "}
-                  {profileData.company_stage}
+                  {profileData.job_hirer_profile?.designation} •{" "}
+                  {profileData.job_hirer_profile?.company_name} •{" "}
+                  {profileData.job_hirer_profile?.company_stage}
                 </p>
               )}
             </div>
@@ -148,21 +225,25 @@ const ProfilePage = () => {
             Contact Information
           </h3>
           <p className="text-gray-500 sm:text-base max-[450px]:text-xs text-sm">
-            Phone: {profileData.phone_number || "Not provided"} <br />
+            Phone: +{profileData.personal_info.phone_number || "Not provided"}{" "}
+            <br />
           </p>
-          {profileData.account_type === "job_seeker" && (
-            <p className="text-gray-500">Location: {profileData.location}</p>
+          {accountType === "job_seeker" && (
+            <p className="text-gray-500">
+              Location: {profileData.job_seeker_profile?.location}
+            </p>
           )}
         </div>
 
-        {profileData.account_type === "job_hirer" && (
+        {accountType === "job_hirer" && (
           <>
             <div className="mb-4">
               <h3 className="sm:text-lg max-[450px]:text-sm text-base font-semibold text-gray-700 mb-1.5">
                 About Company
               </h3>
               <p className="text-gray-500 sm:text-base text-sm">
-                {profileData.company_description || "No Details provided"}
+                {profileData.job_hirer_profile?.company_description ||
+                  "No Details provided"}
               </p>
             </div>
 
@@ -172,22 +253,22 @@ const ProfilePage = () => {
               </h3>
               <div className="flex sm:text-sm text-xs font-semibold text-gray-500">
                 <span className="bg-gray-200/80 text-gray-600 px-3 py-1.5 rounded-full">
-                  {profileData.product_service} based -{" "}
-                  {profileData.company_stage}
+                  {profileData.job_hirer_profile?.product_service} based -{" "}
+                  {profileData.job_hirer_profile?.company_stage}
                 </span>
               </div>
             </div>
           </>
         )}
 
-        {profileData.account_type === "job_seeker" && (
+        {accountType === "job_seeker" && (
           <>
             <div className="mb-4">
               <h3 className="sm:text-lg max-[450px]:text-sm text-base font-semibold text-gray-700">
                 Bio
               </h3>
               <p className="text-gray-500 sm:text-base text-sm">
-                {profileData.bio || "No Bio provided"}
+                {profileData.job_seeker_profile?.bio || "No Bio provided"}
               </p>
             </div>
 
@@ -196,9 +277,8 @@ const ProfilePage = () => {
                 Experience
               </h3>
               <p className="text-gray-500 sm:text-base text-sm">
-                {Math.floor(Number(profileData.years_of_experience)) === 0
-                  ? "Fresher"
-                  : `${Math.floor(Number(profileData.years_of_experience))} years of experience`}
+                {profileData.job_seeker_profile?.years_of_experience ||
+                  "Fresher"}
               </p>
             </div>
 
@@ -221,13 +301,13 @@ const ProfilePage = () => {
               <h3 className="sm:text-lg max-[450px]:text-sm text-base font-semibold text-gray-700 mb-2">
                 Work Experience
               </h3>
-              {profileData.work_experience &&
-              profileData.work_experience.length > 0 ? (
+              {profileData.work_experience_details &&
+              profileData.work_experience_details.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2 items-center">
-                  {profileData.work_experience.map((exp, index) => (
+                  {profileData.work_experience_details.map((exp, index) => (
                     <div
                       key={index}
-                      className="border sm:px-4 sm:py-2 px-2.5 py-1 rounded-md"
+                      className="border-2 sm:px-4 sm:py-2 px-2.5 py-1 rounded-md"
                     >
                       <h4 className="font-semibold text-gray-700 sm:text-base text-sm">
                         {exp.title} at {exp.company_name}
@@ -245,7 +325,7 @@ const ProfilePage = () => {
                   ))}
                 </div>
               ) : (
-                "No work experience provided"
+                <p className="text-gray-500">No work experience provided</p>
               )}
             </div>
 
@@ -253,12 +333,13 @@ const ProfilePage = () => {
               <h3 className="sm:text-lg max-[450px]:text-sm text-base font-semibold text-gray-700 mb-2">
                 Education
               </h3>
-              {profileData.education && profileData.education.length > 0 ? (
+              {profileData.education_details &&
+              profileData.education_details.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2 items-center">
-                  {profileData.education.map((edu, index) => (
+                  {profileData.education_details.map((edu, index) => (
                     <div
                       key={index}
-                      className="border sm:px-4 sm:py-2 px-2.5 py-2 rounded-md"
+                      className="border-2 sm:px-4 sm:py-2 px-2.5 py-2 rounded-md"
                     >
                       <h4 className="font-semibold text-gray-700 sm:text-base text-sm mb-2">
                         {edu.degree} in {edu.major} from {edu.college_name}
@@ -271,7 +352,7 @@ const ProfilePage = () => {
                   ))}
                 </div>
               ) : (
-                "No education details provided"
+                <p className="text-gray-500">No Education details provided</p>
               )}
             </div>
           </>
@@ -279,7 +360,7 @@ const ProfilePage = () => {
 
         <ul className="mt-5 flex flex-col sm:gap-y-3 gap-y-2">
           <Link
-            href={profileData.telegram || "#"}
+            href={profileData.social_profile.telegram || "#"}
             className="flex items-center gap-2.5 group w-fit px-1.5 py-0.5 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           >
             <FaTelegram
@@ -291,7 +372,7 @@ const ProfilePage = () => {
             </p>
           </Link>
           <Link
-            href={profileData.github || "#"}
+            href={profileData.social_profile.github || "#"}
             className="flex items-center gap-2.5 group w-fit px-1.5 py-0.5 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
           >
             <FaGithub
@@ -303,7 +384,7 @@ const ProfilePage = () => {
             </p>
           </Link>
           <Link
-            href={profileData.linkedin || "#"}
+            href={profileData.social_profile.linkedin || "#"}
             className="flex items-center gap-2.5 group w-fit px-1.5 py-0.5 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-blue-700"
           >
             <FaLinkedin
@@ -315,7 +396,7 @@ const ProfilePage = () => {
             </p>
           </Link>
           <Link
-            href={profileData.website || "#"}
+            href={profileData.social_profile.website || "#"}
             className="flex items-center gap-2.5 group w-fit px-1.5 py-0.5 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-black"
           >
             <FaGlobe

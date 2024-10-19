@@ -53,7 +53,7 @@ const EducationForm = ({
     resolver: zodResolver(educationSchema),
     mode: "onChange",
     defaultValues: {
-      year_of_graduation: new Date().getFullYear(),
+      year_of_graduation: Number(new Date().getFullYear()),
       gpa: 0,
     },
   });

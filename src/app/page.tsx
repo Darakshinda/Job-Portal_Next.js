@@ -38,6 +38,7 @@ export default function Home() {
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
     localStorage.removeItem("account_type");
     Cookies.remove("access_token");
     Cookies.remove("account_type");

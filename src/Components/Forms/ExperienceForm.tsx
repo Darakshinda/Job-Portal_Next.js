@@ -302,7 +302,7 @@ const ExperienceForm = ({
                 name="description"
                 id="description"
                 rows={6}
-                className="textarea bg-gray-50 border border-gray-300 text-gray-800 rounded w-full placeholder:text-sm px-4 py-3 min-h-28 max-h-60 placeholder:italic placeholder-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+                className="textarea bg-gray-50 border leading-snug border-gray-300 text-gray-800 rounded w-full placeholder:text-sm px-4 py-3 min-h-28 max-h-60 placeholder:italic placeholder-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
                 placeholder="Tell us more about your work experience"
               />
             )}

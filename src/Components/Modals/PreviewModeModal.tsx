@@ -1,21 +1,33 @@
 import { UseFormWatch } from "react-hook-form";
 import JobCard from "../Cards/JobCard";
 
+interface FormData {
+  job_role: string;
+  job_description: string;
+  job_location: string; // need to make it as string[] later
+  industry: string;
+  employment_type: string;
+  experience_needed: string;
+  skills_required: string[];
+  benefits: string[];
+
+  how_to_apply: string;
+  apply_url: string;
+  application_deadline: string;
+
+  currency_type: string;
+  annual_salary_min: number;
+  annual_salary_max: number;
+
+  // prefetched data
+  company_name?: string;
+  company_website?: string;
+  company_photo_url?: string;
+}
+
 type PreviewModeModalProps = {
   watch: UseFormWatch<any>;
-  formData: {
-    emptype: string;
-    primtg: string;
-    tagsArray: string[];
-    locns: string;
-    desc: string;
-    minSalary: string;
-    maxSalary: string;
-    how2apply: string;
-    benefitsArray: string[];
-    currencyType: string;
-    feedback: string;
-  };
+  formData: FormData;
   handlePreview: () => void;
 };
 
@@ -37,18 +49,27 @@ const PreviewModeModal = ({
         <JobCard
           type="preview"
           job={{
-            company_name: watch && watch("company_name"),
-            position: watch && watch("position"),
-            emptype: formData.emptype,
-            primtg: formData.primtg,
-            tags: formData.tagsArray,
-            locns: formData.locns,
-            desc: formData.desc,
-            minsal: Number(formData.minSalary),
-            maxsal: Number(formData.maxSalary),
-            how2apply: formData.how2apply,
-            benefits: formData.benefitsArray,
-            email4jobappl: watch && watch("email4jobappl"),
+            posted_by: {
+              company_name: formData.company_name!,
+              company_photo_url: formData.company_photo_url!,
+              company_website: formData.company_website!,
+            },
+
+            job_role: watch && watch("job_role"),
+            job_description: formData.job_description,
+            job_location: formData.job_location,
+            industry: formData.industry,
+            employment_type: formData.employment_type,
+            experience_needed: formData.experience_needed,
+            skills_required: formData.skills_required.join(","),
+
+            currency_type: formData.currency_type,
+            annual_salary_min: Number(formData.annual_salary_min),
+            annual_salary_max: Number(formData.annual_salary_max),
+            benefits: formData.benefits.join(","),
+
+            application_deadline: formData.application_deadline,
+            how_to_apply: formData.how_to_apply,
             apply_url: watch && watch("apply_url"),
           }}
           seekerside={false}

@@ -28,6 +28,7 @@ const ResetPasswordPage = () => {
       const response = await axios.post(`${baseurl}/accounts/reset-password/`, {
         email,
       });
+
       if (response.data.detail) {
         Swal.fire({
           title: "Password Reset Link",
@@ -52,7 +53,7 @@ const ResetPasswordPage = () => {
         });
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

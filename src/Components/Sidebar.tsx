@@ -17,7 +17,7 @@ import Cookies from "js-cookie";
 interface Profile {
   email: string;
   first_name: string;
-  profile_picture: string;
+  profile_picture_url: string;
 }
 
 const Sidebar = ({ isHirer }: { isHirer: boolean }) => {
@@ -26,7 +26,7 @@ const Sidebar = ({ isHirer }: { isHirer: boolean }) => {
   const [profile, setProfile] = useState<Profile>({
     email: "",
     first_name: "",
-    profile_picture: "",
+    profile_picture_url: "",
   });
   const Links = [
     {
@@ -54,26 +54,38 @@ const Sidebar = ({ isHirer }: { isHirer: boolean }) => {
 
   const handleLogOut = () => {
     localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
     localStorage.removeItem("account_type");
     Cookies.remove("access_token");
+    Cookies.remove("refresh_token");
     Cookies.remove("account_type");
     router.push("/");
   };
 
   const getProfile = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/accounts/profile`, {
+      const response = await axios.get(`${baseUrl}/accounts/user-details/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+
+      // console.log(response.data);
       setProfile({
         email: response.data.working_email || response.data.email,
         first_name: response.data.first_name,
-        profile_picture: response.data.profile_picture,
+        profile_picture_url: response.data.profile_picture_url,
       });
-    } catch (error: any) {
-      console.log(error.response.data || error);
+    } catch (error) {
+      // Handle any errors that occurred during the login or profile fetching
+      console.error(error);
+      if (
+        axios.isAxiosError(error) &&
+        error.response &&
+        error.response.status === 401
+      ) {
+        router.replace("/login");
+      }
     }
   };
 
@@ -213,14 +225,14 @@ const Sidebar = ({ isHirer }: { isHirer: boolean }) => {
                 setIsOpen(true);
               }}
             >
-              {!profile.profile_picture ? (
+              {!profile.profile_picture_url ? (
                 <HiUserCircle
                   size={32}
                   className="hover:bg-gray-100 rounded-full cursor-pointer p-0.5"
                 />
               ) : (
                 <Image
-                  src={profile.profile_picture}
+                  src={profile.profile_picture_url}
                   alt="Profile Picture"
                   sizes="100%"
                   fill

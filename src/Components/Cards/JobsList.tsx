@@ -6,36 +6,49 @@ import Skeleton from "@/Components/Loaders/Skeleton";
 import Image from "next/image";
 import Link from "next/link";
 import { BiSolidArrowToTop } from "react-icons/bi";
+import { useRouter } from "next/router";
 
 // Define an interface representing the structure of a job object
 interface Job {
   id?: number;
-  company_name: string;
-  position: string;
-  employee_type: string;
-  primary_tag: string;
-  tags: string;
-  location_restriction: string;
+  posted_by: {
+    company_name: string;
+    // company_logo: string;
+    company_photo_url: string;
+    company_website: string;
+  };
+
+  job_role: string;
   job_description: string;
+  job_location: string;
+  industry: string;
+  employment_type: string;
+  experience_needed: string;
+  skills_required: string;
+
+  currency_type: string;
   annual_salary_min: number;
   annual_salary_max: number;
-  how_to_apply: string;
   benefits: string;
-  apply_email_address: string;
+
+  application_deadline: string;
+  how_to_apply: string;
   apply_url: string;
-  created_at?: string;
+
+  created_at: string;
+  is_active: boolean;
 }
 
 interface SearchParams {
   type: string;
   searchParams: {
-    query: string;
-    skillTags: string[];
-    location: string;
-    jobType: string;
-    minSalary: string;
-    maxSalary: string;
-    currencyType: string;
+    industry: string;
+    skills_required: string[];
+    job_location: string;
+    employment_type: string;
+    annual_salary_min: string;
+    annual_salary_max: string;
+    currency_type: string;
   };
 }
 
@@ -43,76 +56,109 @@ const JobsList: React.FC<SearchParams> = React.memo(
   ({ searchParams, type = "jobs" }) => {
     const [jobs, setJobs] = useState<Job[]>([]);
     const [jobsCopy, setJobsCopy] = useState<Job[]>([]);
+
     const [loaded, setLoaded] = useState<boolean>(false);
     const [page, setPage] = useState<number>(1);
-    const [logo, setLogo] = useState<string>("");
+    const [hasMore, setHasMore] = useState<boolean>(true);
     const [fetchCount] = useState(3);
     const scrollRef = useRef<HTMLDivElement>(null);
     const scrollToTopRef = useRef<HTMLAnchorElement>(null);
     const fetchingMore = useRef<boolean>(false);
     const [loadingMore, setLoadingMore] = useState<boolean>(false); // State for the loading message
 
-    const { skillTags, location, jobType, minSalary, maxSalary } = searchParams;
+    const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
 
-    const baseurl =
-      process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000/api";
+    // useEffect(() => {
+    //   const filteredJobs = jobsCopy.filter((job) => {
+    //     const position = job.position.toLowerCase();
+    //     return position.includes(searchParams.query.toLowerCase());
+    //   });
+    //   setJobs(filteredJobs);
+    // }, [searchParams.query, jobsCopy]);
 
-    useEffect(() => {
-      const filteredJobs = jobsCopy.filter((job) => {
-        const position = job.position.toLowerCase();
-        return position.includes(searchParams.query.toLowerCase());
-      });
-      setJobs(filteredJobs);
-    }, [searchParams.query, jobsCopy]);
+    const fetchJobs = useCallback(
+      async (page: number = 1) => {
+        if (fetchingMore.current) return;
 
-    const fetchJobs = useCallback(async () => {
-      if (fetchingMore.current) return;
+        fetchingMore.current = true;
+        setLoadingMore(true); // Set loadingMore to true before fetching
 
-      fetchingMore.current = true;
-      setLoadingMore(true); // Set loadingMore to true before fetching
+        try {
+          const params = new URLSearchParams();
+          if (searchParams.industry)
+            params.append("industry", searchParams.industry);
+          if (searchParams.skills_required.length > 0)
+            params.append(
+              "skills_required",
+              searchParams.skills_required.join(",")
+            );
+          if (searchParams.job_location)
+            params.append("job_location", searchParams.job_location);
+          if (searchParams.employment_type)
+            params.append("employment_type", searchParams.employment_type);
+          if (searchParams.annual_salary_min)
+            params.append("annual_salary_min", searchParams.annual_salary_min);
+          if (searchParams.annual_salary_max)
+            params.append("annual_salary_max", searchParams.annual_salary_max);
 
-      try {
-        const params = new URLSearchParams();
-        if (location) params.append("location", location);
-        if (skillTags.length > 0) params.append("tags", skillTags.join(","));
-        if (jobType) params.append("emptype", jobType);
+          params.append("page", String(page));
 
-        params.append("limit", fetchCount.toString());
-        params.append("offset", ((page - 1) * fetchCount).toString());
-        // console.log(params);
+          const endpoint =
+            type === "posted"
+              ? "posted-jobs"
+              : type === "applied"
+                ? "applied-jobs"
+                : "jobs";
 
-        const url = `${baseurl}/${type === "posted" ? "posted-jobs" : type === "applied" ? "applied-jobs" : "jobs"}/?${params.toString()}`;
-        const token = localStorage.getItem("access_token");
-        const config =
-          type === "posted" || type === "applied"
-            ? { headers: { Authorization: `Bearer ${token}` } }
-            : {};
+          const url = `${baseurl}/${endpoint}/${params.toString() ? `?${params.toString()}` : ""}`;
 
-        // console.log("Fetching jobs from:", url);
-        const response = await axios.get(url, config);
+          // console.log("Fetching jobs from URL:", url);
+          const token = localStorage.getItem("access_token");
+          const config =
+            type === "posted" || type === "applied"
+              ? { headers: { Authorization: `Bearer ${token}` } }
+              : {};
 
-        // Preserve the current scroll position
-        const scrollTop = scrollRef.current?.scrollTop || 0;
-        const scrollHeight = scrollRef.current?.scrollHeight || 0;
+          const response = await axios.get(url, config);
+          // console.log(response.data);
+          const fetchedJobs = response.data.results; // for posted and all jobs
 
-        setJobs((prevJobs) => [...prevJobs, ...response.data.results]);
-        setJobsCopy((prevJobs) => [...prevJobs, ...response.data.results]);
+          // Get pagination metadata
+          const next = response.data.next;
 
-        // Restore the scroll position after updating jobs
-        setTimeout(() => {
-          if (scrollRef.current) {
-            scrollRef.current.scrollTop =
-              scrollRef.current.scrollHeight - scrollHeight + scrollTop;
+          // console.log("Extracted jobs:", fetchedJobs);
+          // Preserve the current scroll position
+          const scrollTop = scrollRef.current?.scrollTop || 0;
+          const scrollHeight = scrollRef.current?.scrollHeight || 0;
+
+          if (fetchedJobs.length > 0) {
+            setJobs((prevJobs) => [...prevJobs, ...fetchedJobs]);
+            setJobsCopy((prevJobs) => [...prevJobs, ...fetchedJobs]);
           }
-        }, 0);
-      } catch (error: any) {
-        console.error("Error fetching jobs:", error?.response?.data);
-      }
+          // Restore the scroll position after updating jobs
+          setTimeout(() => {
+            if (scrollRef.current) {
+              scrollRef.current.scrollTop =
+                scrollRef.current.scrollHeight - scrollHeight + scrollTop;
+            }
+          }, 0);
 
-      setLoaded(true);
-      setLoadingMore(false);
-      fetchingMore.current = false;
-    }, [page, fetchCount, location, jobType, skillTags, baseurl, type]);
+          // If there's no `next` URL, stop fetching more pages
+          if (!next) {
+            setHasMore(false); // You can use this flag to stop further pagination
+          }
+
+          setLoaded(true);
+          setLoadingMore(false);
+          fetchingMore.current = false;
+        } catch (error: any) {
+          console.error("Error fetching jobs:", error?.response?.data);
+          setLoadingMore(false);
+          fetchingMore.current = false;
+        }
+      },
+      [searchParams, type]
+    );
 
     useEffect(() => {
       setJobs([]); // Clear previous jobs when tags change
@@ -125,60 +171,59 @@ const JobsList: React.FC<SearchParams> = React.memo(
       fetchJobs();
     }, [searchParams, type]);
 
+    // Fetch jobs whenever the page state changes
     useEffect(() => {
-      if (page > 1) {
-        setLoaded(false);
-        fetchJobs();
-      }
+      fetchJobs(page); // Fetch jobs for the current page
     }, [page]);
 
-    useEffect(() => {
-      const fetchLogo = () => {
-        const url = `${baseurl}/accounts/profile/`;
-        const token = localStorage.getItem("access_token");
-        axios
-          .get(url, { headers: { Authorization: `Bearer ${token}` } })
-          .then((response) => setLogo(response.data.company_photo))
-          .catch((error) =>
-            console.error(error.response?.data || error.message)
-          );
-      };
-
-      fetchLogo();
-    }, [baseurl, searchParams, page, type]);
+    // useEffect(() => {
+    //   if (page > 1) {
+    //     setLoaded(false);
+    //     fetchJobs();
+    //   }
+    // }, [page]);
 
     useEffect(() => {
       const handleScroll = () => {
-        if (scrollRef.current && scrollToTopRef.current) {
+        if (scrollRef.current) {
           const { scrollTop, clientHeight, scrollHeight } = scrollRef.current;
-          if (scrollTop + clientHeight >= scrollHeight - 5 && loaded) {
-            // setPage((prevPage) => prevPage + 1); // Infinite scroll
-            console.log("Fetching more jobs...");
+
+          // Check if the user has scrolled to the bottom of the container
+          if (
+            scrollTop + clientHeight >= scrollHeight - 5 &&
+            !loadingMore &&
+            hasMore
+          ) {
+            // console.log("Fetching more jobs...");
+            setPage((prevPage) => prevPage + 1); // Increment page for the next fetch
           }
 
-          if (scrollRef.current.scrollTop > 10) {
-            scrollToTopRef.current.style.display = "block";
+          // Show "scroll to top" button if user scrolls down
+          if (scrollTop > 10) {
+            scrollToTopRef.current!.style.display = "block";
           } else {
-            scrollToTopRef.current.style.display = "none";
+            scrollToTopRef.current!.style.display = "none";
           }
         }
       };
 
+      // Attach scroll event listener
       const ref = scrollRef.current;
       if (ref) {
         ref.addEventListener("scroll", handleScroll);
       }
 
+      // Cleanup scroll event listener on unmount
       return () => {
         if (ref) {
           ref.removeEventListener("scroll", handleScroll);
         }
       };
-    }, [loaded]);
+    }, [loadingMore, hasMore]);
 
-    useEffect(() => {
-      console.log(jobs.length);
-    }, [jobs]);
+    // useEffect(() => {
+    //   console.log(jobs.length);
+    // }, [jobs]);
 
     return (
       <section
@@ -196,23 +241,7 @@ const JobsList: React.FC<SearchParams> = React.memo(
                   {jobs.map((job, index) => (
                     <JobCard
                       key={index}
-                      job={{
-                        id: job.id,
-                        logo: logo,
-                        company_name: job.company_name,
-                        position: job.position,
-                        emptype: job.employee_type,
-                        primtg: job.primary_tag,
-                        tags: job.tags.split(","),
-                        locns: job.location_restriction,
-                        desc: job.job_description,
-                        minsal: job.annual_salary_min,
-                        maxsal: job.annual_salary_max,
-                        how2apply: job.how_to_apply,
-                        benefits: job.benefits.split(","),
-                        email4jobappl: job.apply_email_address,
-                        apply_url: job.apply_url,
-                      }}
+                      job={job}
                       // seekerside={appliedJobs || !postedJobs}
                       seekerside={type === "applied" || type === "jobs"}
                     />

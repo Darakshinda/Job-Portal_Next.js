@@ -3,6 +3,7 @@
 import { useState } from "react";
 import locOpns from "@/constants/data/location.json";
 import SkillTags from "@/constants/data/skillTags.json";
+import primaryTags from "@/constants/data/primaryTags.json";
 import empOpns from "@/constants/data/employmentType.json";
 import { LuFilter } from "react-icons/lu";
 import SearchSelectDropdown from "./Custom/SearchSelectDropdown";
@@ -11,13 +12,13 @@ import SignupFormInput from "./Inputs/SignupFormInput";
 
 interface SearchFiltersFormProps {
   searchParams: {
-    query: string;
-    skillTags: string[];
-    location: string;
-    jobType: string;
-    minSalary: string;
-    maxSalary: string;
-    currencyType: string;
+    industry: string;
+    skills_required: string[];
+    job_location: string;
+    employment_type: string;
+    annual_salary_min: string;
+    annual_salary_max: string;
+    currency_type: string;
   };
   handleChange: (name: string, value: string) => void;
   handleSkillChange: (skills: string[]) => void;
@@ -59,18 +60,22 @@ const SearchFiltersForm = ({
           handleSubmit();
         }}
       >
-        <SignupFormInput
-          id="search"
-          name="query"
-          type="text"
-          label="Search"
-          placeholder="Search by job title"
-          labelCls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
-          cls={defaultFieldStylesCls}
-          handleChange={handleChange}
-          resetFlag={resetFlag}
-          setResetFlag={setResetFlag}
-        />
+        <div className="grid grid-rows-[min(fit_content, fit_content)] gap-x-6 items-start">
+          <SearchSelectDropdown
+            req={false}
+            label="Industry/ Field of Work"
+            name="industry"
+            labelCls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
+            placeholder="Eg: Marketing"
+            cls={defaultFieldStylesCls}
+            tags={primaryTags}
+            onSingleChange={handleChange}
+            description="Only fill if you'd only like to hire people from a specific location or timezone this job is restricted to. If not restricted, please leave it as worldwide."
+            multiple={false}
+            resetFlag={resetFlag}
+            setResetFlag={setResetFlag}
+          />
+        </div>
 
         <div className="grid grid-rows-[min(fit_content, fit_content)] gap-x-6 items-start">
           <SearchSelectDropdown
@@ -91,7 +96,7 @@ const SearchFiltersForm = ({
           <SearchSelectDropdown
             req={false}
             label="Location"
-            name="location"
+            name="job_location"
             labelCls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
             placeholder="Eg: London"
             cls={defaultFieldStylesCls}
@@ -108,7 +113,7 @@ const SearchFiltersForm = ({
           <SearchSelectDropdown
             req={false}
             label="Employment Type"
-            name="emptype"
+            name="employment_type"
             labelCls="text-gray-700 text-sm font-semibold relative flex items-center gap-2 mt-2"
             placeholder="Eg: Full-Time"
             cls={defaultFieldStylesCls}
@@ -126,23 +131,23 @@ const SearchFiltersForm = ({
           name="salary"
           labelCls="text-gray-700 text-base font-semibold relative flex items-center gap-2"
           handleChange={handleChange}
-          minSalary={searchParams.minSalary}
-          maxSalary={searchParams.maxSalary}
-          currencyType={searchParams.currencyType}
+          minSalary={searchParams.annual_salary_min}
+          maxSalary={searchParams.annual_salary_max}
+          currencyType={searchParams.currency_type}
         />
 
         <div className="flex gap-3 items-center flex-nowrap">
           <button
             type="submit"
             onClick={() => setShowFilters && setShowFilters(false)}
-            className="flex-1 bg-blue-500 text-white py-1.5 rounded transition-colors duration-150 hover:bg-blue-600"
+            className="flex-1 bg-blue-500 text-white py-1.5 rounded transition-colors duration-150 hover:bg-blue-600 focus-visible:ring-2 focus-visible:ring-blue-300 outline-none"
           >
             Search
           </button>
 
           <button
             type="button"
-            className="w-1/4 bg-red-500 text-white py-1.5 rounded transition-colors duration-150 hover:bg-red-600"
+            className="w-1/4 bg-red-500 text-white py-1.5 rounded transition-colors duration-150 hover:bg-red-600 focus-visible:ring-2 focus-visible:ring-red-300 outline-none"
             onClick={handleReset}
           >
             Reset

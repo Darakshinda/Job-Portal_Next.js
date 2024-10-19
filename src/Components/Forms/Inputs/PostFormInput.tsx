@@ -12,8 +12,9 @@ interface FormInputProps {
   disabled?: boolean;
   id: string;
   label?: string;
+  value?: string;
   type: string;
-  register: UseFormRegister<any>;
+  register?: UseFormRegister<any>;
   errors?: FieldError;
   name: string;
   description?: string;
@@ -24,6 +25,7 @@ const PostFormInput = ({
   name,
   type,
   label,
+  value,
   register,
   placeholder,
   req,
@@ -61,15 +63,22 @@ const PostFormInput = ({
 
       <div className="relative w-full flex flex-col isolate">
         <input
-          {...register(name)}
+          {...(register ? register(name) : {})}
           id={id}
           name={name}
           type={type}
           required={req}
-          className={cls}
+          className={`${cls} read-only:bg-gray-300 read-only:cursor-default`}
           placeholder={placeholder}
           disabled={disabled}
+          defaultValue={value || ""} // Use defaultValue for read-only fields
+          title={
+            value &&
+            "This field is read-only, you can edit it in profile edit page"
+          }
+          readOnly={!!value} // Keep it read-only if value is provided
         />
+
         <span
           className={`text-red-500 text-xs absolute font-semibold  ${errors ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"} transition-all transform duration-300 absolute z-10 bg-red-50 rounded-b-md top-full px-2 py-0.5 before:content-[''] before:absolute before:w-2 before:h-2 before:bg-red-50 before:left-0 before:bottom-full after:content-[''] after:absolute after:z-10 after:w-2 after:h-2 after:bg-gray-50 after:rounded-bl-md after:border-l after:border-b after:border-gray-300 after:left-0 after:bottom-full`}
         >

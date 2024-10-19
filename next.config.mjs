@@ -9,7 +9,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "job-portal-2.s3.amazonaws.com",
+        hostname: "job-portal-version1.s3.us-east-1.amazonaws.com",
         port: "",
       },
       {

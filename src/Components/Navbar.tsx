@@ -54,7 +54,8 @@ const Navbar = ({
         ) : (
           <>
             <Link
-              href={`${accountType === "job_seeker" ? "/seeker-dashboard" : "/dashboard"}`}
+              // href={`${accountType === "job_seeker" ? "/seeker-dashboard" : "/dashboard"}`}
+              href={"/seeker-dashboard"}
               className="inline-block rounded-full bg-gray-300 from-purple-500 via-indigo-500 to-pink-500 bg-[length:_400%_400%] p-[2.5px] [animation-duration:_6s] animate-background hover:bg-gradient-to-r group"
             >
               <span className="block rounded-full bg-blue-500 group-hover:bg-white px-5 py-2 font-medium text-white group-hover:text-blue-500 transition-colors duration-200">

@@ -21,64 +21,93 @@ const RangeSlider = ({
   labelCls,
   minSalary,
   maxSalary,
-  currencyType,
+  currencyType = "USD",
   handleChange,
 }: RangeSliderProps) => {
-  const [min, setMin] = useState<number>(1500);
-  const [max, setMax] = useState<number>(90000);
-  const [step, setStep] = useState<number>(500);
-  const [values, setValues] = useState([Number(minSalary), Number(maxSalary)]);
+  // Fixed bounds for the slider
+  const [sliderBounds, setSliderBounds] = useState({
+    min: 0,
+    max: 100000,
+    step: 500,
+  });
+
+  // Current values of the slider in displayed currency
+  const [values, setValues] = useState([
+    minSalary ? Number(minSalary) : sliderBounds.min,
+    maxSalary ? Number(maxSalary) : sliderBounds.max,
+  ]);
+
   const [currencyList, setCurrencyList] = useState<string[]>([]);
   const [currencyRates, setCurrencyRates] = useState<{ [key: string]: number }>(
-    { USD: 1 }
+    {
+      USD: 1,
+    }
   );
 
-  // console.log(values);
   const determineStepValue = (currencyType: string) => {
     switch (currencyType) {
       case "INR":
-        return 1; // INR in Lakhs, so step by 1 LPA
+        return 100000; // 1 LPA
       case "USD":
-        return 500; // USD, step by $500
+        return 500;
       case "EUR":
-        return 400; // EUR, step by €400
+        return 400;
       case "JPY":
-        return 50000; // JPY, step by ¥50000
+        return 5000;
       case "GBP":
-        return 300; // GBP, step by £300
-      // Add cases for other currencies as needed
+        return 300;
       default:
-        return 500; // Fallback step value
+        return 500;
     }
   };
 
+  // Convert displayed currency value to USD
+  const convertToUSD = (amount: number, fromCurrency: string) => {
+    if (fromCurrency === "USD") return amount;
+    const rate = currencyRates[fromCurrency.toLowerCase()];
+    return Math.round(amount / rate);
+  };
+
+  // Convert USD to display currency
+  const convertFromUSD = (amount: number, toCurrency: string) => {
+    if (toCurrency === "USD") return amount;
+    const rate = currencyRates[toCurrency.toLowerCase()];
+    return Math.round(amount * rate);
+  };
+
+  // Initialize or update bounds based on currency
+  useEffect(() => {
+    if (currencyType) {
+      const newStep = determineStepValue(currencyType);
+      const newBounds = {
+        min: currencyType === "INR" ? 0 : 0,
+        max: currencyType === "INR" ? 10000000 : 100000, // 1 Cr for INR, 1M for others
+        step: newStep,
+      };
+      setSliderBounds(newBounds);
+
+      // Convert USD values from props to display currency
+      const displayMin = minSalary
+        ? convertFromUSD(Number(minSalary), currencyType)
+        : newBounds.min;
+      const displayMax = maxSalary
+        ? convertFromUSD(Number(maxSalary), currencyType)
+        : newBounds.max;
+
+      setValues([displayMin, displayMax]);
+    }
+  }, [currencyType, minSalary, maxSalary, currencyRates]);
+
   useEffect(() => {
     const getVals = async () => {
-      // const apiKey = "6bec93c77b543a360c7e8995";
-      // const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/USD`;
-
-      // try {
-      //   const response = await axios.get(apiUrl);
-      //   const currencyRates = response.data.conversion_rates;
-      //   const List = Object.keys(currencyRates);
-      //   // console.log("Fetched currency rates:", currencyRates);
-
-      //   setCurrencyList(List);
-      //   setCurrencyRates(currencyRates);
-      // } catch (error) {
-      //   console.error("Failed to fetch currency rates:", error);
-      // }
       const apiUrl =
         "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json";
 
       try {
         const response = await axios.get(apiUrl);
-        // console.log("Fetched currency rates:", response.data);
         const List = Object.keys(response.data.usd);
         setCurrencyList(List);
-        const currencyRates = response.data.usd;
-        // console.log("Fetched currency rates:", currencyRates);
-        setCurrencyRates(currencyRates);
+        setCurrencyRates(response.data.usd);
       } catch (error) {
         console.error("Failed to fetch currency rates:", error);
       }
@@ -92,45 +121,33 @@ const RangeSlider = ({
     setValues(newValues);
   };
 
-  const convertCurrency = (
-    amount: number,
-    fromCurrency: string,
-    toCurrency: string
-  ) => {
-    const fromRate = currencyRates[fromCurrency];
-    const toRate = currencyRates[toCurrency];
-
-    if (fromRate === toRate) return amount;
-
-    const amountInUSD = amount / fromRate;
-    let convertedValue = amountInUSD * toRate;
-    return Math.round(convertedValue);
-  };
-
   const handleCurrencyChange = (name: string, newCurrencyType: string) => {
-    const newMinLimit = convertCurrency(min, currencyType!, newCurrencyType);
-    const newMaxLimit = convertCurrency(max, currencyType!, newCurrencyType);
-    setMin(newMinLimit);
-    setMax(newMaxLimit);
+    // First convert current values to USD
+    const usdMin = convertToUSD(values[0], currencyType);
+    const usdMax = convertToUSD(values[1], currencyType);
 
-    const convertedMin = convertCurrency(
-      values[0],
-      currencyType!,
-      newCurrencyType
-    );
+    // Then convert USD values to new currency for display
+    const newMin = convertFromUSD(usdMin, newCurrencyType);
+    const newMax = convertFromUSD(usdMax, newCurrencyType);
 
-    const convertedMax = convertCurrency(
-      values[1],
-      currencyType!,
-      newCurrencyType
-    );
-    // console.log("Converted min:", convertedMin);
-    setStep(determineStepValue(newCurrencyType));
-    setValues([Math.round(convertedMin), Math.round(convertedMax)]);
-    handleChange(name, newCurrencyType);
+    const newStep = determineStepValue(newCurrencyType);
+    const roundedMin = Math.round(newMin / newStep) * newStep;
+    const roundedMax = Math.round(newMax / newStep) * newStep;
+
+    setValues([roundedMin, roundedMax]);
+
+    // Store USD values in search params
+    handleChange("annual_salary_min", usdMin.toString());
+    handleChange("annual_salary_max", usdMax.toString());
+    handleChange(name, newCurrencyType.toLocaleUpperCase());
   };
 
-  // console.log(values);
+  const formatValue = (value: number) => {
+    if (currencyType === "INR") {
+      return `${Math.round(value / 100000)} LPA`;
+    }
+    return `${Math.round(value / 1000)}K`;
+  };
 
   return (
     <div className="flex flex-col justify-center w-full py-4 px-1">
@@ -141,7 +158,7 @@ const RangeSlider = ({
 
         {currencyList.length > 0 && (
           <SearchSelectDropdown
-            name="currencyType"
+            name="currency_type"
             tags={currencyList}
             cls="w-24 px-2 py-0.5 bg-gray-50 text-gray-700 rounded-lg border border-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 placeholder:text-sm placeholder:italic"
             onSingleChange={handleCurrencyChange}
@@ -155,36 +172,36 @@ const RangeSlider = ({
       <Slider.Root
         className="relative flex items-center w-full h-6 my-2"
         value={values}
-        min={min}
-        max={max}
-        step={step}
+        min={sliderBounds.min}
+        max={sliderBounds.max}
+        step={sliderBounds.step}
         onValueChange={handleValueChange}
-        onValueCommit={(values) => {
-          handleChange("minSalary", values[0].toString());
-          handleChange("maxSalary", values[1].toString());
+        onValueCommit={(committedValues) => {
+          // Convert to USD before storing in search params
+          const usdMin = convertToUSD(committedValues[0], currencyType);
+          const usdMax = convertToUSD(committedValues[1], currencyType);
+
+          handleChange("annual_salary_min", usdMin.toString());
+          handleChange("annual_salary_max", usdMax.toString());
         }}
       >
         <Slider.Track className="bg-gray-300 relative flex-grow h-1 rounded-full">
           <Slider.Range className="absolute bg-blue-500 h-full rounded-full" />
         </Slider.Track>
         <Slider.Thumb
-          className="block w-5 h-5 bg-blue-500 border rounded-full outline-none relative"
+          className="block w-5 h-5 bg-blue-500 border rounded-full outline-none relative focus-visible:ring-2 ring-gray-700"
           aria-label="Minimum Value"
         >
           <div className="absolute font-semibold -bottom-6 right-full translate-x-full text-xs text-gray-500 whitespace-nowrap">
-            {currencyType === "INR"
-              ? `${Math.round(values[0] / 100000)} LPA`
-              : `${Math.round(values[0] / 1000)}K`}
+            {formatValue(values[0])}
           </div>
         </Slider.Thumb>
         <Slider.Thumb
-          className="block w-5 h-5 bg-blue-500 border rounded-full outline-none relative"
+          className="block w-5 h-5 bg-blue-500 border rounded-full outline-none relative focus-visible:ring-2 ring-gray-700"
           aria-label="Maximum Value"
         >
           <div className="absolute font-semibold -bottom-6 left-full -translate-x-[70%] text-xs text-gray-500 whitespace-nowrap">
-            {currencyType === "INR"
-              ? `${Math.round(values[1] / 100000)} LPA`
-              : `${Math.round(values[1] / 1000)}K`}
+            {formatValue(values[1])}
           </div>
         </Slider.Thumb>
       </Slider.Root>

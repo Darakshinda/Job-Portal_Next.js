@@ -2,17 +2,20 @@ import Footer from "@/Components/Footer";
 import Sidebar from "@/Components/Sidebar";
 import { cookies } from "next/headers";
 
-const getAccountType = () => {
-  const account_type = cookies().get("account_type")?.value;
-  console.log(account_type);
-  return account_type;
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const token = cookies().get("access_token")?.value;
+
+  const getAccountType = () => {
+    const account_type = cookies().get("account_type")?.value;
+    // console.log(token);
+    console.log(account_type);
+    return account_type;
+  };
+
   const account_type = getAccountType();
 
   return (
@@ -23,7 +26,7 @@ export default function RootLayout({
           {children}
         </div>
       </main>
-      <footer className="ps-[4.5rem] max-[450px]:ps-0">
+      <footer className={`${token && "ps-[4.5rem]"}  max-[450px]:ps-0`}>
         <Footer />
       </footer>
     </>
