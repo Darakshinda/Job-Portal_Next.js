@@ -19,7 +19,7 @@ import {
 } from "react-icons/fa";
 import locOpns from "@/constants/data/location.json";
 import ExperienceTags from "@/constants/data/experience.json";
-import companyType from "@/constants/data/companytype.json";
+import companyType from "@/constants/data/companyType.json";
 import SkillTags from "@/constants/data/skillTags.json";
 import ethnicity from "@/constants/data/ethnicity.json";
 import LoginFormInput from "@/Components/Forms/Inputs/LoginFormInput";
